@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - StudentStay</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <style>.bg-primary { background-color: #22C55E; }</style>
+</head>
+<body class="bg-slate-900">
+
+  <nav class="bg-slate-900/90 backdrop-blur-sm border-b border-slate-700">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
+      <a href="index.html" class="flex items-center gap-2"><div class="h-8 w-8 bg-primary rounded-lg flex items-center justify-center"><span class="text-white font-bold text-sm">S</span></div><div><h1 class="text-xl font-bold text-white">StudentStay Admin</h1></div></a>
+      <div class="flex gap-4"><a href="index.html" class="text-slate-300 hover:text-primary text-sm">Home</a><a href="admin.html" class="text-primary text-sm">Admin</a><a href="#" id="logoutBtn" class="text-slate-300 hover:text-primary text-sm">Logout</a></div>
+    </div>
+  </nav>
+
+  <div class="max-w-6xl mx-auto px-4 py-8">
+    <div id="adminCheck" class="text-center py-20 text-red-400">Checking admin access...</div>
+    <div id="adminContent" style="display:none;">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+        <div class="bg-slate-800 rounded-xl p-4 text-center"><p class="text-slate-400">Pending Rooms</p><p id="pendingCount" class="text-3xl font-bold text-white">0</p></div>
+        <div class="bg-slate-800 rounded-xl p-4 text-center"><p class="text-slate-400">Applications</p><p id="appCount" class="text-3xl font-bold text-white">0</p></div>
+        <div class="bg-slate-800 rounded-xl p-4 text-center"><p class="text-slate-400">Total Rooms</p><p id="totalRoomsCount" class="text-3xl font-bold text-white">0</p></div>
+      </div>
+      <div class="flex gap-2 border-b border-slate-700 mb-6">
+        <button class="tab-btn active px-4 py-2 font-medium border-b-2 border-primary text-primary" data-tab="rooms">Pending Rooms</button>
+        <button class="tab-btn px-4 py-2 font-medium text-slate-400" data-tab="applications">Landlord Applications</button>
+      </div>
+      <div id="roomsSection"><div id="roomsTable" class="bg-slate-800 rounded-xl border border-slate-700 overflow-hidden"><div class="p-6 text-center text-slate-400">Loading...</div></div></div>
+      <div id="applicationsSection" style="display:none;"><div id="applicationsTable" class="bg-slate-800 rounded-xl border border-slate-700 overflow-hidden"><div class="p-6 text-center text-slate-400">Loading...</div></div></div>
+    </div>
+  </div>
+
+  <script>
+    firebase.auth().onAuthStateChanged(async (user) => {
+      if (!user) { document.getElementById('adminCheck').innerHTML = '<div class="bg-red-500/20 p-6 rounded-lg text-center"><p class="text-red-400">Admin access required</p><a href="login.html" class="mt-4 inline-block bg-primary text-white px-4 py-2 rounded-lg">Login</a></div>'; return; }
+      const userDoc = await db.collection('users').doc(user.uid).get();
+      if (!userDoc.exists || userDoc.data().role !== 'admin') { document.getElementById('adminCheck').innerHTML = '<div class="bg-red-500/20 p-6 rounded-lg text-center"><p class="text-red-400">Access Denied</p><a href="index.html" class="mt-4 inline-block bg-slate-600 text-white px-4 py-2 rounded-lg">Back to Home</a></div>'; return; }
+      document.getElementById('adminCheck').style.display = 'none'; document.getElementById('adminContent').style.display = 'block';
+      loadStats(); loadPendingRooms(); loadApplications();
+    });
+    async function loadStats() {
+      const rooms = await db.collection('rooms').get(), pending = await db.collection('rooms').where('status','==','pending').get(), apps = await db.collection('applications').where('status','==','pending').get();
+      document.getElementById('pendingCount').innerText = pending.size; document.getElementById('appCount').innerText = apps.size; document.getElementById('totalRoomsCount').innerText = rooms.size;
+    }
+    async function loadPendingRooms() {
+      const snapshot = await db.collection('rooms').where('status','==','pending').get();
+      const container = document.getElementById('roomsTable');
+      if (snapshot.empty) { container.innerHTML = '<div class="p-6 text-center text-slate-400">No pending rooms.</div>'; return; }
+      let html = '<div class="overflow-x-auto"><table class="w-full text-sm"><thead class="bg-slate-700"><tr><th class="p-3 text-left">Title</th><th class="p-3 text-left">Price</th><th class="p-3 text-left">City</th><th class="p-3 text-left">Actions</th></tr></thead><tbody>';
+      for (const doc of snapshot.docs) {
+        const room = doc.data();
+        html += `<tr class="border-b border-slate-700"><td class="p-3 text-white">${room.title}</td><td class="p-3">${room.price.toLocaleString()} FCFA</td><td class="p-3">${room.city}</td><td class="p-3"><button onclick="approveRoom('${doc.id}')" class="bg-green-600 text-white px-3 py-1 rounded mr-2">Approve</button><button onclick="deleteRoom('${doc.id}')" class="bg-red-600 text-white px-3 py-1 rounded">Delete</button></td></tr>`;
+      }
+      html += '</tbody></table></div>'; container.innerHTML = html;
+    }
+    async function loadApplications() {
+      const snapshot = await db.collection('applications').where('status','==','pending').get();
+      const container = document.getElementById('applicationsTable');
+      if (snapshot.empty) { container.innerHTML = '<div class="p-6 text-center text-slate-400">No pending applications.</div>'; return; }
+      let html = '<div class="overflow-x-auto"><table class="w-full text-sm"><thead class="bg-slate-700"><tr><th class="p-3 text-left">Email</th><th class="p-3 text-left">Requested Role</th><th class="p-3 text-left">Date</th><th class="p-3 text-left">Actions</th></tr></thead><tbody>';
+      for (const doc of snapshot.docs) {
+        const app = doc.data();
+        html += `<tr class="border-b border-slate-700"><td class="p-3">${app.userEmail}</td><td class="p-3 capitalize">${app.requestedRole}</td><td class="p-3">${app.createdAt?.toDate().toLocaleDateString() || 'N/A'}</td><td class="p-3"><button onclick="approveApplication('${doc.id}', '${app.userId}', '${app.requestedRole}')" class="bg-green-600 text-white px-3 py-1 rounded mr-2">Approve</button><button onclick="rejectApplication('${doc.id}')" class="bg-red-600 text-white px-3 py-1 rounded">Reject</button></td></tr>`;
+      }
+      html += '</tbody></table></div>'; container.innerHTML = html;
+    }
+    window.approveRoom = async (id) => { await db.collection('rooms').doc(id).update({ status: 'approved', expiresAt: new Date(Date.now() + 30*24*60*60*1000) }); loadPendingRooms(); loadStats(); };
+    window.deleteRoom = async (id) => { if (confirm('Delete permanently?')) { await db.collection('rooms').doc(id).delete(); loadPendingRooms(); loadStats(); } };
+    window.approveApplication = async (appId, userId, role) => { await db.collection('users').doc(userId).update({ role: role, freeListingsRemaining: 5 }); await db.collection('applications').doc(appId).update({ status: 'approved', reviewedAt: new Date() }); alert('User approved!'); loadApplications(); loadStats(); };
+    window.rejectApplication = async (appId) => { if (confirm('Reject application?')) { await db.collection('applications').doc(appId).update({ status: 'rejected', reviewedAt: new Date() }); loadApplications(); loadStats(); } };
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.onclick = () => { const tab = btn.dataset.tab; document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('border-b-2','border-primary','text-primary')); btn.classList.add('border-b-2','border-primary','text-primary'); document.getElementById('roomsSection').style.display = tab === 'rooms' ? 'block' : 'none'; document.getElementById('applicationsSection').style.display = tab === 'applications' ? 'block' : 'none'; });
+    document.getElementById('logoutBtn').onclick = () => { firebase.auth().signOut(); window.location.href = 'index.html'; };
+  </script>
+</body>
+</html>

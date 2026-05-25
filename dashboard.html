@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - StudentStay</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <style>.bg-primary { background-color: #22C55E; }</style>
+</head>
+<body class="bg-slate-900">
+
+  <nav class="bg-slate-900/90 backdrop-blur-sm border-b border-slate-700">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
+      <a href="index.html" class="flex items-center gap-2"><div class="h-8 w-8 bg-primary rounded-lg flex items-center justify-center"><span class="text-white font-bold text-sm">S</span></div><div><h1 class="text-xl font-bold text-white">StudentStay</h1><p class="text-xs text-slate-400">Find Rooms. No Stress.</p></div></a>
+      <div class="flex gap-4"><a href="index.html" class="text-slate-300 hover:text-primary text-sm">Home</a><a href="listings.html" class="text-slate-300 hover:text-primary text-sm">Browse</a><a href="dashboard.html" class="text-primary text-sm">Dashboard</a><a href="#" id="logoutBtn" class="text-slate-300 hover:text-primary text-sm">Logout</a></div>
+    </div>
+  </nav>
+
+  <div class="max-w-4xl mx-auto px-4 py-8">
+    <div id="dashboardContent" class="bg-slate-800 rounded-xl border border-slate-700 p-6"><div class="text-center py-10 text-slate-400">Loading...</div></div>
+  </div>
+
+  <script>
+    firebase.auth().onAuthStateChanged(async (user) => {
+      if (!user) { window.location.href = 'login.html'; return; }
+      const userDoc = await db.collection('users').doc(user.uid).get();
+      const userData = userDoc.data() || { fullName: user.email, role: 'user', freeListingsRemaining: 5 };
+      const applications = await db.collection('applications').where('userId', '==', user.uid).where('status', '==', 'pending').get();
+      const hasPending = !applications.empty;
+      const isLandlord = userData.role === 'landlord' || userData.role === 'admin';
+      const roomsSnapshot = await db.collection('rooms').where('landlordId', '==', user.uid).get();
+      
+      let landlordSection = '';
+      if (!isLandlord && !hasPending && userData.role !== 'admin') landlordSection = `<div class="bg-slate-700/50 rounded-lg p-4 mb-6"><p class="text-white font-semibold mb-2">Want to list rooms?</p><button id="becomeLandlordBtn" class="bg-primary text-white px-4 py-2 rounded-lg text-sm font-semibold">Request to become Landlord</button></div>`;
+      else if (hasPending) landlordSection = `<div class="bg-yellow-500/20 border border-yellow-500/30 rounded-lg p-4 mb-6"><p class="text-yellow-400 font-semibold">⏳ Pending Approval</p><p class="text-yellow-300 text-sm">Your landlord application is being reviewed.</p></div>`;
+      else if (isLandlord) landlordSection = `<div class="bg-green-500/20 border border-green-500/30 rounded-lg p-4 mb-6"><p class="text-green-400 font-semibold">✅ Verified Landlord</p><p class="text-green-300 text-sm">You have ${userData.freeListingsRemaining || 5} free listings remaining.</p><a href="post-room.html" class="inline-block mt-3 bg-primary text-white px-4 py-2 rounded-lg text-sm font-semibold">+ Post New Room</a></div>`;
+      
+      let myRoomsHtml = '<div class="space-y-3">';
+      roomsSnapshot.forEach(doc => { const room = doc.data(); myRoomsHtml += `<div class="bg-slate-700 rounded-lg p-3 flex justify-between items-center"><div><h4 class="text-white font-semibold">${room.title}</h4><p class="text-slate-400 text-sm">${room.price.toLocaleString()} FCFA/mo • ${room.city}</p><span class="text-xs px-2 py-0.5 rounded ${room.status === 'approved' ? 'bg-green-500/20 text-green-400' : room.status === 'pending' ? 'bg-yellow-500/20 text-yellow-400' : 'bg-red-500/20 text-red-400'}">${room.status}</span></div><a href="details.html?id=${doc.id}" class="text-primary text-sm">View</a></div>`; });
+      myRoomsHtml += roomsSnapshot.empty ? '<p class="text-slate-400 text-sm">No rooms posted yet.</p>' : '</div>';
+      
+      document.getElementById('dashboardContent').innerHTML = `<div><div class="flex justify-between items-start mb-6"><div><h2 class="text-2xl font-bold text-white">Welcome, ${userData.fullName || user.email}!</h2><p class="text-slate-400 text-sm">${user.email}</p><p class="text-slate-400 text-sm">Role: <span class="text-primary">${userData.role || 'user'}</span></p></div></div>${landlordSection}<div class="border-t border-slate-700 pt-4"><h3 class="font-semibold text-white mb-3">My Rooms</h3>${myRoomsHtml}</div></div>`;
+      
+      const becomeBtn = document.getElementById('becomeLandlordBtn');
+      if (becomeBtn) becomeBtn.onclick = async () => { await db.collection('applications').add({ userId: user.uid, userEmail: user.email, requestedRole: 'landlord', status: 'pending', createdAt: new Date() }); alert('Application submitted!'); window.location.reload(); };
+    });
+    document.getElementById('logoutBtn').onclick = () => { firebase.auth().signOut(); window.location.href = 'index.html'; };
+  </script>
+</body>
+</html>

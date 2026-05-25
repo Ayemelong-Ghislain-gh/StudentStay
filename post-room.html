@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Post a Room - StudentStay</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <style>.bg-primary { background-color: #22C55E; }</style>
+</head>
+<body class="bg-slate-900">
+
+  <nav class="bg-slate-900/90 backdrop-blur-sm border-b border-slate-700"><div class="max-w-6xl mx-auto px-4 py-3"><a href="index.html" class="flex items-center gap-2"><div class="h-8 w-8 bg-primary rounded-lg flex items-center justify-center"><span class="text-white font-bold text-sm">S</span></div><div><h1 class="text-xl font-bold text-white">StudentStay</h1><p class="text-xs text-slate-400">Find Rooms. No Stress.</p></div></a></div></nav>
+
+  <div class="max-w-2xl mx-auto px-4 py-8">
+    <div class="bg-slate-800 rounded-xl border border-slate-700 p-6">
+      <h1 class="text-2xl font-bold text-white mb-2">Post a Room</h1>
+      <p class="text-slate-400 text-sm mb-6">Fill out the form. Admin will review before publishing.</p>
+      <div id="messageArea" class="hidden mb-4 p-3 rounded-lg"></div>
+      <form id="roomForm">
+        <div class="mb-4"><label class="block text-slate-300 text-sm font-semibold mb-1">Title *</label><input type="text" id="title" required class="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2"></div>
+        <div class="mb-4"><label class="block text-slate-300 text-sm font-semibold mb-1">Price (FCFA/month) *</label><input type="number" id="price" required class="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2"></div>
+        <div class="grid grid-cols-2 gap-4 mb-4"><div><label class="block text-slate-300 text-sm font-semibold mb-1">City *</label><select id="city" class="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2"><option value="Bambili">Bambili</option><option value="Bamenda">Bamenda</option><option value="Mankon">Mankon</option><option value="Up Station">Up Station</option><option value="Nkwen">Nkwen</option></select></div><div><label class="block text-slate-300 text-sm font-semibold mb-1">Area</label><input type="text" id="area" placeholder="e.g., Commercial Ave" class="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2"></div></div>
+        <div class="mb-4"><label class="block text-slate-300 text-sm font-semibold mb-1">Distance from University (km) *</label><input type="number" id="distance" step="0.1" required class="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2"></div>
+        <div class="mb-4"><label class="block text-slate-300 text-sm font-semibold mb-1">Description *</label><textarea id="description" rows="4" required class="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2"></textarea></div>
+        <div class="mb-4"><label class="block text-slate-300 text-sm font-semibold mb-1">Features (comma separated)</label><input type="text" id="features" placeholder="Water, Electricity, Furnished" class="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2"></div>
+        <div class="mb-4"><label class="block text-slate-300 text-sm font-semibold mb-1">WhatsApp Number *</label><input type="tel" id="phone" required placeholder="670922913" class="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2"></div>
+        <div class="mb-4"><label class="block text-slate-300 text-sm font-semibold mb-1">Image URLs (one per line, max 5)</label><textarea id="imageUrls" rows="3" placeholder="https://example.com/room1.jpg" class="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2"></textarea><p class="text-slate-500 text-xs mt-1">Paste direct image links from Imgur or other hosts</p></div>
+        <button type="submit" class="w-full bg-primary text-white py-3 rounded-lg font-semibold hover:bg-green-600">Submit Listing</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    firebase.auth().onAuthStateChanged(async (user) => {
+      if (!user) { window.location.href = 'login.html'; return; }
+      const userDoc = await db.collection('users').doc(user.uid).get();
+      const userData = userDoc.data();
+      if (userData.role !== 'landlord' && userData.role !== 'admin') { alert('Only approved landlords can post rooms.'); window.location.href = 'dashboard.html'; return; }
+    });
+    document.getElementById('roomForm').onsubmit = async (e) => {
+      e.preventDefault();
+      const user = firebase.auth().currentUser;
+      const title = document.getElementById('title').value, price = parseInt(document.getElementById('price').value), city = document.getElementById('city').value, area = document.getElementById('area').value, distance = parseFloat(document.getElementById('distance').value), description = document.getElementById('description').value, features = document.getElementById('features').value.split(',').map(f=>f.trim()), phone = document.getElementById('phone').value, imageUrls = document.getElementById('imageUrls').value.split('\n').filter(url=>url.trim());
+      const msgDiv = document.getElementById('messageArea');
+      try {
+        await db.collection('rooms').add({ title, price, city, area: area || null, distance, description, features, phone, images: imageUrls.slice(0,5), landlordId: user.uid, status: 'pending', createdAt: new Date(), expiresAt: new Date(Date.now() + 30*24*60*60*1000) });
+        const userDoc = await db.collection('users').doc(user.uid).get();
+        const currentFree = userDoc.data().freeListingsRemaining || 5;
+        await db.collection('users').doc(user.uid).update({ freeListingsRemaining: currentFree - 1 });
+        msgDiv.className = 'mb-4 p-3 rounded-lg bg-green-500/20 text-green-400'; msgDiv.innerHTML = '✅ Listing submitted! Admin will review it shortly.'; msgDiv.classList.remove('hidden');
+        setTimeout(() => { window.location.href = 'dashboard.html'; }, 2000);
+      } catch (error) { msgDiv.className = 'mb-4 p-3 rounded-lg bg-red-500/20 text-red-400'; msgDiv.innerHTML = 'Error: ' + error.message; msgDiv.classList.remove('hidden'); }
+    };
+  </script>
+</body>
+</html>

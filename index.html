@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StudentStay — Find Student Rooms. No Stress.</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <style>
+    .bg-primary { background-color: #22C55E; }
+    .text-primary { color: #22C55E; }
+  </style>
+</head>
+<body class="bg-slate-900">
+
+  <nav class="bg-slate-900/90 backdrop-blur-sm border-b border-slate-700 sticky top-0 z-10">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
+      <a href="index.html" class="flex items-center gap-2">
+        <div class="h-8 w-8 bg-primary rounded-lg flex items-center justify-center"><span class="text-white font-bold text-sm">S</span></div>
+        <div><h1 class="text-xl font-bold text-white">StudentStay</h1><p class="text-xs text-slate-400">Find Rooms. No Stress.</p></div>
+      </a>
+      <div class="hidden md:flex gap-4">
+        <a href="index.html" class="text-primary text-sm">Home</a>
+        <a href="listings.html" class="text-slate-300 hover:text-primary text-sm">Browse</a>
+        <a href="dashboard.html" class="text-slate-300 hover:text-primary text-sm">Dashboard</a>
+        <a href="#" id="desktopLogoutBtn" class="text-slate-300 hover:text-primary text-sm">Login</a>
+      </div>
+      <button id="menuBtn" class="md:hidden text-white"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg></button>
+    </div>
+    <div id="mobileMenu" class="hidden md:hidden bg-slate-800 border-t border-slate-700 py-3 px-4 flex flex-col gap-3">
+      <a href="index.html" class="text-primary text-sm">Home</a>
+      <a href="listings.html" class="text-slate-300 hover:text-primary text-sm">Browse</a>
+      <a href="dashboard.html" class="text-slate-300 hover:text-primary text-sm">Dashboard</a>
+      <a href="#" id="mobileLogoutBtn" class="text-slate-300 hover:text-primary text-sm">Login</a>
+    </div>
+  </nav>
+
+  <section class="py-16 text-center">
+    <div class="max-w-2xl mx-auto px-4">
+      <h2 class="text-4xl md:text-5xl font-bold text-white mb-2">Find Student Rooms.<br><span class="text-primary">No Stress.</span></h2>
+      <p class="text-slate-400 mb-6">Browse verified rooms in Bamenda and Bambili. Connect with landlords instantly on WhatsApp.</p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <a href="listings.html" class="bg-primary text-white px-6 py-3 rounded-full font-semibold hover:bg-green-600">Browse Rooms →</a>
+        <a href="dashboard.html" class="border border-primary text-primary px-6 py-3 rounded-full font-semibold hover:bg-primary/10">List a Room</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-8 border-y border-slate-800">
+    <div class="max-w-6xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+      <div><div class="text-primary text-2xl mb-1">✅</div><p class="text-white text-sm font-semibold">Verified Listings</p><p class="text-slate-500 text-xs">All rooms verified</p></div>
+      <div><div class="text-primary text-2xl mb-1">💬</div><p class="text-white text-sm font-semibold">Direct WhatsApp</p><p class="text-slate-500 text-xs">Contact landlords instantly</p></div>
+      <div><div class="text-primary text-2xl mb-1">📍</div><p class="text-white text-sm font-semibold">Prime Locations</p><p class="text-slate-500 text-xs">Near university gates</p></div>
+      <div><div class="text-primary text-2xl mb-1">💰</div><p class="text-white text-sm font-semibold">No Commission</p><p class="text-slate-500 text-xs">Free for students</p></div>
+    </div>
+  </section>
+
+  <section class="py-12 px-4">
+    <div class="max-w-6xl mx-auto">
+      <h3 class="text-2xl font-bold text-white mb-2">Latest Rooms</h3>
+      <p class="text-slate-400 mb-6">Recently posted by verified landlords</p>
+      <div id="roomsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="col-span-full text-center text-slate-400 py-10">Loading rooms...</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-12 px-4 bg-slate-800/50">
+    <div class="max-w-3xl mx-auto text-center">
+      <h3 class="text-2xl font-bold text-white mb-2">Have a room to rent out?</h3>
+      <p class="text-slate-400 mb-4">Reach hundreds of students looking for rooms in Bamenda and Bambili.</p>
+      <a href="dashboard.html" class="inline-block bg-primary text-white px-6 py-3 rounded-full font-semibold hover:bg-green-600">List Your Room →</a>
+    </div>
+  </section>
+
+  <footer class="bg-slate-900 border-t border-slate-800 py-8 text-center text-slate-400 text-sm">
+    <p><span class="text-primary font-bold">StudentStay</span> — Find Rooms. No Stress.</p>
+    <p class="mt-1">📍 Bambili, Bamenda, Cameroon</p>
+    <p class="mt-4">© 2026 StudentStay. All rights reserved.</p>
+  </footer>
+
+  <script>
+    const menuBtn = document.getElementById('menuBtn'), mobileMenu = document.getElementById('mobileMenu');
+    if (menuBtn) menuBtn.onclick = () => mobileMenu.classList.toggle('hidden');
+    
+    async function logoutUser() { await firebase.auth().signOut(); window.location.href = 'login.html'; }
+    
+    firebase.auth().onAuthStateChanged((user) => {
+      const desktopBtn = document.getElementById('desktopLogoutBtn'), mobileBtn = document.getElementById('mobileLogoutBtn');
+      if (user) {
+        if (desktopBtn) { desktopBtn.textContent = 'Logout'; desktopBtn.href = '#'; desktopBtn.onclick = (e) => { e.preventDefault(); logoutUser(); }; }
+        if (mobileBtn) { mobileBtn.textContent = 'Logout'; mobileBtn.href = '#'; mobileBtn.onclick = (e) => { e.preventDefault(); logoutUser(); }; }
+      } else {
+        if (desktopBtn) { desktopBtn.textContent = 'Login'; desktopBtn.href = 'login.html'; desktopBtn.onclick = null; }
+        if (mobileBtn) { mobileBtn.textContent = 'Login'; mobileBtn.href = 'login.html'; mobileBtn.onclick = null; }
+      }
+    });
+
+    // EXACT SAME LOAD FUNCTION AS LISTINGS.HTML (no orderBy)
+    async function loadRooms() {
+      const grid = document.getElementById('roomsGrid');
+      grid.innerHTML = '<div class="col-span-full text-center text-slate-400 py-10">Loading rooms...</div>';
+      try {
+        const snapshot = await db.collection('rooms').where('status', '==', 'approved').get();
+        const rooms = [];
+        snapshot.forEach(doc => rooms.push({ id: doc.id, ...doc.data() }));
+        
+        console.log('Found rooms:', rooms.length);
+        
+        if (rooms.length === 0) {
+          grid.innerHTML = '<div class="col-span-full text-center text-slate-400 py-10">No rooms available yet. Check back soon!</div>';
+          return;
+        }
+        
+        // Take only first 6 rooms for homepage
+        const latestRooms = rooms.slice(0, 6);
+        
+        grid.innerHTML = latestRooms.map(room => `
+          <div class="bg-slate-800 rounded-xl overflow-hidden border border-slate-700 hover:shadow-lg hover:-translate-y-1 transition">
+            <img src="${room.images && room.images[0] ? room.images[0] : 'https://picsum.photos/id/104/400/250'}" class="w-full h-48 object-cover">
+            <div class="p-4">
+              <div class="text-primary font-bold text-xl">${room.price?.toLocaleString() || 0} FCFA<span class="text-sm text-slate-400">/mo</span></div>
+              <h4 class="font-semibold text-white mt-1">${room.title || 'Untitled'}</h4>
+              <p class="text-sm text-slate-400">${room.city || 'Unknown'} • ${room.distance || 'N/A'} km</p>
+              <div class="flex flex-wrap gap-1 mt-2">
+                ${room.features ? room.features.slice(0,3).map(f => `<span class="text-xs bg-slate-700 text-slate-300 px-2 py-1 rounded">${f}</span>`).join('') : ''}
+              </div>
+              <a href="details.html?id=${room.id}" class="block mt-3 text-center border border-primary text-primary py-2 rounded-lg font-medium hover:bg-primary hover:text-white">View Details</a>
+            </div>
+          </div>
+        `).join('');
+      } catch (error) {
+        console.error('Error loading rooms:', error);
+        grid.innerHTML = '<div class="col-span-full text-center text-red-400 py-10">Error loading rooms</div>';
+      }
+    }
+    
+    loadRooms();
+  </script>
+</body>
+</html>
