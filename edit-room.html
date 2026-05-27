@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Room - StudentStay</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <style>.bg-primary { background-color: #22C55E; }</style>
+</head>
+<body class="bg-slate-900">
+
+  <nav class="bg-slate-900/90 backdrop-blur-sm border-b border-slate-700"><div class="max-w-6xl mx-auto px-4 py-3"><a href="index.html" class="flex items-center gap-2"><div class="h-8 w-8 bg-primary rounded-lg flex items-center justify-center"><span class="text-white font-bold text-sm">S</span></div><div><h1 class="text-xl font-bold text-white">StudentStay</h1><p class="text-xs text-slate-400">Find Rooms. No Stress.</p></div></a></div></nav>
+
+  <div class="max-w-2xl mx-auto px-4 py-8">
+    <div class="bg-slate-800 rounded-xl border border-slate-700 p-6">
+      <h1 class="text-2xl font-bold text-white mb-2">Edit Room</h1>
+      <div id="messageArea" class="hidden mb-4 p-3 rounded-lg"></div>
+      <div id="loadingArea" class="text-center py-10 text-slate-400">Loading...</div>
+      <form id="roomForm" style="display:none;">
+        <input type="hidden" id="roomId">
+        <div class="mb-4"><label class="block text-slate-300 text-sm font-semibold mb-1">Title *</label><input type="text" id="title" required class="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2"></div>
+        <div class="mb-4"><label class="block text-slate-300 text-sm font-semibold mb-1">Price (FCFA/month) *</label><input type="number" id="price" required class="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2"></div>
+        <div class="grid grid-cols-2 gap-4 mb-4"><div><label class="block text-slate-300 text-sm font-semibold mb-1">City *</label><select id="city" class="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2"><option value="Bambili">Bambili</option><option value="Bamenda">Bamenda</option><option value="Mankon">Mankon</option><option value="Up Station">Up Station</option><option value="Nkwen">Nkwen</option></select></div><div><label class="block text-slate-300 text-sm font-semibold mb-1">Area</label><input type="text" id="area" class="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2"></div></div>
+        <div class="mb-4"><label class="block text-slate-300 text-sm font-semibold mb-1">Distance (km) *</label><input type="number" id="distance" step="0.1" required class="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2"></div>
+        <div class="mb-4"><label class="block text-slate-300 text-sm font-semibold mb-1">Description *</label><textarea id="description" rows="4" required class="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2"></textarea></div>
+        <div class="mb-4"><label class="block text-slate-300 text-sm font-semibold mb-1">Features (comma separated)</label><input type="text" id="features" class="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2"></div>
+        <div class="mb-4"><label class="block text-slate-300 text-sm font-semibold mb-1">WhatsApp *</label><input type="tel" id="phone" required class="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2"></div>
+        <div class="mb-4"><label class="block text-slate-300 text-sm font-semibold mb-1">Image URLs (one per line)</label><textarea id="imageUrls" rows="3" class="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2"></textarea><p class="text-slate-500 text-xs">Add new image URLs. Existing images will be replaced.</p></div>
+        <div class="flex gap-3"><button type="submit" class="flex-1 bg-primary text-white py-3 rounded-lg font-semibold hover:bg-green-600">Save Changes</button><button type="button" id="deleteBtn" class="flex-1 bg-red-600 text-white py-3 rounded-lg font-semibold hover:bg-red-700">Delete Room</button></div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const roomId = urlParams.get('id');
+    if (!roomId) { document.getElementById('loadingArea').innerHTML = '<div class="text-center text-red-400">No room ID</div>'; }
+    
+    firebase.auth().onAuthStateChanged(async (user) => {
+      if (!user) { window.location.href = 'login.html'; return; }
+      const userDoc = await db.collection('users').doc(user.uid).get();
+      const userData = userDoc.data();
+      const isLandlord = userData.role === 'landlord' || userData.role === 'admin';
+      if (!isLandlord) { alert('Permission denied'); window.location.href = 'dashboard.html'; return; }
+      
+      const doc = await db.collection('rooms').doc(roomId).get();
+      if (!doc.exists) { document.getElementById('loadingArea').innerHTML = '<div class="text-center text-red-400">Room not found</div>'; return; }
+      const room = doc.data();
+      if (!userData.role === 'admin' && room.landlordId !== user.uid) { alert('You can only edit your own rooms'); window.location.href = 'dashboard.html'; return; }
+      
+      document.getElementById('roomId').value = roomId;
+      document.getElementById('title').value = room.title || '';
+      document.getElementById('price').value = room.price || '';
+      document.getElementById('city').value = room.city || 'Bambili';
+      document.getElementById('area').value = room.area || '';
+      document.getElementById('distance').value = room.distance || '';
+      document.getElementById('description').value = room.description || '';
+      document.getElementById('features').value = (room.features || []).join(', ');
+      document.getElementById('phone').value = room.phone || '';
+      document.getElementById('imageUrls').value = (room.images || []).join('\n');
+      
+      document.getElementById('loadingArea').style.display = 'none';
+      document.getElementById('roomForm').style.display = 'block';
+    });
+    
+    document.getElementById('roomForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const msgDiv = document.getElementById('messageArea');
+      msgDiv.classList.remove('hidden');
+      msgDiv.className = 'mb-4 p-3 rounded-lg bg-blue-500/20 text-blue-400';
+      msgDiv.innerHTML = 'Saving...';
+      try {
+        const imageUrls = document.getElementById('imageUrls').value.split('\n').filter(u => u.trim());
+        await db.collection('rooms').doc(roomId).update({
+          title: document.getElementById('title').value,
+          price: parseInt(document.getElementById('price').value),
+          city: document.getElementById('city').value,
+          area: document.getElementById('area').value || null,
+          distance: parseFloat(document.getElementById('distance').value),
+          description: document.getElementById('description').value,
+          features: document.getElementById('features').value.split(',').map(f=>f.trim()),
+          phone: document.getElementById('phone').value,
+          images: imageUrls.slice(0,10)
+        });
+        msgDiv.className = 'mb-4 p-3 rounded-lg bg-green-500/20 text-green-400';
+        msgDiv.innerHTML = '✅ Room updated! Redirecting...';
+        setTimeout(() => { window.location.href = 'dashboard.html'; }, 1500);
+      } catch (error) {
+        msgDiv.className = 'mb-4 p-3 rounded-lg bg-red-500/20 text-red-400';
+        msgDiv.innerHTML = 'Error: ' + error.message;
+      }
+    });
+    
+    document.getElementById('deleteBtn').addEventListener('click', async () => {
+      if (confirm('Delete permanently?')) {
+        await db.collection('rooms').doc(roomId).delete();
+        window.location.href = 'dashboard.html';
+      }
+    });
+  </script>
+</body>
+</html>
