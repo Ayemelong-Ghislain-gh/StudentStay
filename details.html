@@ -9,20 +9,17 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
   <script src="js/firebase-config.js"></script>
-  <style>.bg-primary { background-color: #22C55E; } .bg-whatsapp { background-color: #25D366; }</style>
+  <style>.bg-primary { background-color: #22C55E; } .bg-whatsapp { background-color: #25D366; } .bg-whatsapp:hover { background-color: #1da851; }</style>
 </head>
 <body class="bg-slate-900">
 
   <nav class="bg-slate-900/90 backdrop-blur-sm border-b border-slate-700">
-    <div class="max-w-6xl mx-auto px-4 py-3"><a href="index.html" class="flex items-center gap-2"><div class="h-8 w-8 bg-primary rounded-lg flex items-center justify-center"><span class="text-white font-bold text-sm">S</span></div><div><h1 class="text-xl font-bold text-white">StudentStay</h1><p class="text-xs text-slate-400">Find Rooms. No Stress.</p></div></a></div>
+    <div class="max-w-6xl mx-auto px-4 py-3"><a href="index.html" class="flex items-center gap-2"><div class="h-8 w-8 bg-primary rounded-lg flex items-center justify-center"><span class="text-white font-bold text-sm">S</span></div><div><h1 class="text-xl font-bold text-white">StudentStay</h1><p class="text-xs text-slate-300">Find Rooms. No Stress.</p></div></a></div>
   </nav>
 
   <div class="max-w-4xl mx-auto px-4 py-8">
-    <div id="roomContent" class="bg-slate-800 rounded-xl overflow-hidden border border-slate-700"><div class="text-center py-20 text-slate-400">Loading...</div></div>
-    <div class="mt-4 flex gap-3">
-      <a href="listings.html" class="inline-block text-primary hover:underline">← Back to listings</a>
-      <div id="editButtonContainer"></div>
-    </div>
+    <div id="roomContent" class="bg-slate-800 rounded-xl overflow-hidden border border-slate-700"><div class="text-center py-20 text-slate-300">Loading...</div></div>
+    <div class="mt-4 flex gap-3"><a href="listings.html" class="inline-block text-primary hover:underline">← Back to listings</a><div id="editButtonContainer"></div></div>
   </div>
 
   <script>
@@ -38,7 +35,7 @@
       const msg = encodeURIComponent(`Hello, I saw your ${room.title} on StudentStay for ${room.price?.toLocaleString()} FCFA and I am interested.`);
       const whatsappUrl = `https://wa.me/237${(room.phone || '').replace(/[^0-9]/g, '')}?text=${msg}`;
       const imagesHtml = room.images && room.images.length ? room.images.map(img => `<img src="${img}" class="w-full h-80 object-cover">`).join('') : '<div class="w-full h-80 bg-slate-700 flex items-center justify-center text-slate-400">📷 No images</div>';
-      document.getElementById('roomContent').innerHTML = `<div><div class="flex overflow-x-auto snap-x snap-mandatory">${imagesHtml}</div><div class="p-6"><div class="flex justify-between items-start flex-wrap gap-2 mb-4"><h1 class="text-2xl font-bold text-white">${room.title}</h1><span class="bg-green-500/20 text-green-400 px-3 py-1 rounded-full text-sm">✅ Verified</span></div><div class="text-primary font-bold text-3xl mb-4">${room.price?.toLocaleString() || 0} FCFA<span class="text-slate-400 text-base font-normal">/month</span></div><div class="flex items-center gap-2 text-slate-300 mb-4"><span>📍</span><span>${room.city}${room.area ? `, ${room.area}` : ''}</span><span>•</span><span>🚶 ${room.distance} km</span></div><div class="flex flex-wrap gap-2 mb-4">${room.features ? room.features.map(f => `<span class="bg-slate-700 text-slate-300 px-3 py-1 rounded-full text-sm">${f}</span>`).join('') : ''}</div><div class="border-t border-slate-700 pt-4"><h3 class="font-semibold text-white mb-2">Description</h3><p class="text-slate-300">${room.description || 'No description'}</p></div><div class="border-t border-slate-700 pt-4 mt-4"><a href="${whatsappUrl}" target="_blank" class="bg-whatsapp text-white text-center py-3 px-6 rounded-full font-semibold inline-flex items-center gap-2 w-full sm:w-auto justify-center">📲 Contact Landlord on WhatsApp</a></div></div></div>`;
+      document.getElementById('roomContent').innerHTML = `<div><div class="flex overflow-x-auto snap-x snap-mandatory">${imagesHtml}</div><div class="p-6"><div class="flex justify-between items-start flex-wrap gap-2 mb-4"><h1 class="text-2xl font-bold text-white">${room.title}</h1><span class="bg-green-500/20 text-green-400 px-3 py-1 rounded-full text-sm font-semibold">✅ Verified</span></div><div class="text-primary font-bold text-3xl mb-2">${room.price?.toLocaleString() || 0} FCFA<span class="text-slate-300 text-base font-normal">/month</span></div><div class="flex items-center gap-2 text-slate-300 mb-4"><span>📍</span><span>${room.city}${room.area ? `, ${room.area}` : ''}</span><span>•</span><span>🚶 ${room.distance} km from University</span></div><div class="flex flex-wrap gap-2 mb-4">${room.features ? room.features.map(f => `<span class="bg-slate-700 text-slate-200 px-3 py-1 rounded-full text-sm">${f}</span>`).join('') : ''}</div><div class="border-t border-slate-700 pt-4"><h3 class="font-semibold text-white mb-2">Description</h3><p class="text-slate-300 leading-relaxed">${room.description || 'No description provided'}</p></div><div class="border-t border-slate-700 pt-4 mt-4"><a href="${whatsappUrl}" target="_blank" class="bg-whatsapp text-white text-center py-3 px-6 rounded-full font-semibold inline-flex items-center gap-2 w-full sm:w-auto justify-center transition">📲 Contact Landlord on WhatsApp</a></div></div></div>`;
       
       if (user) {
         const userDoc = await db.collection('users').doc(user.uid).get();
@@ -46,7 +43,7 @@
         const isOwner = room.landlordId === user.uid;
         const isAdmin = userData?.role === 'admin';
         if (isOwner || isAdmin) {
-          document.getElementById('editButtonContainer').innerHTML = `<a href="edit-room.html?id=${roomId}" class="bg-yellow-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-yellow-700 inline-block">✏️ Edit Room</a>`;
+          document.getElementById('editButtonContainer').innerHTML = `<a href="edit-room.html?id=${roomId}" class="bg-yellow-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-yellow-700 inline-block transition">✏️ Edit Room</a>`;
         }
       }
     });

@@ -9,13 +9,13 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
   <script src="js/firebase-config.js"></script>
-  <style>.bg-primary { background-color: #22C55E; }</style>
+  <style>.bg-primary { background-color: #22C55E; } .card { background-color: #1E293B; border-radius: 16px; overflow: hidden; border: 1px solid #334155; transition: all 0.2s; } .card:hover { transform: translateY(-4px); box-shadow: 0 10px 25px -5px rgba(0,0,0,0.3); }</style>
 </head>
 <body class="bg-slate-900">
 
-  <nav class="bg-slate-900/90 backdrop-blur-sm border-b border-slate-700 sticky top-0 z-10">
+  <nav class="bg-slate-900/90 backdrop-blur-sm border-b border-slate-700">
     <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
-      <a href="index.html" class="flex items-center gap-2"><div class="h-8 w-8 bg-primary rounded-lg flex items-center justify-center"><span class="text-white font-bold text-sm">S</span></div><div><h1 class="text-xl font-bold text-white">StudentStay</h1><p class="text-xs text-slate-400">Find Rooms. No Stress.</p></div></a>
+      <a href="index.html" class="flex items-center gap-2"><div class="h-8 w-8 bg-primary rounded-lg flex items-center justify-center"><span class="text-white font-bold text-sm">S</span></div><div><h1 class="text-xl font-bold text-white">StudentStay</h1><p class="text-xs text-slate-300">Find Rooms. No Stress.</p></div></a>
       <div class="hidden md:flex gap-4"><a href="index.html" class="text-slate-300 hover:text-primary text-sm">Home</a><a href="listings.html" class="text-primary text-sm">Browse</a><a href="dashboard.html" class="text-slate-300 hover:text-primary text-sm">Dashboard</a><a href="#" id="desktopLogoutBtn" class="text-slate-300 hover:text-primary text-sm">Login</a></div>
       <button id="menuBtn" class="md:hidden text-white"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg></button>
     </div>
@@ -27,35 +27,35 @@
     <div class="bg-slate-800 rounded-xl p-4 mb-8 border border-slate-700">
       <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
         <select id="cityFilter" class="bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2"><option value="">All Cities</option><option value="Bambili">Bambili</option><option value="Bamenda">Bamenda</option><option value="Mankon">Mankon</option><option value="Up Station">Up Station</option><option value="Nkwen">Nkwen</option></select>
-        <input type="number" id="minPrice" placeholder="Min Price" class="bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2">
-        <input type="number" id="maxPrice" placeholder="Max Price" class="bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2">
+        <input type="number" id="minPrice" placeholder="Min Price" class="bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2 placeholder-slate-400">
+        <input type="number" id="maxPrice" placeholder="Max Price" class="bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2 placeholder-slate-400">
         <button id="applyFilters" class="bg-primary text-white rounded-lg py-2 font-semibold hover:bg-green-600">Apply Filters</button>
       </div>
     </div>
-    <p id="resultsCount" class="text-slate-400 mb-4">Loading...</p>
+    <p id="resultsCount" class="text-slate-300 mb-4">Loading...</p>
     <div id="roomsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
   </div>
 
   <footer class="bg-slate-900 border-t border-slate-800 py-8 text-center text-slate-400 text-sm"><p><span class="text-primary font-bold">StudentStay</span> — Find Rooms. No Stress.</p></footer>
 
   <script>
-    const menuBtn = document.getElementById('menuBtn'), mobileMenu = document.getElementById('mobileMenu');
-    if (menuBtn) menuBtn.onclick = () => mobileMenu.classList.toggle('hidden');
-    async function logoutUser() { await firebase.auth().signOut(); window.location.href = 'login.html'; }
+    document.getElementById('menuBtn')?.addEventListener('click', () => document.getElementById('mobileMenu').classList.toggle('hidden'));
+    
     firebase.auth().onAuthStateChanged((user) => {
       const desktopBtn = document.getElementById('desktopLogoutBtn'), mobileBtn = document.getElementById('mobileLogoutBtn');
       if (user) {
-        if (desktopBtn) { desktopBtn.textContent = 'Logout'; desktopBtn.href = '#'; desktopBtn.onclick = (e) => { e.preventDefault(); logoutUser(); }; }
-        if (mobileBtn) { mobileBtn.textContent = 'Logout'; mobileBtn.href = '#'; mobileBtn.onclick = (e) => { e.preventDefault(); logoutUser(); }; }
+        if (desktopBtn) { desktopBtn.textContent = 'Logout'; desktopBtn.onclick = (e) => { e.preventDefault(); firebase.auth().signOut(); window.location.href = 'login.html'; }; }
+        if (mobileBtn) { mobileBtn.textContent = 'Logout'; mobileBtn.onclick = (e) => { e.preventDefault(); firebase.auth().signOut(); window.location.href = 'login.html'; }; }
       } else {
         if (desktopBtn) { desktopBtn.textContent = 'Login'; desktopBtn.href = 'login.html'; desktopBtn.onclick = null; }
         if (mobileBtn) { mobileBtn.textContent = 'Login'; mobileBtn.href = 'login.html'; mobileBtn.onclick = null; }
       }
     });
+    
     let allRooms = [], filteredRooms = [];
     async function loadRooms() {
       const grid = document.getElementById('roomsGrid');
-      grid.innerHTML = '<div class="col-span-full text-center text-slate-400 py-10">Loading rooms...</div>';
+      grid.innerHTML = '<div class="col-span-full text-center text-slate-300 py-10">Loading rooms...</div>';
       try {
         const snapshot = await db.collection('rooms').where('status', '==', 'approved').get();
         allRooms = []; snapshot.forEach(doc => allRooms.push({ id: doc.id, ...doc.data() }));
@@ -64,9 +64,9 @@
     }
     function displayRooms() {
       const grid = document.getElementById('roomsGrid'), count = document.getElementById('resultsCount');
-      if (!filteredRooms.length) { grid.innerHTML = '<div class="col-span-full text-center text-slate-400 py-10">No rooms found</div>'; count.innerHTML = '0 rooms found'; return; }
+      if (!filteredRooms.length) { grid.innerHTML = '<div class="col-span-full text-center text-slate-300 py-10">No rooms found</div>'; count.innerHTML = '0 rooms found'; return; }
       count.innerHTML = `${filteredRooms.length} rooms found`;
-      grid.innerHTML = filteredRooms.map(room => `<div class="bg-slate-800 rounded-xl overflow-hidden border border-slate-700 hover:shadow-lg hover:-translate-y-1 transition"><img src="${room.images && room.images[0] ? room.images[0] : 'https://picsum.photos/id/104/400/250'}" class="w-full h-48 object-cover"><div class="p-4"><div class="text-primary font-bold text-xl">${room.price.toLocaleString()} FCFA<span class="text-sm text-slate-400">/mo</span></div><h4 class="font-semibold text-white mt-1">${room.title}</h4><p class="text-sm text-slate-400">${room.city} • ${room.distance || 'N/A'} km</p><div class="flex flex-wrap gap-1 mt-2">${room.features ? room.features.slice(0,3).map(f => `<span class="text-xs bg-slate-700 text-slate-300 px-2 py-1 rounded">${f}</span>`).join('') : ''}</div><a href="details.html?id=${room.id}" class="block mt-3 text-center border border-primary text-primary py-2 rounded-lg font-medium hover:bg-primary hover:text-white">View Details</a></div></div>`).join('');
+      grid.innerHTML = filteredRooms.map(room => `<div class="card"><img src="${room.images?.[0] || 'https://placehold.co/600x400/1e293b/22C55E?text=No+Image'}" class="w-full h-48 object-cover"><div class="p-4"><div class="text-primary font-bold text-xl">${room.price?.toLocaleString() || 0} FCFA<span class="text-sm text-slate-400">/mo</span></div><h4 class="font-semibold text-white text-lg">${room.title}</h4><p class="text-slate-300 text-sm">📍 ${room.city} • ${room.distance || '?'} km</p><div class="flex flex-wrap gap-1 mt-2">${room.features?.slice(0,3).map(f => `<span class="text-xs bg-slate-700 text-slate-200 px-2 py-1 rounded">${f}</span>`).join('') || ''}</div><a href="details.html?id=${room.id}" class="block mt-3 text-center bg-primary text-white py-2 rounded-lg font-medium hover:bg-green-600">View Details →</a></div></div>`).join('');
     }
     function applyFilters() {
       const city = document.getElementById('cityFilter').value, min = parseInt(document.getElementById('minPrice').value) || 0, max = parseInt(document.getElementById('maxPrice').value) || Infinity;
