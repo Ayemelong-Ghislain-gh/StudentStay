@@ -9,7 +9,11 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
   <script src="js/firebase-config.js"></script>
-  <style>.bg-primary { background-color: #22C55E; } .card { background-color: #1E293B; border-radius: 16px; overflow: hidden; border: 1px solid #334155; transition: all 0.2s; } .card:hover { transform: translateY(-4px); box-shadow: 0 10px 25px -5px rgba(0,0,0,0.3); }</style>
+  <style>
+    .bg-primary { background-color: #22C55E; }
+    .card { background-color: #1E293B; border-radius: 16px; overflow: hidden; border: 1px solid #334155; transition: all 0.2s; }
+    .card:hover { transform: translateY(-4px); box-shadow: 0 10px 25px -5px rgba(0,0,0,0.3); }
+  </style>
 </head>
 <body class="bg-slate-900">
 
@@ -66,7 +70,7 @@
       const grid = document.getElementById('roomsGrid'), count = document.getElementById('resultsCount');
       if (!filteredRooms.length) { grid.innerHTML = '<div class="col-span-full text-center text-slate-300 py-10">No rooms found</div>'; count.innerHTML = '0 rooms found'; return; }
       count.innerHTML = `${filteredRooms.length} rooms found`;
-      grid.innerHTML = filteredRooms.map(room => `<div class="card"><img src="${room.images?.[0] || 'https://placehold.co/600x400/1e293b/22C55E?text=No+Image'}" class="w-full h-48 object-cover"><div class="p-4"><div class="text-primary font-bold text-xl">${room.price?.toLocaleString() || 0} FCFA<span class="text-sm text-slate-400">/mo</span></div><h4 class="font-semibold text-white text-lg">${room.title}</h4><p class="text-slate-300 text-sm">📍 ${room.city} • ${room.distance || '?'} km</p><div class="flex flex-wrap gap-1 mt-2">${room.features?.slice(0,3).map(f => `<span class="text-xs bg-slate-700 text-slate-200 px-2 py-1 rounded">${f}</span>`).join('') || ''}</div><a href="details.html?id=${room.id}" class="block mt-3 text-center bg-primary text-white py-2 rounded-lg font-medium hover:bg-green-600">View Details →</a></div></div>`).join('');
+      grid.innerHTML = filteredRooms.map(room => `<div class="card"><img src="${room.images?.[0] || 'https://placehold.co/600x400/1e293b/22C55E?text=No+Image'}" class="w-full h-48 object-cover"><div class="p-4"><div class="text-green-400 font-bold text-2xl">${room.price?.toLocaleString() || 0} FCFA<span class="text-sm text-slate-300">/month</span></div><h4 class="font-semibold text-white text-lg mt-1">${room.title}</h4><p class="text-slate-300 text-sm">📍 ${room.city} • ${room.distance || '?'} km</p><div class="flex flex-wrap gap-1 mt-2">${room.features?.slice(0,3).map(f => `<span class="text-xs bg-slate-700 text-slate-200 px-2 py-1 rounded">${f}</span>`).join('') || ''}</div><a href="details.html?id=${room.id}" class="block mt-3 text-center bg-primary text-white py-2 rounded-lg font-medium hover:bg-green-600">View Details →</a></div></div>`).join('');
     }
     function applyFilters() {
       const city = document.getElementById('cityFilter').value, min = parseInt(document.getElementById('minPrice').value) || 0, max = parseInt(document.getElementById('maxPrice').value) || Infinity;
