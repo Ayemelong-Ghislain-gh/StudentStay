@@ -13,8 +13,21 @@
     .bg-primary { background-color: #22C55E; }
     .preview-image { width: 80px; height: 80px; object-fit: cover; border-radius: 8px; border: 1px solid #334155; }
     .remove-image { position: absolute; top: -8px; right: -8px; background: #ef4444; color: white; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 12px; cursor: pointer; }
-    .upload-btn { background-color: #22C55E; color: white; text-align: center; padding: 8px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: background-color 0.2s; display: inline-block; }
-    .upload-btn:hover { background-color: #16A34A; }
+    /* Style the file input button - keep background white, text black */
+    input[type="file"]::file-selector-button {
+      background-color: white;
+      color: black;
+      border: 1px solid #ccc;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-right: 12px;
+      transition: background-color 0.2s;
+    }
+    input[type="file"]::file-selector-button:hover {
+      background-color: #f0f0f0;
+    }
   </style>
 </head>
 <body class="bg-slate-900">
@@ -39,11 +52,10 @@
         <div class="mb-4"><label class="block text-slate-300 text-sm font-semibold mb-1">Features (comma separated)</label><input type="text" id="features" placeholder="Water, Electricity, Furnished" class="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2"></div>
         <div class="mb-4"><label class="block text-slate-300 text-sm font-semibold mb-1">WhatsApp Number *</label><input type="tel" id="phone" required placeholder="670922913" class="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2"></div>
         
-        <!-- Image Upload - Solid Green Custom Button -->
+        <!-- Image Upload - White button with black text -->
         <div class="mb-4">
           <label class="block text-slate-300 text-sm font-semibold mb-1">Upload Images (max 5)</label>
-          <input type="file" id="imageInput" accept="image/*" multiple style="display:none;">
-          <button type="button" id="uploadBtn" class="upload-btn">📸 Choose Images (max 5)</button>
+          <input type="file" id="imageInput" accept="image/*" multiple class="w-full text-slate-300 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:bg-white file:text-black file:font-semibold file:border file:border-gray-300 file:cursor-pointer file:hover:bg-gray-100">
           <p class="text-slate-500 text-xs mt-1">Select up to 5 images (JPG, PNG). Uploaded to ImgBB (free).</p>
           <div id="previewContainer" class="flex flex-wrap gap-2 mt-3"></div>
         </div>
@@ -59,13 +71,7 @@
     let isUploading = false;
     
     const imageInput = document.getElementById('imageInput');
-    const uploadBtn = document.getElementById('uploadBtn');
     const previewContainer = document.getElementById('previewContainer');
-    
-    // Trigger file input when button is clicked
-    uploadBtn.addEventListener('click', () => {
-      imageInput.click();
-    });
     
     imageInput.addEventListener('change', (e) => {
       const files = Array.from(e.target.files);
