@@ -9,7 +9,6 @@ const urlsToCache = [
   '/admin.html',
   '/post-room.html',
   '/edit-room.html',
-  '/css/style.css',
   '/js/firebase-config.js',
   'https://cdn.tailwindcss.com',
   'https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js',
