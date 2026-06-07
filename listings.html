@@ -29,6 +29,8 @@
     body .border-slate-700 { border-color: #334155; }
     body .card { background-color: #1E293B; border-color: #334155; }
     body .feature-badge { background-color: #334155; color: #CBD5E1; }
+    body footer { background-color: #0F172A; border-color: #1E293B; }
+    body footer .text-slate-400 { color: #94A3B8; }
 
     /* === LIGHT MODE === */
     body.light-mode {
@@ -48,14 +50,38 @@
     body.light-mode .bg-primary { background-color: #22C55E; }
     body.light-mode .text-primary { color: #22C55E; }
     
+    /* Footer in light mode */
+    body.light-mode footer {
+      background-color: #F9FAFB !important;
+      border-color: #E5E7EB !important;
+    }
+    body.light-mode footer .text-slate-400 {
+      color: #4B5563 !important;
+    }
+    body.light-mode footer .text-primary {
+      color: #22C55E !important;
+    }
+
+    /* Dropdown and input fields in light mode */
+    body.light-mode select,
+    body.light-mode input {
+      background-color: #FFFFFF !important;
+      border-color: #D1D5DB !important;
+      color: #111827 !important;
+    }
+    body.light-mode select option {
+      background-color: #FFFFFF !important;
+      color: #111827 !important;
+    }
+    body.light-mode .placeholder-slate-400::placeholder {
+      color: #9CA3AF !important;
+    }
+
     /* Page titles and text become black in light mode */
     body.light-mode h1.text-white,
     body.light-mode .text-slate-300:not(nav .text-slate-300),
     body.light-mode .text-slate-400 {
       color: #111827 !important;
-    }
-    body.light-mode footer .text-slate-400 {
-      color: #4B5563 !important;
     }
 
     /* Navbar stays dark with white text in both modes */
@@ -111,7 +137,14 @@
     <h1 class="text-3xl font-bold text-white mb-6">Browse Rooms</h1>
     <div class="bg-slate-800 rounded-xl p-4 mb-8 border border-slate-700">
       <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <select id="cityFilter" class="bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2"><option value="">All Cities</option><option value="Bambili">Bambili</option><option value="Bamenda">Bamenda</option><option value="Mankon">Mankon</option><option value="Up Station">Up Station</option><option value="Nkwen">Nkwen</option></select>
+        <select id="cityFilter" class="bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2">
+          <option value="">All Cities</option>
+          <option value="Bambili">Bambili</option>
+          <option value="Bamenda">Bamenda</option>
+          <option value="Mankon">Mankon</option>
+          <option value="Up Station">Up Station</option>
+          <option value="Nkwen">Nkwen</option>
+        </select>
         <input type="number" id="minPrice" placeholder="Min Price" class="bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2 placeholder-slate-400">
         <input type="number" id="maxPrice" placeholder="Max Price" class="bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2 placeholder-slate-400">
         <button id="applyFilters" class="bg-primary text-white rounded-lg py-2 font-semibold hover:bg-green-600">Apply Filters</button>
@@ -121,7 +154,10 @@
     <div id="roomsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
   </div>
 
-  <footer class="bg-slate-900 border-t border-slate-800 py-8 text-center text-slate-400 text-sm"><p><span class="text-primary font-bold">StudentStay</span> — Find Rooms. No Stress.</p></footer>
+  <footer class="bg-slate-900 border-t border-slate-800 py-8 text-center text-slate-400 text-sm">
+    <p><span class="text-primary font-bold">StudentStay</span> — Find Rooms. No Stress.</p>
+    <p class="mt-1">📍 Bambili, Bamenda, Cameroon</p>
+  </footer>
 
   <script>
     // Dark Mode Toggle
