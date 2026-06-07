@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <link rel="manifest" href="/manifest.json">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard - StudentStay</title>
@@ -11,13 +12,28 @@
   <script src="js/firebase-config.js"></script>
   <style>.bg-primary { background-color: #22C55E; }</style>
 </head>
-<link rel="manifest" href="/manifest.json">
 <body class="bg-slate-900">
 
   <nav class="bg-slate-900/90 backdrop-blur-sm border-b border-slate-700">
     <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
       <a href="index.html" class="flex items-center gap-2"><div class="h-8 w-8 bg-primary rounded-lg flex items-center justify-center"><span class="text-white font-bold text-sm">S</span></div><div><h1 class="text-xl font-bold text-white">StudentStay</h1><p class="text-xs text-slate-400">Find Rooms. No Stress.</p></div></a>
-      <div class="flex gap-4"><a href="index.html" class="text-slate-300 hover:text-primary text-sm">Home</a><a href="listings.html" class="text-slate-300 hover:text-primary text-sm">Browse</a><a href="dashboard.html" class="text-primary text-sm">Dashboard</a><a href="#" id="logoutBtn" class="text-slate-300 hover:text-primary text-sm">Logout</a></div>
+      <!-- DESKTOP MENU with install button -->
+      <div class="hidden md:flex gap-4">
+        <a href="index.html" class="text-slate-300 hover:text-primary text-sm">Home</a>
+        <a href="listings.html" class="text-slate-300 hover:text-primary text-sm">Browse</a>
+        <a href="dashboard.html" class="text-primary text-sm">Dashboard</a>
+        <a href="#" id="logoutBtn" class="text-slate-300 hover:text-primary text-sm">Logout</a>
+        <button id="installAppBtn" style="display:none; background:#22C55E; color:white; border:none; padding:4px 12px; border-radius:8px;">📲 Install</button>
+      </div>
+      <button id="menuBtn" class="md:hidden text-white"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg></button>
+    </div>
+    <!-- MOBILE MENU with install button -->
+    <div id="mobileMenu" class="hidden md:hidden bg-slate-800 border-t border-slate-700 py-3 px-4 flex flex-col gap-3">
+      <a href="index.html" class="text-slate-300 hover:text-primary text-sm">Home</a>
+      <a href="listings.html" class="text-slate-300 hover:text-primary text-sm">Browse</a>
+      <a href="dashboard.html" class="text-primary text-sm">Dashboard</a>
+      <a href="#" id="mobileLogoutBtn" class="text-slate-300 hover:text-primary text-sm">Logout</a>
+      <button id="mobileInstallAppBtn" style="display:none; background:#22C55E; color:white; border:none; padding:8px 16px; border-radius:8px;">📲 Install App</button>
     </div>
   </nav>
 
@@ -32,6 +48,9 @@
         window.location.reload();
       }
     };
+
+    // Mobile menu toggle
+    document.getElementById('menuBtn')?.addEventListener('click', () => document.getElementById('mobileMenu').classList.toggle('hidden'));
 
     firebase.auth().onAuthStateChanged(async (user) => {
       if (!user) { window.location.href = 'login.html'; return; }
@@ -55,16 +74,58 @@
       
       const becomeBtn = document.getElementById('becomeLandlordBtn');
       if (becomeBtn) becomeBtn.onclick = async () => { await db.collection('applications').add({ userId: user.uid, userEmail: user.email, requestedRole: 'landlord', status: 'pending', createdAt: new Date() }); alert('Application submitted!'); window.location.reload(); };
+      
+      // Handle mobile logout button
+      const mobileLogout = document.getElementById('mobileLogoutBtn');
+      if (mobileLogout) {
+        mobileLogout.onclick = (e) => { e.preventDefault(); firebase.auth().signOut(); window.location.href = 'index.html'; };
+      }
     });
+    
     document.getElementById('logoutBtn').onclick = () => { firebase.auth().signOut(); window.location.href = 'index.html'; };
   </script>
 
-<script>
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/sw.js')
-      .then(reg => console.log('Service Worker registered', reg))
-      .catch(err => console.log('Service Worker registration failed', err));
-  }
-</script>
+  <!-- Service Worker Registration -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js')
+        .then(reg => console.log('Service Worker registered', reg))
+        .catch(err => console.log('Service Worker registration failed', err));
+    }
+  </script>
+
+  <!-- PWA Install Script -->
+  <script>
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      const desktopBtn = document.getElementById('installAppBtn');
+      const mobileBtn = document.getElementById('mobileInstallAppBtn');
+      if (desktopBtn) desktopBtn.style.display = 'inline-block';
+      if (mobileBtn) mobileBtn.style.display = 'inline-block';
+    });
+
+    function handleInstall(btnId) {
+      const btn = document.getElementById(btnId);
+      if (btn) {
+        btn.addEventListener('click', () => {
+          if (deferredPrompt) {
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.then((choice) => {
+              if (choice.outcome === 'accepted') console.log('User installed PWA');
+              deferredPrompt = null;
+              const desktopBtn = document.getElementById('installAppBtn');
+              const mobileBtn = document.getElementById('mobileInstallAppBtn');
+              if (desktopBtn) desktopBtn.style.display = 'none';
+              if (mobileBtn) mobileBtn.style.display = 'none';
+            });
+          }
+        });
+      }
+    }
+    handleInstall('installAppBtn');
+    handleInstall('mobileInstallAppBtn');
+  </script>
 </body>
 </html>
