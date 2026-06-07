@@ -44,7 +44,6 @@
       background-color: #F3F4F6;
       color: #111827;
     }
-    /* Page content changes to light mode */
     body.light-mode .bg-slate-900 { background-color: #F9FAFB; }
     body.light-mode .bg-slate-800 { background-color: #FFFFFF; border-color: #E5E7EB; }
     body.light-mode .bg-slate-700 { background-color: #F3F4F6; border-color: #E5E7EB; }
@@ -59,7 +58,6 @@
     body.light-mode .bg-primary { background-color: #22C55E; }
     body.light-mode .text-primary { color: #22C55E; }
     
-    /* Hero section, section titles, footer text become black in light mode */
     body.light-mode .text-white:not(nav .text-white),
     body.light-mode .text-slate-300:not(nav .text-slate-300),
     body.light-mode .text-slate-400:not(nav .text-slate-400),
@@ -69,20 +67,17 @@
     body.light-mode .card .text-slate-400 {
       color: #111827 !important;
     }
-    /* Hero section specific */
     body.light-mode section h2.text-white,
     body.light-mode section p.text-slate-300,
     body.light-mode h3.text-white,
     body.light-mode p.text-slate-300 {
       color: #111827 !important;
     }
-    /* Footer specific */
     body.light-mode footer p,
     body.light-mode footer .text-slate-400 {
       color: #4B5563 !important;
     }
 
-    /* Navbar stays dark with white text in both modes */
     body.light-mode nav,
     body.light-mode .bg-slate-900\/90 {
       background-color: #0F172A !important;
@@ -112,36 +107,50 @@
         <div class="h-8 w-8 bg-primary rounded-lg flex items-center justify-center"><span class="text-white font-bold text-sm">S</span></div>
         <div><h1 class="text-xl font-bold text-white">StudentStay</h1><p class="text-xs text-slate-300">Find Rooms. No Stress.</p></div>
       </a>
-      <!-- DESKTOP MENU -->
       <div class="hidden md:flex gap-4">
         <a href="index.html" class="text-white hover:text-primary text-sm">Home</a>
         <a href="listings.html" class="text-slate-300 hover:text-primary text-sm">Browse</a>
         <a href="dashboard.html" class="text-slate-300 hover:text-primary text-sm">List a Room</a>
-        <button id="installAppBtn" style="display:none; background:#22C55E; color:white; border:none; padding:4px 12px; border-radius:8px;">📲 Install</button>
         <button id="darkModeToggle" class="text-slate-300 hover:text-primary text-sm">🌓 Dark/Light</button>
         <a href="#" id="desktopLogoutBtn" class="text-slate-300 hover:text-primary text-sm">Login</a>
       </div>
       <button id="menuBtn" class="md:hidden text-white"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg></button>
     </div>
-    <!-- MOBILE MENU -->
     <div id="mobileMenu" class="hidden md:hidden bg-slate-800 border-t border-slate-700 py-3 px-4 flex flex-col gap-3">
       <a href="index.html" class="text-white hover:text-primary text-sm">Home</a>
       <a href="listings.html" class="text-slate-300 hover:text-primary text-sm">Browse</a>
       <a href="dashboard.html" class="text-slate-300 hover:text-primary text-sm">List a Room</a>
-      <button id="mobileInstallAppBtn" style="display:none; background:#22C55E; color:white; border:none; padding:8px 16px; border-radius:8px;">📲 Install App</button>
       <button id="mobileDarkModeToggle" class="text-slate-300 hover:text-primary text-sm text-left">🌓 Dark/Light</button>
       <a href="#" id="mobileLogoutBtn" class="text-slate-300 hover:text-primary text-sm">Login</a>
     </div>
   </nav>
 
-  <section class="py-16 text-center"><div class="max-w-2xl mx-auto px-4"><h2 class="text-4xl md:text-5xl font-bold text-white mb-2">Find Student Rooms.<br><span class="text-primary">No Stress.</span></h2><p class="text-slate-300 mb-6">Browse verified rooms in Bamenda and Bambili. Connect with landlords directly on WhatsApp.</p><div class="flex flex-col sm:flex-row gap-4 justify-center"><a href="listings.html" class="btn-primary">Browse Rooms →</a><a href="dashboard.html" class="btn-primary">List a Room</a></div></div></section>
+  <section class="py-16 text-center">
+    <div class="max-w-2xl mx-auto px-4">
+      <h2 class="text-4xl md:text-5xl font-bold text-white mb-2">Find Student Rooms.<br><span class="text-primary">No Stress.</span></h2>
+      <p class="text-slate-300 mb-6">Browse verified rooms in Bamenda and Bambili. Connect with landlords directly on WhatsApp.</p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <a href="listings.html" class="btn-primary">Browse Rooms →</a>
+        <a href="dashboard.html" class="btn-primary">List a Room</a>
+        <button id="installAppBtnHero" style="display:none; background:#22C55E; color:white; border:none; padding:12px 24px; border-radius:9999px; font-weight:600; cursor:pointer;" class="btn-primary">📲 Install App</button>
+      </div>
+    </div>
+  </section>
 
-  <section class="py-12 px-4"><div class="max-w-6xl mx-auto"><h3 class="text-2xl font-bold text-white mb-2">Latest Rooms</h3><p class="text-slate-300 mb-6">Recently posted by verified landlords</p><div id="roomsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div></div></section>
+  <section class="py-12 px-4">
+    <div class="max-w-6xl mx-auto">
+      <h3 class="text-2xl font-bold text-white mb-2">Latest Rooms</h3>
+      <p class="text-slate-300 mb-6">Recently posted by verified landlords</p>
+      <div id="roomsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+    </div>
+  </section>
 
-  <footer class="bg-slate-900 border-t border-slate-800 py-8 text-center text-slate-400 text-sm"><p><span class="text-primary font-bold">StudentStay</span> — Find Rooms. No Stress.</p><p class="mt-1">📍 Bambili, Bamenda, Cameroon</p></footer>
+  <footer class="bg-slate-900 border-t border-slate-800 py-8 text-center text-slate-400 text-sm">
+    <p><span class="text-primary font-bold">StudentStay</span> — Find Rooms. No Stress.</p>
+    <p class="mt-1">📍 Bambili, Bamenda, Cameroon</p>
+  </footer>
 
   <script>
-    // Dark Mode Toggle
     function setDarkMode(isDark) {
       if (isDark) {
         document.body.classList.remove('light-mode');
@@ -212,38 +221,27 @@
     }
   </script>
 
-  <!-- PWA Install Script -->
+  <!-- PWA Install Script (Hero Button) -->
   <script>
     let deferredPrompt;
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       deferredPrompt = e;
-      const desktopBtn = document.getElementById('installAppBtn');
-      const mobileBtn = document.getElementById('mobileInstallAppBtn');
-      if (desktopBtn) desktopBtn.style.display = 'inline-block';
-      if (mobileBtn) mobileBtn.style.display = 'inline-block';
+      const heroBtn = document.getElementById('installAppBtnHero');
+      if (heroBtn) heroBtn.style.display = 'inline-block';
     });
 
-    function handleInstall(btnId) {
-      const btn = document.getElementById(btnId);
-      if (btn) {
-        btn.addEventListener('click', () => {
-          if (deferredPrompt) {
-            deferredPrompt.prompt();
-            deferredPrompt.userChoice.then((choice) => {
-              if (choice.outcome === 'accepted') console.log('User installed PWA');
-              deferredPrompt = null;
-              const desktopBtn = document.getElementById('installAppBtn');
-              const mobileBtn = document.getElementById('mobileInstallAppBtn');
-              if (desktopBtn) desktopBtn.style.display = 'none';
-              if (mobileBtn) mobileBtn.style.display = 'none';
-            });
-          }
+    document.getElementById('installAppBtnHero')?.addEventListener('click', () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then((choice) => {
+          if (choice.outcome === 'accepted') console.log('User installed PWA');
+          deferredPrompt = null;
+          const heroBtn = document.getElementById('installAppBtnHero');
+          if (heroBtn) heroBtn.style.display = 'none';
         });
       }
-    }
-    handleInstall('installAppBtn');
-    handleInstall('mobileInstallAppBtn');
+    });
   </script>
 </body>
 </html>
