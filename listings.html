@@ -16,7 +16,6 @@
     .card:hover { transform: translateY(-4px); box-shadow: 0 10px 25px -5px rgba(0,0,0,0.3); }
     .feature-badge { background-color: #334155; color: #CBD5E1; padding: 4px 8px; border-radius: 8px; font-size: 12px; }
 
-    /* === DARK MODE (default) === */
     body {
       background-color: #0F172A;
       color: #F1F5F9;
@@ -32,7 +31,6 @@
     body footer { background-color: #0F172A; border-color: #1E293B; }
     body footer .text-slate-400 { color: #94A3B8; }
 
-    /* === LIGHT MODE === */
     body.light-mode {
       background-color: #F3F4F6;
       color: #111827;
@@ -50,7 +48,6 @@
     body.light-mode .bg-primary { background-color: #22C55E; }
     body.light-mode .text-primary { color: #22C55E; }
     
-    /* Footer in light mode */
     body.light-mode footer {
       background-color: #F9FAFB !important;
       border-color: #E5E7EB !important;
@@ -58,11 +55,7 @@
     body.light-mode footer .text-slate-400 {
       color: #4B5563 !important;
     }
-    body.light-mode footer .text-primary {
-      color: #22C55E !important;
-    }
 
-    /* Dropdown and input fields in light mode */
     body.light-mode select,
     body.light-mode input {
       background-color: #FFFFFF !important;
@@ -73,18 +66,13 @@
       background-color: #FFFFFF !important;
       color: #111827 !important;
     }
-    body.light-mode .placeholder-slate-400::placeholder {
-      color: #9CA3AF !important;
-    }
 
-    /* Page titles and text become black in light mode */
     body.light-mode h1.text-white,
     body.light-mode .text-slate-300:not(nav .text-slate-300),
     body.light-mode .text-slate-400 {
       color: #111827 !important;
     }
 
-    /* Navbar stays dark with white text in both modes */
     body.light-mode nav,
     body.light-mode .bg-slate-900\/90 {
       background-color: #0F172A !important;
@@ -111,23 +99,19 @@
   <nav class="bg-slate-900/90 backdrop-blur-sm border-b border-slate-700">
     <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
       <a href="index.html" class="flex items-center gap-2"><div class="h-8 w-8 bg-primary rounded-lg flex items-center justify-center"><span class="text-white font-bold text-sm">S</span></div><div><h1 class="text-xl font-bold text-white">StudentStay</h1><p class="text-xs text-slate-300">Find Rooms. No Stress.</p></div></a>
-      <!-- DESKTOP MENU -->
       <div class="hidden md:flex gap-4">
         <a href="index.html" class="text-white hover:text-primary text-sm">Home</a>
         <a href="listings.html" class="text-primary text-sm">Browse</a>
         <a href="dashboard.html" class="text-slate-300 hover:text-primary text-sm">List a Room</a>
-        <button id="installAppBtn" style="display:none; background:#22C55E; color:white; border:none; padding:4px 12px; border-radius:8px;">📲 Install</button>
         <button id="darkModeToggle" class="text-slate-300 hover:text-primary text-sm">🌓 Dark/Light</button>
         <a href="#" id="desktopLogoutBtn" class="text-slate-300 hover:text-primary text-sm">Login</a>
       </div>
       <button id="menuBtn" class="md:hidden text-white"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg></button>
     </div>
-    <!-- MOBILE MENU -->
     <div id="mobileMenu" class="hidden md:hidden bg-slate-800 border-t border-slate-700 py-3 px-4 flex flex-col gap-3">
       <a href="index.html" class="text-white hover:text-primary text-sm">Home</a>
       <a href="listings.html" class="text-primary text-sm">Browse</a>
       <a href="dashboard.html" class="text-slate-300 hover:text-primary text-sm">List a Room</a>
-      <button id="mobileInstallAppBtn" style="display:none; background:#22C55E; color:white; border:none; padding:8px 16px; border-radius:8px;">📲 Install App</button>
       <button id="mobileDarkModeToggle" class="text-slate-300 hover:text-primary text-sm text-left">🌓 Dark/Light</button>
       <a href="#" id="mobileLogoutBtn" class="text-slate-300 hover:text-primary text-sm">Login</a>
     </div>
@@ -160,7 +144,6 @@
   </footer>
 
   <script>
-    // Dark Mode Toggle
     function setDarkMode(isDark) {
       if (isDark) {
         document.body.classList.remove('light-mode');
@@ -228,40 +211,6 @@
         .then(reg => console.log('Service Worker registered', reg))
         .catch(err => console.log('Service Worker registration failed', err));
     }
-  </script>
-
-  <!-- PWA Install Script -->
-  <script>
-    let deferredPrompt;
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      deferredPrompt = e;
-      const desktopBtn = document.getElementById('installAppBtn');
-      const mobileBtn = document.getElementById('mobileInstallAppBtn');
-      if (desktopBtn) desktopBtn.style.display = 'inline-block';
-      if (mobileBtn) mobileBtn.style.display = 'inline-block';
-    });
-
-    function handleInstall(btnId) {
-      const btn = document.getElementById(btnId);
-      if (btn) {
-        btn.addEventListener('click', () => {
-          if (deferredPrompt) {
-            deferredPrompt.prompt();
-            deferredPrompt.userChoice.then((choice) => {
-              if (choice.outcome === 'accepted') console.log('User installed PWA');
-              deferredPrompt = null;
-              const desktopBtn = document.getElementById('installAppBtn');
-              const mobileBtn = document.getElementById('mobileInstallAppBtn');
-              if (desktopBtn) desktopBtn.style.display = 'none';
-              if (mobileBtn) mobileBtn.style.display = 'none';
-            });
-          }
-        });
-      }
-    }
-    handleInstall('installAppBtn');
-    handleInstall('mobileInstallAppBtn');
   </script>
 </body>
 </html>
