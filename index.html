@@ -138,5 +138,13 @@
     handleInstall('installAppBtn');
     handleInstall('mobileInstallAppBtn');
   </script>
+
+<script>
+  // Force show install button after 3 seconds (for testing)
+  setTimeout(() => {
+    const btn = document.getElementById('installAppBtn');
+    if (btn) btn.style.display = 'inline-block';
+  }, 3000);
+</script>
 </body>
 </html>
