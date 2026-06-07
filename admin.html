@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <link rel="manifest" href="/manifest.json">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Dashboard - StudentStay</title>
@@ -9,15 +10,66 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
   <script src="js/firebase-config.js"></script>
-  <style>.bg-primary { background-color: #22C55E; }</style>
+  <style>
+    .bg-primary { background-color: #22C55E; }
+    .text-primary { color: #22C55E; }
+
+    /* === DARK MODE (default) === */
+    body {
+      background-color: #0F172A;
+      color: #F1F5F9;
+    }
+    body .bg-slate-800 { background-color: #1E293B; border-color: #334155; }
+    body .bg-slate-700 { background-color: #334155; border-color: #475569; }
+    body .text-white { color: #F1F5F9; }
+    body .text-slate-300 { color: #CBD5E1; }
+    body .text-slate-400 { color: #94A3B8; }
+    body .border-slate-700 { border-color: #334155; }
+    body .bg-red-500\/20 { background-color: #7F1D1D; }
+    body .text-red-400 { color: #F87171; }
+
+    /* === LIGHT MODE === */
+    body.light-mode {
+      background-color: #F3F4F6;
+      color: #111827;
+    }
+    body.light-mode .bg-slate-800 { background-color: #FFFFFF; border-color: #E5E7EB; }
+    body.light-mode .bg-slate-700 { background-color: #F3F4F6; border-color: #E5E7EB; }
+    body.light-mode .border-slate-700 { border-color: #E5E7EB; }
+    body.light-mode .text-white { color: #111827; }
+    body.light-mode .text-slate-300 { color: #374151; }
+    body.light-mode .text-slate-400 { color: #4B5563; }
+    body.light-mode .bg-red-500\/20 { background-color: #FEE2E2 !important; }
+    body.light-mode .text-red-400 { color: #DC2626 !important; }
+    body.light-mode .bg-green-600 { background-color: #16A34A; }
+    body.light-mode .bg-yellow-600 { background-color: #D97706; }
+    body.light-mode table .bg-slate-700 { background-color: #F3F4F6; }
+
+    /* Navbar stays dark with white text in both modes */
+    body.light-mode nav,
+    body.light-mode .bg-slate-900\/90 {
+      background-color: #0F172A !important;
+    }
+    body.light-mode nav .text-white,
+    body.light-mode nav .text-slate-300,
+    body.light-mode nav h1,
+    body.light-mode nav a,
+    body.light-mode nav button {
+      color: #FFFFFF !important;
+    }
+  </style>
 </head>
-<link rel="manifest" href="/manifest.json">
-<body class="bg-slate-900">
+<body>
 
   <nav class="bg-slate-900/90 backdrop-blur-sm border-b border-slate-700">
     <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
       <a href="index.html" class="flex items-center gap-2"><div class="h-8 w-8 bg-primary rounded-lg flex items-center justify-center"><span class="text-white font-bold text-sm">S</span></div><div><h1 class="text-xl font-bold text-white">StudentStay Admin</h1></div></a>
-      <div class="flex gap-4"><a href="index.html" class="text-slate-300 hover:text-primary text-sm">Home</a><a href="admin.html" class="text-primary text-sm">Admin</a><a href="#" id="logoutBtn" class="text-slate-300 hover:text-primary text-sm">Logout</a></div>
+      <div class="flex gap-4">
+        <a href="index.html" class="text-slate-300 hover:text-primary text-sm">Home</a>
+        <a href="admin.html" class="text-primary text-sm">Admin</a>
+        <a href="#" id="logoutBtn" class="text-slate-300 hover:text-primary text-sm">Logout</a>
+        <button id="darkModeToggle" class="text-slate-300 hover:text-primary text-sm">🌓 Dark/Light</button>
+      </div>
     </div>
   </nav>
 
@@ -39,6 +91,25 @@
   </div>
 
   <script>
+    // Dark Mode Toggle
+    function setDarkMode(isDark) {
+      if (isDark) {
+        document.body.classList.remove('light-mode');
+        localStorage.setItem('theme', 'dark');
+      } else {
+        document.body.classList.add('light-mode');
+        localStorage.setItem('theme', 'light');
+      }
+    }
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'light') setDarkMode(false);
+    else setDarkMode(true);
+
+    document.getElementById('darkModeToggle')?.addEventListener('click', () => {
+      const isDark = !document.body.classList.contains('light-mode');
+      setDarkMode(!isDark);
+    });
+
     window.approveRoom = async (id) => { await db.collection('rooms').doc(id).update({ status: 'approved', expiresAt: new Date(Date.now() + 30*24*60*60*1000) }); location.reload(); };
     window.deleteRoom = async (id) => { if (confirm('Delete permanently?')) { await db.collection('rooms').doc(id).delete(); location.reload(); } };
     window.approveApplication = async (appId, userId, role) => { await db.collection('users').doc(userId).update({ role: role, freeListingsRemaining: 5 }); await db.collection('applications').doc(appId).update({ status: 'approved', reviewedAt: new Date() }); alert('User approved!'); location.reload(); };
@@ -70,12 +141,13 @@
     document.getElementById('logoutBtn').onclick = () => { firebase.auth().signOut(); window.location.href = 'index.html'; };
   </script>
 
-<script>
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/sw.js')
-      .then(reg => console.log('Service Worker registered', reg))
-      .catch(err => console.log('Service Worker registration failed', err));
-  }
-</script>
+  <!-- Service Worker Registration -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js')
+        .then(reg => console.log('Service Worker registered', reg))
+        .catch(err => console.log('Service Worker registration failed', err));
+    }
+  </script>
 </body>
 </html>
