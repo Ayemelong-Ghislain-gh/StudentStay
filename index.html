@@ -39,12 +39,13 @@
     body .card .text-slate-400 { color: #94A3B8; }
     body .feature-badge { background-color: #334155; color: #CBD5E1; }
 
-    /* === LIGHT MODE (high contrast) === */
+    /* === LIGHT MODE === */
     body.light-mode {
       background-color: #F3F4F6;
       color: #111827;
     }
-    body.light-mode .bg-slate-900 { background-color: #FFFFFF; }
+    /* Page content changes to light mode */
+    body.light-mode .bg-slate-900 { background-color: #F9FAFB; }
     body.light-mode .bg-slate-800 { background-color: #FFFFFF; border-color: #E5E7EB; }
     body.light-mode .bg-slate-700 { background-color: #F3F4F6; border-color: #E5E7EB; }
     body.light-mode .border-slate-700 { border-color: #E5E7EB; }
@@ -58,22 +59,24 @@
     body.light-mode .bg-primary { background-color: #22C55E; }
     body.light-mode .text-primary { color: #22C55E; }
 
-    /* Light mode - Keep header text white */
-    body.light-mode nav h1,
-    body.light-mode nav .text-white,
-    body.light-mode nav .text-slate-300 {
-      color: #FFFFFF !important;
+    /* Navbar stays dark with white text in both modes */
+    body.light-mode nav,
+    body.light-mode .bg-slate-900\/90 {
+      background-color: #0F172A !important;
     }
-    body.light-mode nav .bg-slate-900\/90 {
-      background-color: #1E293B !important;
+    body.light-mode nav .text-white,
+    body.light-mode nav .text-slate-300,
+    body.light-mode nav h1,
+    body.light-mode nav p,
+    body.light-mode nav a,
+    body.light-mode nav button {
+      color: #FFFFFF !important;
     }
     body.light-mode #mobileMenu {
       background-color: #1E293B !important;
     }
-    body.light-mode #mobileMenu a {
-      color: #FFFFFF !important;
-    }
-    body.light-mode #mobileMenu .text-slate-300 {
+    body.light-mode #mobileMenu a,
+    body.light-mode #mobileMenu button {
       color: #FFFFFF !important;
     }
   </style>
