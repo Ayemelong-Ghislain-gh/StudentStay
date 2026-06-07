@@ -60,11 +60,17 @@
     body.light-mode .btn-primary:hover { background-color: #16A34A; }
     body.light-mode .bg-primary { background-color: #22C55E; }
     body.light-mode .text-primary { color: #22C55E; }
-    /* Header specific - extra dark for contrast */
+
+    /* Header specific - extra bold with borders in light mode */
+    body.light-mode nav h1 {
+      font-weight: 900 !important;
+      -webkit-text-stroke: 0.5px #111827;
+      text-stroke: 0.5px #111827;
+    }
+
     body.light-mode nav a, 
     body.light-mode nav .text-slate-300,
     body.light-mode nav .text-white,
-    body.light-mode nav h1,
     body.light-mode nav p {
       color: #111827 !important;
     }
