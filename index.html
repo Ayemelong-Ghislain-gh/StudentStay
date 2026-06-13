@@ -115,10 +115,131 @@
     body.light-mode #mobileMenu button {
       color: #FFFFFF !important;
     }
+    <style>
+    /* Language Selection Modal */
+    .lang-modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.85);
+        backdrop-filter: blur(8px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        transition: all 0.3s ease;
+    }
+    .lang-modal {
+        background: #1E293B;
+        border-radius: 24px;
+        padding: 32px;
+        text-align: center;
+        max-width: 400px;
+        width: 90%;
+        border: 1px solid #334155;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        animation: modalFadeIn 0.3s ease;
+    }
+    body.light-mode .lang-modal {
+        background: #FFFFFF;
+        border-color: #E5E7EB;
+    }
+    @keyframes modalFadeIn {
+        from {
+            opacity: 0;
+            transform: scale(0.95);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+    .lang-flag {
+        font-size: 48px;
+        margin-bottom: 16px;
+    }
+    .lang-title {
+        font-size: 24px;
+        font-weight: bold;
+        margin-bottom: 8px;
+    }
+    .lang-subtitle {
+        font-size: 14px;
+        color: #94A3B8;
+        margin-bottom: 24px;
+    }
+    .lang-buttons {
+        display: flex;
+        gap: 16px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    .lang-btn {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        padding: 16px 24px;
+        background: #334155;
+        border: 2px solid #475569;
+        border-radius: 16px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        min-width: 120px;
+    }
+    .lang-btn:hover {
+        transform: translateY(-2px);
+        border-color: #22C55E;
+        background: #22C55E20;
+    }
+    .lang-btn-flag {
+        font-size: 32px;
+    }
+    .lang-btn-text {
+        font-size: 18px;
+        font-weight: 600;
+    }
+    .lang-btn-sub {
+        font-size: 12px;
+        color: #94A3B8;
+    }
+    body.light-mode .lang-btn {
+        background: #F3F4F6;
+        border-color: #E5E7EB;
+    }
+    body.light-mode .lang-btn:hover {
+        background: #22C55E10;
+        border-color: #22C55E;
+    }
+    .hidden-modal {
+        display: none !important;
+    }
+</style>
   </style>
 </head>
 <body>
-
+  <!-- Language Selection Modal -->
+  <div id="languageModal" class="lang-modal-overlay">
+      <div class="lang-modal">
+          <div class="lang-flag">🇨🇲</div>
+          <h2 class="lang-title">Welcome to StudentStay</h2>
+          <p class="lang-subtitle">Bienvenue sur StudentStay</p>
+          <div class="lang-buttons">
+              <div class="lang-btn" onclick="selectLanguage('en')">
+                  <div class="lang-btn-flag">🇬🇧</div>
+                  <div class="lang-btn-text">English</div>
+                  <div class="lang-btn-sub">Continue in English</div>
+              </div>
+              <div class="lang-btn" onclick="selectLanguage('fr')">
+                  <div class="lang-btn-flag">🇫🇷</div>
+                  <div class="lang-btn-text">Français</div>
+                  <div class="lang-btn-sub">Continuer en français</div>
+              </div>
+          </div>
+      </div>
+  </div>
   <nav class="bg-slate-900/90 backdrop-blur-sm border-b border-slate-700 sticky top-0 z-10">
     <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
       <a href="index.html" class="flex items-center gap-3">
@@ -134,6 +255,7 @@
         <a href="dashboard.html" class="nav-btn text-slate-300 hover:text-primary">List a Room</a>
         <button id="darkModeToggle" class="nav-btn text-slate-300 hover:text-primary">🌓 Dark/Light</button>
         <a href="#" id="desktopLogoutBtn" class="nav-btn text-slate-300 hover:text-primary">Login</a>
+        <button id="languageToggle" class="nav-btn text-slate-300 hover:text-primary">🇫🇷 FR</button>
       </div>
       <button id="menuBtn" class="md:hidden text-white"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg></button>
     </div>
