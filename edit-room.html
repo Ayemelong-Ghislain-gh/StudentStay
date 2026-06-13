@@ -10,6 +10,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
   <script src="js/firebase-config.js"></script>
+  <script src="js/languages.js"></script>
   <style>
     .bg-primary { background-color: #22C55E; }
     .preview-image { width: 80px; height: 80px; object-fit: cover; border-radius: 8px; border: 1px solid #334155; }
@@ -127,7 +128,7 @@
     body.light-mode #mobileMenu button {
       color: #FFFFFF !important;
     }
-    <style>
+
     /* Language Selection Modal */
     .lang-modal-overlay {
         position: fixed;
@@ -228,7 +229,6 @@
     .hidden-modal {
         display: none !important;
     }
-</style>
   </style>
 </head>
 <body>
@@ -236,105 +236,140 @@
   <div id="languageModal" class="lang-modal-overlay">
       <div class="lang-modal">
           <div class="lang-flag">🇨🇲</div>
-          <h2 class="lang-title">Welcome to StudentStay</h2>
-          <p class="lang-subtitle">Bienvenue sur StudentStay</p>
+          <h2 class="lang-title" data-i18n="modalWelcome">Welcome to StudentStay</h2>
+          <p class="lang-subtitle" data-i18n="modalSubtitle">Bienvenue sur StudentStay</p>
           <div class="lang-buttons">
               <div class="lang-btn" onclick="selectLanguage('en')">
                   <div class="lang-btn-flag">🇬🇧</div>
-                  <div class="lang-btn-text">English</div>
-                  <div class="lang-btn-sub">Continue in English</div>
+                  <div class="lang-btn-text" data-i18n="modalEnglish">English</div>
+                  <div class="lang-btn-sub" data-i18n="modalEnglishSub">Continue in English</div>
               </div>
               <div class="lang-btn" onclick="selectLanguage('fr')">
                   <div class="lang-btn-flag">🇫🇷</div>
-                  <div class="lang-btn-text">Français</div>
-                  <div class="lang-btn-sub">Continuer en français</div>
+                  <div class="lang-btn-text" data-i18n="modalFrench">Français</div>
+                  <div class="lang-btn-sub" data-i18n="modalFrenchSub">Continuer en français</div>
               </div>
           </div>
       </div>
   </div>
+
   <nav class="bg-slate-900/90 backdrop-blur-sm border-b border-slate-700">
     <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
       <a href="index.html" class="flex items-center gap-3">
         <div class="h-9 w-9 bg-primary rounded-lg flex items-center justify-center"><span class="text-white font-bold text-base">S</span></div>
         <div>
-          <h1 class="text-2xl font-bold text-white tracking-tight">StudentStay</h1>
-          <p class="text-xs text-slate-300">Find Rooms. No Stress.</p>
+          <h1 class="text-2xl font-bold text-white tracking-tight" data-i18n="appName">StudentStay</h1>
+          <p class="text-xs text-slate-300" data-i18n="tagline">Find Rooms. No Stress.</p>
         </div>
       </a>
       <div class="hidden md:flex gap-3">
-        <a href="index.html" class="nav-btn text-white hover:text-primary">Home</a>
-        <a href="listings.html" class="nav-btn text-slate-300 hover:text-primary">Browse</a>
-        <a href="dashboard.html" class="nav-btn text-slate-300 hover:text-primary">Dashboard</a>
-        <a href="#" id="desktopLogoutBtn" class="nav-btn text-slate-300 hover:text-primary">Login</a>
-        <button id="darkModeToggle" class="nav-btn text-slate-300 hover:text-primary">🌓 Dark/Light</button>
+        <a href="index.html" class="nav-btn text-white hover:text-primary" data-i18n="home">Home</a>
+        <a href="listings.html" class="nav-btn text-slate-300 hover:text-primary" data-i18n="browse">Browse</a>
+        <a href="dashboard.html" class="nav-btn text-slate-300 hover:text-primary" data-i18n="dashboard">Dashboard</a>
+        <button id="darkModeToggle" class="nav-btn text-slate-300 hover:text-primary" data-i18n="darkLight">🌓 Dark/Light</button>
+        <button id="languageToggle" class="nav-btn text-slate-300 hover:text-primary">🌐 FR/EN</button>
+        <a href="#" id="desktopLogoutBtn" class="nav-btn text-slate-300 hover:text-primary" data-i18n="login">Login</a>
       </div>
       <button id="menuBtn" class="md:hidden text-white"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg></button>
     </div>
     <div id="mobileMenu" class="hidden md:hidden bg-slate-800 border-t border-slate-700 py-3 px-4 flex flex-col gap-2">
-      <a href="index.html" class="nav-btn text-white hover:text-primary block text-left">Home</a>
-      <a href="listings.html" class="nav-btn text-slate-300 hover:text-primary block text-left">Browse</a>
-      <a href="dashboard.html" class="nav-btn text-slate-300 hover:text-primary block text-left">Dashboard</a>
-      <a href="#" id="mobileLogoutBtn" class="nav-btn text-slate-300 hover:text-primary block text-left">Login</a>
-      <button id="mobileDarkModeToggle" class="nav-btn text-slate-300 hover:text-primary text-left w-full">🌓 Dark/Light</button>
-      <button id="languageToggle" class="nav-btn text-slate-300 hover:text-primary">🇫🇷 FR</button>
+      <a href="index.html" class="nav-btn text-white hover:text-primary block text-left" data-i18n="home">Home</a>
+      <a href="listings.html" class="nav-btn text-slate-300 hover:text-primary block text-left" data-i18n="browse">Browse</a>
+      <a href="dashboard.html" class="nav-btn text-slate-300 hover:text-primary block text-left" data-i18n="dashboard">Dashboard</a>
+      <button id="mobileDarkModeToggle" class="nav-btn text-slate-300 hover:text-primary text-left w-full" data-i18n="darkLight">🌓 Dark/Light</button>
+      <button id="mobileLanguageToggle" class="nav-btn text-slate-300 hover:text-primary text-left w-full">🌐 FR/EN</button>
+      <a href="#" id="mobileLogoutBtn" class="nav-btn text-slate-300 hover:text-primary block text-left" data-i18n="login">Login</a>
     </div>
   </nav>
 
   <div class="max-w-2xl mx-auto px-4 py-8">
     <div class="bg-slate-800 rounded-xl border border-slate-700 p-6">
-      <h1 class="text-2xl font-bold text-white mb-2">Edit Room</h1>
+      <h1 class="text-2xl font-bold text-white mb-2" data-i18n="editRoomTitle">Edit Room</h1>
       <div id="messageArea" class="hidden mb-4 p-3 rounded-lg"></div>
-      <div id="loadingArea" class="text-center py-10 text-slate-400">Loading...</div>
+      <div id="loadingArea" class="text-center py-10 text-slate-400" data-i18n="loadingText">Loading...</div>
       
       <form id="roomForm" style="display:none;">
         <input type="hidden" id="roomId">
-        <div class="mb-4"><label class="block text-slate-300 text-sm font-semibold mb-1">Title *</label><input type="text" id="title" required class="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2"></div>
         
-        <!-- PRICING SECTION - NEW -->
         <div class="mb-4">
-          <label class="block text-slate-300 text-sm font-semibold mb-1">Pricing Type *</label>
+          <label class="block text-slate-300 text-sm font-semibold mb-1" data-i18n="titleLabel">Title *</label>
+          <input type="text" id="title" required class="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2">
+        </div>
+        
+        <!-- PRICING SECTION -->
+        <div class="mb-4">
+          <label class="block text-slate-300 text-sm font-semibold mb-1" data-i18n="pricingTypeLabel2">Pricing Type *</label>
           <select id="pricingType" class="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2">
-            <option value="monthly">Monthly (per month)</option>
-            <option value="yearly">Yearly (per school year)</option>
-            <option value="both">Both (monthly & yearly)</option>
+            <option value="monthly" data-i18n="monthlyOption">Monthly (per month)</option>
+            <option value="yearly" data-i18n="yearlyOption2">Yearly (per school year)</option>
+            <option value="both" data-i18n="bothOption">Both (monthly & yearly)</option>
           </select>
         </div>
         
         <div class="mb-4" id="monthlyPriceDiv">
-          <label class="block text-slate-300 text-sm font-semibold mb-1">Price (FCFA/month) *</label>
+          <label class="block text-slate-300 text-sm font-semibold mb-1" data-i18n="monthlyPriceLabel">Price (FCFA/month) *</label>
           <input type="number" id="monthlyPrice" class="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2">
-          <p class="text-slate-500 text-xs mt-1">For monthly payment option</p>
+          <p class="text-slate-500 text-xs mt-1" data-i18n="monthlyHint">For monthly payment option</p>
         </div>
         
         <div class="mb-4" id="yearlyPriceDiv" style="display:none;">
-          <label class="block text-slate-300 text-sm font-semibold mb-1">Price (FCFA/school year) *</label>
+          <label class="block text-slate-300 text-sm font-semibold mb-1" data-i18n="yearlyPriceLabel">Price (FCFA/school year) *</label>
           <input type="number" id="yearlyPrice" class="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2">
-          <p class="text-slate-500 text-xs mt-1">Most students pay per school year (9-10 months)</p>
+          <p class="text-slate-500 text-xs mt-1" data-i18n="yearlyHint">Most students pay per school year (9-10 months)</p>
         </div>
         
-        <!-- LOCATION SECTION - NEW with search -->
+        <!-- LOCATION SECTION with search -->
         <div class="mb-4">
-          <label class="block text-slate-300 text-sm font-semibold mb-1">City / Town *</label>
+          <label class="block text-slate-300 text-sm font-semibold mb-1" data-i18n="cityLabel2">City / Town *</label>
           <div class="searchable-dropdown">
-            <input type="text" id="citySearch" placeholder="Search or select city..." class="dropdown-input" autocomplete="off">
+            <input type="text" id="citySearch" placeholder="" class="dropdown-input" autocomplete="off" data-i18n-placeholder="searchCity">
             <div id="cityDropdownList" class="dropdown-list"></div>
           </div>
           <input type="hidden" id="selectedCity" required>
         </div>
         
-        <div class="mb-4"><label class="block text-slate-300 text-sm font-semibold mb-1">Neighborhood/Area (optional)</label><input type="text" id="area" class="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2"></div>
-        <div class="mb-4"><label class="block text-slate-300 text-sm font-semibold mb-1">Distance (km from University) *</label><input type="number" id="distance" step="0.1" required class="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2"></div>
-        <div class="mb-4"><label class="block text-slate-300 text-sm font-semibold mb-1">Description *</label><textarea id="description" rows="4" required class="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2"></textarea></div>
-        <div class="mb-4"><label class="block text-slate-300 text-sm font-semibold mb-1">Features (comma separated)</label><input type="text" id="features" placeholder="Water, Electricity, Furnished, WiFi" class="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2"></div>
-        <div class="mb-4"><label class="block text-slate-300 text-sm font-semibold mb-1">WhatsApp Number *</label><input type="tel" id="phone" required placeholder="670922913" class="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2"></div>
+        <div class="mb-4">
+          <label class="block text-slate-300 text-sm font-semibold mb-1" data-i18n="areaLabel">Neighborhood/Area (optional)</label>
+          <input type="text" id="area" class="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2">
+        </div>
+        
+        <div class="mb-4">
+          <label class="block text-slate-300 text-sm font-semibold mb-1" data-i18n="distanceLabel">Distance (km from University) *</label>
+          <input type="number" id="distance" step="0.1" required class="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2">
+        </div>
+        
+        <div class="mb-4">
+          <label class="block text-slate-300 text-sm font-semibold mb-1" data-i18n="descriptionLabel">Description *</label>
+          <textarea id="description" rows="4" required class="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2"></textarea>
+        </div>
+        
+        <div class="mb-4">
+          <label class="block text-slate-300 text-sm font-semibold mb-1" data-i18n="featuresLabel">Features (comma separated)</label>
+          <input type="text" id="features" placeholder="" class="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2" data-i18n-placeholder="featuresHint">
+        </div>
+        
+        <div class="mb-4">
+          <label class="block text-slate-300 text-sm font-semibold mb-1" data-i18n="whatsappLabel">WhatsApp Number *</label>
+          <input type="tel" id="phone" required placeholder="" class="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2" data-i18n-placeholder="whatsappHint">
+        </div>
         
         <!-- Existing Images -->
-        <div class="mb-4"><label class="block text-slate-300 text-sm font-semibold mb-1">Current Images</label><div id="existingImagesContainer" class="flex flex-wrap gap-2"></div></div>
+        <div class="mb-4">
+          <label class="block text-slate-300 text-sm font-semibold mb-1" data-i18n="currentImages">Current Images</label>
+          <div id="existingImagesContainer" class="flex flex-wrap gap-2"></div>
+        </div>
         
         <!-- Add New Images -->
-        <div class="mb-4"><label class="block text-slate-300 text-sm font-semibold mb-1">Add New Images (max 10 total)</label><input type="file" id="newImagesInput" accept="image/*" multiple class="w-full text-slate-300 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:bg-white file:text-black file:font-semibold file:border file:border-gray-300 file:cursor-pointer file:hover:bg-gray-100"><div id="newPreviewContainer" class="flex flex-wrap gap-2 mt-3"></div></div>
+        <div class="mb-4">
+          <label class="block text-slate-300 text-sm font-semibold mb-1" data-i18n="addNewImages">Add New Images (max 10 total)</label>
+          <input type="file" id="newImagesInput" accept="image/*" multiple class="w-full text-slate-300 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:bg-white file:text-black file:font-semibold file:border file:border-gray-300 file:cursor-pointer file:hover:bg-gray-100">
+          <div id="newPreviewContainer" class="flex flex-wrap gap-2 mt-3"></div>
+        </div>
         
-        <div class="flex gap-3"><button type="submit" class="flex-1 bg-primary text-white py-3 rounded-lg font-semibold hover:bg-green-600">Save Changes</button><button type="button" id="deleteBtn" class="flex-1 bg-red-600 text-white py-3 rounded-lg font-semibold hover:bg-red-700">Delete Room</button></div>
+        <div class="flex gap-3">
+          <button type="submit" class="flex-1 bg-primary text-white py-3 rounded-lg font-semibold hover:bg-green-600" data-i18n="saveChanges">Save Changes</button>
+          <button type="button" id="deleteBtn" class="flex-1 bg-red-600 text-white py-3 rounded-lg font-semibold hover:bg-red-700" data-i18n="deleteRoom">Delete Room</button>
+        </div>
       </form>
     </div>
   </div>
@@ -342,25 +377,15 @@
   <script>
     // Complete list of Cameroonian cities (all university zones)
     const CAMEROON_CITIES = [
-      // North-West Region (UBa, CATUC, BUST)
       "Bamenda", "Bambili", "Mankon", "Nkwen", "Up Station",
-      // South-West Region (UBuea)
       "Buea", "Limbe", "Kumba", "Tiko",
-      // Littoral Region (UDouala)
       "Douala", "Bonaberi", "Nkongsamba", "Edéa",
-      // Centre Region (UYI, UYII, Catholic University Yaoundé, UPAC)
       "Yaoundé", "Soa", "Mbalmayo", "Ebolowa", "Mfou",
-      // West Region (UDschang, Université des Montagnes)
       "Dschang", "Bafoussam", "Bangangté", "Foumban", "Mbouda",
-      // Adamawa Region (UNgaoundéré)
       "Ngaoundéré", "Tibati", "Meiganga",
-      // Far-North Region (UMaroua)
       "Maroua", "Mokolo", "Kousséri",
-      // North Region
       "Garoua", "Rey Bouba", "Lagdo",
-      // East Region
       "Bertoua", "Batouri", "Abong-Mbang",
-      // Additional university towns
       "Kumbo", "Ndop", "Fundong", "Bali", "Santa", "Wum"
     ].sort();
 
@@ -459,6 +484,28 @@
       setDarkMode(!isDark);
     });
 
+    // Language Toggle Buttons
+    const langToggle = document.getElementById('languageToggle');
+    const mobileLangToggle = document.getElementById('mobileLanguageToggle');
+    
+    if (langToggle) {
+      langToggle.addEventListener('click', () => {
+        toggleLanguage();
+        updatePageLanguage();
+        // Re-populate dropdown placeholder after language change
+        const citySearch = document.getElementById('citySearch');
+        if (citySearch) citySearch.placeholder = t('searchCity');
+      });
+    }
+    if (mobileLangToggle) {
+      mobileLangToggle.addEventListener('click', () => {
+        toggleLanguage();
+        updatePageLanguage();
+        const citySearch = document.getElementById('citySearch');
+        if (citySearch) citySearch.placeholder = t('searchCity');
+      });
+    }
+
     document.getElementById('menuBtn')?.addEventListener('click', () => document.getElementById('mobileMenu').classList.toggle('hidden'));
 
     const IMGBB_API_KEY = '4d01c952d0e4fd8cd5cc6d81ef0fd025';
@@ -475,8 +522,14 @@
       
       const desktopLogout = document.getElementById('desktopLogoutBtn');
       const mobileLogout = document.getElementById('mobileLogoutBtn');
-      if (desktopLogout) { desktopLogout.textContent = 'Logout'; desktopLogout.onclick = (e) => { e.preventDefault(); firebase.auth().signOut(); window.location.href = 'login.html'; }; }
-      if (mobileLogout) { mobileLogout.textContent = 'Logout'; mobileLogout.onclick = (e) => { e.preventDefault(); firebase.auth().signOut(); window.location.href = 'login.html'; }; }
+      if (desktopLogout) { 
+        desktopLogout.textContent = t('logout'); 
+        desktopLogout.onclick = (e) => { e.preventDefault(); firebase.auth().signOut(); window.location.href = 'login.html'; }; 
+      }
+      if (mobileLogout) { 
+        mobileLogout.textContent = t('logout'); 
+        mobileLogout.onclick = (e) => { e.preventDefault(); firebase.auth().signOut(); window.location.href = 'login.html'; }; 
+      }
       
       const doc = await db.collection('rooms').doc(roomId).get();
       if (!doc.exists) { document.getElementById('loadingArea').innerHTML = '<div class="text-center text-red-400">Room not found</div>'; return; }
@@ -502,6 +555,7 @@
       const cityValue = room.city || '';
       document.getElementById('selectedCity').value = cityValue;
       document.getElementById('citySearch').value = cityValue;
+      document.getElementById('citySearch').placeholder = t('searchCity');
       
       document.getElementById('area').value = room.area || '';
       document.getElementById('distance').value = room.distance || '';
@@ -513,11 +567,15 @@
       initSearchableDropdown();
       document.getElementById('loadingArea').style.display = 'none';
       document.getElementById('roomForm').style.display = 'block';
+      updatePageLanguage();
     });
     
     function displayExistingImages() {
       const container = document.getElementById('existingImagesContainer');
-      if (imagesToKeep.length === 0) { container.innerHTML = '<p class="text-slate-400 text-sm">No images. Add some below.</p>'; return; }
+      if (imagesToKeep.length === 0) { 
+        container.innerHTML = '<p class="text-slate-400 text-sm">' + t('noImages') + '</p>'; 
+        return; 
+      }
       container.innerHTML = imagesToKeep.map((img, idx) => `<div class="existing-image"><img src="${img}" class="preview-image"><div class="remove-existing" onclick="removeExistingImage(${idx})">×</div></div>`).join('');
     }
     
@@ -552,7 +610,7 @@
         const fd = new FormData(); fd.append('key', IMGBB_API_KEY); fd.append('image', file);
         const res = await fetch('https://api.imgbb.com/1/upload', { method: 'POST', body: fd });
         const data = await res.json();
-        if (!data.success) throw new Error('Upload failed');
+        if (!data.success) throw new Error(t('errorOccurred') + 'Upload failed');
         urls.push(data.data.url);
       }
       return urls;
@@ -562,7 +620,7 @@
       e.preventDefault();
       const msgDiv = document.getElementById('messageArea');
       msgDiv.classList.remove('hidden'); msgDiv.className = 'mb-4 p-3 rounded-lg bg-blue-500/20 text-blue-400';
-      msgDiv.innerHTML = 'Saving...';
+      msgDiv.innerHTML = t('uploadingImages');
       try {
         const newUrls = await uploadNewImages();
         const allImages = [...imagesToKeep, ...newUrls];
@@ -572,7 +630,7 @@
         const yearlyPrice = parseInt(document.getElementById('yearlyPrice').value) || 0;
         const selectedCity = document.getElementById('selectedCity').value;
         
-        if (!selectedCity) { throw new Error('Please select a city'); }
+        if (!selectedCity) { throw new Error(t('cityLabel2')); }
         
         await db.collection('rooms').doc(roomId).update({
           title: document.getElementById('title').value,
@@ -589,16 +647,19 @@
           images: allImages.slice(0,10)
         });
         msgDiv.className = 'mb-4 p-3 rounded-lg bg-green-500/20 text-green-400';
-        msgDiv.innerHTML = '✅ Room updated! Redirecting...';
+        msgDiv.innerHTML = t('successUpdated');
         setTimeout(() => { window.location.href = 'dashboard.html'; }, 1500);
       } catch (error) {
         msgDiv.className = 'mb-4 p-3 rounded-lg bg-red-500/20 text-red-400';
-        msgDiv.innerHTML = 'Error: ' + error.message;
+        msgDiv.innerHTML = t('errorOccurred') + error.message;
       }
     });
     
     document.getElementById('deleteBtn').onclick = async () => {
-      if (confirm('Delete permanently?')) { await db.collection('rooms').doc(roomId).delete(); window.location.href = 'dashboard.html'; }
+      if (confirm(t('confirm') + '? ' + t('deleteRoom'))) { 
+        await db.collection('rooms').doc(roomId).delete(); 
+        window.location.href = 'dashboard.html'; 
+      }
     };
   </script>
 

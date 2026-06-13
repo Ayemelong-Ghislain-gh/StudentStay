@@ -10,6 +10,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
   <script src="js/firebase-config.js"></script>
+  <script src="js/languages.js"></script>
   <style>
     .bg-primary { background-color: #22C55E; }
     .text-primary { color: #22C55E; }
@@ -76,7 +77,7 @@
     body.light-mode nav button {
       color: #FFFFFF !important;
     }
-    <style>
+
     /* Language Selection Modal */
     .lang-modal-overlay {
         position: fixed;
@@ -177,7 +178,6 @@
     .hidden-modal {
         display: none !important;
     }
-</style>
   </style>
 </head>
 <body>
@@ -185,54 +185,64 @@
   <div id="languageModal" class="lang-modal-overlay">
       <div class="lang-modal">
           <div class="lang-flag">🇨🇲</div>
-          <h2 class="lang-title">Welcome to StudentStay</h2>
-          <p class="lang-subtitle">Bienvenue sur StudentStay</p>
+          <h2 class="lang-title" data-i18n="modalWelcome">Welcome to StudentStay</h2>
+          <p class="lang-subtitle" data-i18n="modalSubtitle">Bienvenue sur StudentStay</p>
           <div class="lang-buttons">
               <div class="lang-btn" onclick="selectLanguage('en')">
                   <div class="lang-btn-flag">🇬🇧</div>
-                  <div class="lang-btn-text">English</div>
-                  <div class="lang-btn-sub">Continue in English</div>
+                  <div class="lang-btn-text" data-i18n="modalEnglish">English</div>
+                  <div class="lang-btn-sub" data-i18n="modalEnglishSub">Continue in English</div>
               </div>
               <div class="lang-btn" onclick="selectLanguage('fr')">
                   <div class="lang-btn-flag">🇫🇷</div>
-                  <div class="lang-btn-text">Français</div>
-                  <div class="lang-btn-sub">Continuer en français</div>
+                  <div class="lang-btn-text" data-i18n="modalFrench">Français</div>
+                  <div class="lang-btn-sub" data-i18n="modalFrenchSub">Continuer en français</div>
               </div>
           </div>
       </div>
   </div>
+
   <nav class="bg-slate-900/90 backdrop-blur-sm border-b border-slate-700">
     <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
       <a href="index.html" class="flex items-center gap-3">
         <div class="h-9 w-9 bg-primary rounded-lg flex items-center justify-center"><span class="text-white font-bold text-base">S</span></div>
         <div>
-          <h1 class="text-2xl font-bold text-white tracking-tight">StudentStay Admin</h1>
+          <h1 class="text-2xl font-bold text-white tracking-tight" data-i18n="adminDashboard">StudentStay Admin</h1>
         </div>
       </a>
       <div class="flex gap-3">
-        <a href="index.html" class="nav-btn text-white hover:text-primary">Home</a>
-        <a href="admin.html" class="nav-btn text-primary hover:text-primary">Admin</a>
-        <a href="#" id="logoutBtn" class="nav-btn text-slate-300 hover:text-primary">Logout</a>
-        <button id="darkModeToggle" class="nav-btn text-slate-300 hover:text-primary">🌓 Dark/Light</button>
-        <button id="languageToggle" class="nav-btn text-slate-300 hover:text-primary">🇫🇷 FR</button>
+        <a href="index.html" class="nav-btn text-white hover:text-primary" data-i18n="home">Home</a>
+        <a href="admin.html" class="nav-btn text-primary hover:text-primary" data-i18n="admin">Admin</a>
+        <a href="#" id="logoutBtn" class="nav-btn text-slate-300 hover:text-primary" data-i18n="logout">Logout</a>
+        <button id="darkModeToggle" class="nav-btn text-slate-300 hover:text-primary" data-i18n="darkLight">🌓 Dark/Light</button>
+        <button id="languageToggle" class="nav-btn text-slate-300 hover:text-primary">🌐 FR/EN</button>
       </div>
     </div>
   </nav>
 
   <div class="max-w-6xl mx-auto px-4 py-8">
-    <div id="adminCheck" class="text-center py-20 text-red-400">Checking admin access...</div>
+    <div id="adminCheck" class="text-center py-20 text-red-400" data-i18n="loadingText">Checking admin access...</div>
     <div id="adminContent" style="display:none;">
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        <div class="bg-slate-800 rounded-xl p-4 text-center"><p class="text-slate-400">Pending Rooms</p><p id="pendingCount" class="text-3xl font-bold text-white">0</p></div>
-        <div class="bg-slate-800 rounded-xl p-4 text-center"><p class="text-slate-400">Applications</p><p id="appCount" class="text-3xl font-bold text-white">0</p></div>
-        <div class="bg-slate-800 rounded-xl p-4 text-center"><p class="text-slate-400">Total Rooms</p><p id="totalRoomsCount" class="text-3xl font-bold text-white">0</p></div>
+        <div class="bg-slate-800 rounded-xl p-4 text-center">
+          <p class="text-slate-400" data-i18n="pendingRooms">Pending Rooms</p>
+          <p id="pendingCount" class="text-3xl font-bold text-white">0</p>
+        </div>
+        <div class="bg-slate-800 rounded-xl p-4 text-center">
+          <p class="text-slate-400" data-i18n="applications">Applications</p>
+          <p id="appCount" class="text-3xl font-bold text-white">0</p>
+        </div>
+        <div class="bg-slate-800 rounded-xl p-4 text-center">
+          <p class="text-slate-400" data-i18n="totalRooms">Total Rooms</p>
+          <p id="totalRoomsCount" class="text-3xl font-bold text-white">0</p>
+        </div>
       </div>
       <div class="flex gap-2 border-b border-slate-700 mb-6">
-        <button class="tab-btn active px-4 py-2 font-medium border-b-2 border-primary text-primary" data-tab="rooms">Pending Rooms</button>
-        <button class="tab-btn px-4 py-2 font-medium text-slate-400" data-tab="applications">Landlord Applications</button>
+        <button class="tab-btn active px-4 py-2 font-medium border-b-2 border-primary text-primary" data-tab="rooms" data-i18n="pendingRoomsTab">Pending Rooms</button>
+        <button class="tab-btn px-4 py-2 font-medium text-slate-400" data-tab="applications" data-i18n="landlordApplications">Landlord Applications</button>
       </div>
-      <div id="roomsSection"><div id="roomsTable" class="bg-slate-800 rounded-xl border border-slate-700 overflow-hidden"><div class="p-6 text-center text-slate-400">Loading...</div></div></div>
-      <div id="applicationsSection" style="display:none;"><div id="applicationsTable" class="bg-slate-800 rounded-xl border border-slate-700 overflow-hidden"><div class="p-6 text-center text-slate-400">Loading...</div></div></div>
+      <div id="roomsSection"><div id="roomsTable" class="bg-slate-800 rounded-xl border border-slate-700 overflow-hidden"><div class="p-6 text-center text-slate-400" data-i18n="loadingText">Loading...</div></div></div>
+      <div id="applicationsSection" style="display:none;"><div id="applicationsTable" class="bg-slate-800 rounded-xl border border-slate-700 overflow-hidden"><div class="p-6 text-center text-slate-400" data-i18n="loadingText">Loading...</div></div></div>
     </div>
   </div>
 
@@ -240,19 +250,22 @@
     // Helper function to get price display text based on pricing type
     function getPriceDisplayText(room) {
       const pricingType = room.pricingType || 'monthly';
+      const perMonthText = t('perMonthBadge');
+      const perYearText = t('perYearBadge');
+      const bothText = t('bothBadge');
       
       if (pricingType === 'yearly') {
         const yearlyPrice = room.yearlyPrice || room.price || 0;
-        return `${yearlyPrice.toLocaleString()} FCFA<span class="pricing-badge pricing-yearly ml-2">per year</span>`;
+        return `${yearlyPrice.toLocaleString()} FCFA<span class="pricing-badge pricing-yearly ml-2">${perYearText}</span>`;
       } 
       else if (pricingType === 'both') {
         const monthlyPrice = room.monthlyPrice || room.price || 0;
         const yearlyPrice = room.yearlyPrice || (monthlyPrice * 9) || 0;
-        return `${monthlyPrice.toLocaleString()} FCFA/mo<br><span class="text-xs text-slate-400">or ${yearlyPrice.toLocaleString()} FCFA/year</span><span class="pricing-badge pricing-both ml-2">both</span>`;
+        return `${monthlyPrice.toLocaleString()} FCFA/${perMonthText}<br><span class="text-xs text-slate-400">or ${yearlyPrice.toLocaleString()} FCFA/${perYearText}</span><span class="pricing-badge pricing-both ml-2">${bothText}</span>`;
       }
       else {
         const monthlyPrice = room.monthlyPrice || room.price || 0;
-        return `${monthlyPrice.toLocaleString()} FCFA<span class="pricing-badge pricing-monthly ml-2">per month</span>`;
+        return `${monthlyPrice.toLocaleString()} FCFA<span class="pricing-badge pricing-monthly ml-2">${perMonthText}</span>`;
       }
     }
 
@@ -275,12 +288,22 @@
       setDarkMode(!isDark);
     });
 
+    // Language Toggle Button
+    const langToggle = document.getElementById('languageToggle');
+    if (langToggle) {
+      langToggle.addEventListener('click', () => {
+        toggleLanguage();
+        // Reload admin data after language change
+        location.reload();
+      });
+    }
+
     window.approveRoom = async (id) => { 
       await db.collection('rooms').doc(id).update({ status: 'approved', expiresAt: new Date(Date.now() + 30*24*60*60*1000) }); 
       location.reload(); 
     };
     window.deleteRoom = async (id) => { 
-      if (confirm('Delete permanently?')) { 
+      if (confirm(t('confirm') + '?')) { 
         await db.collection('rooms').doc(id).delete(); 
         location.reload(); 
       } 
@@ -288,11 +311,11 @@
     window.approveApplication = async (appId, userId, role) => { 
       await db.collection('users').doc(userId).update({ role: role, freeListingsRemaining: 5 }); 
       await db.collection('applications').doc(appId).update({ status: 'approved', reviewedAt: new Date() }); 
-      alert('User approved!'); 
+      alert(t('approve')); 
       location.reload(); 
     };
     window.rejectApplication = async (appId) => { 
-      if (confirm('Reject application?')) { 
+      if (confirm(t('confirm') + '?')) { 
         await db.collection('applications').doc(appId).update({ status: 'rejected', reviewedAt: new Date() }); 
         location.reload(); 
       } 
@@ -300,12 +323,12 @@
     
     firebase.auth().onAuthStateChanged(async (user) => {
       if (!user) { 
-        document.getElementById('adminCheck').innerHTML = '<div class="bg-red-500/20 p-6 rounded-lg text-center"><p class="text-red-400">Admin access required</p><a href="login.html" class="mt-4 inline-block bg-primary text-white px-4 py-2 rounded-lg">Login</a></div>'; 
+        document.getElementById('adminCheck').innerHTML = '<div class="bg-red-500/20 p-6 rounded-lg text-center"><p class="text-red-400">' + t('loginTitle') + ' required</p><a href="login.html" class="mt-4 inline-block bg-primary text-white px-4 py-2 rounded-lg">' + t('login') + '</a></div>'; 
         return; 
       }
       const userDoc = await db.collection('users').doc(user.uid).get();
       if (!userDoc.exists || userDoc.data().role !== 'admin') { 
-        document.getElementById('adminCheck').innerHTML = '<div class="bg-red-500/20 p-6 rounded-lg text-center"><p class="text-red-400">Access Denied</p><a href="index.html" class="mt-4 inline-block bg-slate-600 text-white px-4 py-2 rounded-lg">Back to Home</a></div>'; 
+        document.getElementById('adminCheck').innerHTML = '<div class="bg-red-500/20 p-6 rounded-lg text-center"><p class="text-red-400">' + t('noData') + '</p><a href="index.html" class="mt-4 inline-block bg-slate-600 text-white px-4 py-2 rounded-lg">' + t('back') + '</a></div>'; 
         return; 
       }
       document.getElementById('adminCheck').style.display = 'none'; 
@@ -319,11 +342,10 @@
       document.getElementById('totalRoomsCount').innerText = rooms.size;
       
       const pendingSnapshot = await db.collection('rooms').where('status','==','pending').get();
-      let roomsHtml = '<div class="overflow-x-auto"><table class="w-full text-sm"><thead class="bg-slate-700"><tr><th class="p-3">Title</th><th class="p-3">Pricing</th><th class="p-3">City</th><th class="p-3">Listed By</th><th class="p-3">Actions</th></tr></thead><tbody>';
+      let roomsHtml = '<div class="overflow-x-auto"><table class="w-full text-sm"><thead class="bg-slate-700"><tr><th class="p-3">' + t('title') + '</th><th class="p-3">' + t('pricing') + '</th><th class="p-3">' + t('city') + '</th><th class="p-3">' + t('listedBy') + '</th><th class="p-3">' + t('actions') + '</th></tr></thead><tbody>';
       
       for (const doc of pendingSnapshot.docs) { 
         const room = doc.data(); 
-        // Get landlord name
         let landlordName = 'Unknown';
         if (room.landlordId) {
           const landlordDoc = await db.collection('users').doc(room.landlordId).get();
@@ -338,22 +360,21 @@
           <td class="p-3">${escapeHtml(room.city)}</td>
           <td class="p-3 text-slate-300 text-sm">${escapeHtml(landlordName)}</td>
           <td class="p-3">
-            <a href="edit-room.html?id=${doc.id}" class="bg-yellow-600 text-white px-3 py-1 rounded mr-2 inline-block hover:bg-yellow-700">Edit</a>
-            <button onclick="approveRoom('${doc.id}')" class="bg-green-600 text-white px-3 py-1 rounded mr-2">Approve</button>
-            <button onclick="deleteRoom('${doc.id}')" class="bg-red-600 text-white px-3 py-1 rounded">Delete</button>
+            <a href="edit-room.html?id=${doc.id}" class="bg-yellow-600 text-white px-3 py-1 rounded mr-2 inline-block hover:bg-yellow-700">${t('edit')}</a>
+            <button onclick="approveRoom('${doc.id}')" class="bg-green-600 text-white px-3 py-1 rounded mr-2">${t('approve')}</button>
+            <button onclick="deleteRoom('${doc.id}')" class="bg-red-600 text-white px-3 py-1 rounded">${t('delete')}</button>
           </td>
-        </tr>`;
+         </tr>`;
       }
-      roomsHtml += pendingSnapshot.empty ? '<tr><td colspan="5" class="p-6 text-center">No pending rooms</td></tr>' : ''; 
+      roomsHtml += pendingSnapshot.empty ? '<tr><td colspan="5" class="p-6 text-center">' + t('noPendingRooms') + '</td></tr>' : ''; 
       roomsHtml += '</tbody></table></div>';
       document.getElementById('roomsTable').innerHTML = roomsHtml;
       
       const appSnapshot = await db.collection('applications').where('status','==','pending').get();
-      let appsHtml = '<div class="overflow-x-auto"><table class="w-full text-sm"><thead class="bg-slate-700"><tr><th class="p-3">Name</th><th class="p-3">Email</th><th class="p-3">WhatsApp</th><th class="p-3">Requested Role</th><th class="p-3">Date</th><th class="p-3">Actions</th></tr></thead><tbody>';
+      let appsHtml = '<div class="overflow-x-auto"><table class="w-full text-sm"><thead class="bg-slate-700"><tr><th class="p-3">' + t('name') + '</th><th class="p-3">' + t('email') + '</th><th class="p-3">' + t('whatsapp') + '</th><th class="p-3">' + t('requestedRole') + '</th><th class="p-3">' + t('date') + '</th><th class="p-3">' + t('actions') + '</th></tr></thead><tbody>';
       
       for (const doc of appSnapshot.docs) { 
         const app = doc.data(); 
-        // Get user details
         let userName = 'N/A';
         let userPhone = 'N/A';
         if (app.userId) {
@@ -371,12 +392,12 @@
           <td class="p-3 capitalize"><span class="px-2 py-1 rounded text-xs ${app.requestedRole === 'landlord' ? 'bg-primary/20 text-primary' : 'bg-blue-500/20 text-blue-400'}">${app.requestedRole}</span></td>
           <td class="p-3">${app.createdAt?.toDate().toLocaleDateString() || 'N/A'}</td>
           <td class="p-3">
-            <button onclick="approveApplication('${doc.id}', '${app.userId}', '${app.requestedRole}')" class="bg-green-600 text-white px-3 py-1 rounded mr-2">Approve</button>
-            <button onclick="rejectApplication('${doc.id}')" class="bg-red-600 text-white px-3 py-1 rounded">Reject</button>
+            <button onclick="approveApplication('${doc.id}', '${app.userId}', '${app.requestedRole}')" class="bg-green-600 text-white px-3 py-1 rounded mr-2">${t('approve')}</button>
+            <button onclick="rejectApplication('${doc.id}')" class="bg-red-600 text-white px-3 py-1 rounded">${t('delete')}</button>
           </td>
-        </tr>`;
+         </tr>`;
       }
-      appsHtml += appSnapshot.empty ? '<tr><td colspan="6" class="p-6 text-center">No pending applications</td></tr>' : ''; 
+      appsHtml += appSnapshot.empty ? '<tr><td colspan="6" class="p-6 text-center">' + t('noPendingApps') + '</td></tr>' : ''; 
       appsHtml += '</tbody></table></div>';
       document.getElementById('applicationsTable').innerHTML = appsHtml;
     });

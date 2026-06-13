@@ -10,6 +10,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
   <script src="js/firebase-config.js"></script>
+  <script src="js/languages.js"></script>
   <style>
     .bg-primary { background-color: #22C55E; }
     .text-primary { color: #22C55E; }
@@ -72,7 +73,7 @@
     body.light-mode #mobileMenu button {
       color: #FFFFFF !important;
     }
-    <style>
+
     /* Language Selection Modal */
     .lang-modal-overlay {
         position: fixed;
@@ -173,7 +174,6 @@
     .hidden-modal {
         display: none !important;
     }
-</style>
   </style>
 </head>
 <body>
@@ -181,65 +181,67 @@
   <div id="languageModal" class="lang-modal-overlay">
       <div class="lang-modal">
           <div class="lang-flag">🇨🇲</div>
-          <h2 class="lang-title">Welcome to StudentStay</h2>
-          <p class="lang-subtitle">Bienvenue sur StudentStay</p>
+          <h2 class="lang-title" data-i18n="modalWelcome">Welcome to StudentStay</h2>
+          <p class="lang-subtitle" data-i18n="modalSubtitle">Bienvenue sur StudentStay</p>
           <div class="lang-buttons">
               <div class="lang-btn" onclick="selectLanguage('en')">
                   <div class="lang-btn-flag">🇬🇧</div>
-                  <div class="lang-btn-text">English</div>
-                  <div class="lang-btn-sub">Continue in English</div>
+                  <div class="lang-btn-text" data-i18n="modalEnglish">English</div>
+                  <div class="lang-btn-sub" data-i18n="modalEnglishSub">Continue in English</div>
               </div>
               <div class="lang-btn" onclick="selectLanguage('fr')">
                   <div class="lang-btn-flag">🇫🇷</div>
-                  <div class="lang-btn-text">Français</div>
-                  <div class="lang-btn-sub">Continuer en français</div>
+                  <div class="lang-btn-text" data-i18n="modalFrench">Français</div>
+                  <div class="lang-btn-sub" data-i18n="modalFrenchSub">Continuer en français</div>
               </div>
           </div>
       </div>
   </div>
+
   <nav class="bg-slate-900/90 backdrop-blur-sm border-b border-slate-700">
     <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
       <a href="index.html" class="flex items-center gap-3">
         <div class="h-9 w-9 bg-primary rounded-lg flex items-center justify-center"><span class="text-white font-bold text-base">S</span></div>
         <div>
-          <h1 class="text-2xl font-bold text-white tracking-tight">StudentStay</h1>
-          <p class="text-xs text-slate-300">Find Rooms. No Stress.</p>
+          <h1 class="text-2xl font-bold text-white tracking-tight" data-i18n="appName">StudentStay</h1>
+          <p class="text-xs text-slate-300" data-i18n="tagline">Find Rooms. No Stress.</p>
         </div>
       </a>
       <div class="hidden md:flex gap-3">
-        <a href="index.html" class="nav-btn text-white hover:text-primary">Home</a>
-        <a href="listings.html" class="nav-btn text-slate-300 hover:text-primary">Browse</a>
-        <a href="dashboard.html" class="nav-btn text-slate-300 hover:text-primary">Dashboard</a>
-        <button id="darkModeToggle" class="nav-btn text-slate-300 hover:text-primary">🌓 Dark/Light</button>
-        <button id="languageToggle" class="nav-btn text-slate-300 hover:text-primary">🇫🇷 FR</button>
+        <a href="index.html" class="nav-btn text-white hover:text-primary" data-i18n="home">Home</a>
+        <a href="listings.html" class="nav-btn text-slate-300 hover:text-primary" data-i18n="browse">Browse</a>
+        <a href="dashboard.html" class="nav-btn text-slate-300 hover:text-primary" data-i18n="dashboard">Dashboard</a>
+        <button id="darkModeToggle" class="nav-btn text-slate-300 hover:text-primary" data-i18n="darkLight">🌓 Dark/Light</button>
+        <button id="languageToggle" class="nav-btn text-slate-300 hover:text-primary">🌐 FR/EN</button>
       </div>
       <button id="menuBtn" class="md:hidden text-white"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg></button>
     </div>
     <div id="mobileMenu" class="hidden md:hidden bg-slate-800 border-t border-slate-700 py-3 px-4 flex flex-col gap-2">
-      <a href="index.html" class="nav-btn text-white hover:text-primary block text-left">Home</a>
-      <a href="listings.html" class="nav-btn text-slate-300 hover:text-primary block text-left">Browse</a>
-      <a href="dashboard.html" class="nav-btn text-slate-300 hover:text-primary block text-left">Dashboard</a>
-      <button id="mobileDarkModeToggle" class="nav-btn text-slate-300 hover:text-primary text-left w-full">🌓 Dark/Light</button>
+      <a href="index.html" class="nav-btn text-white hover:text-primary block text-left" data-i18n="home">Home</a>
+      <a href="listings.html" class="nav-btn text-slate-300 hover:text-primary block text-left" data-i18n="browse">Browse</a>
+      <a href="dashboard.html" class="nav-btn text-slate-300 hover:text-primary block text-left" data-i18n="dashboard">Dashboard</a>
+      <button id="mobileDarkModeToggle" class="nav-btn text-slate-300 hover:text-primary text-left w-full" data-i18n="darkLight">🌓 Dark/Light</button>
+      <button id="mobileLanguageToggle" class="nav-btn text-slate-300 hover:text-primary text-left w-full">🌐 FR/EN</button>
     </div>
   </nav>
 
   <div class="max-w-md mx-auto px-4 py-12">
     <div class="bg-slate-800 rounded-xl border border-slate-700 p-6">
       <div class="flex border-b border-slate-700 mb-6">
-        <button id="loginTab" class="flex-1 py-2 text-center font-medium border-b-2 border-primary text-primary">Login</button>
-        <button id="signupTab" class="flex-1 py-2 text-center font-medium text-slate-400">Sign Up</button>
+        <button id="loginTab" class="flex-1 py-2 text-center font-medium border-b-2 border-primary text-primary" data-i18n="loginTitle">Login</button>
+        <button id="signupTab" class="flex-1 py-2 text-center font-medium text-slate-400" data-i18n="signupTitle">Sign Up</button>
       </div>
       <div id="loginForm">
-        <input type="email" id="loginEmail" placeholder="Email" class="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2 mb-3">
-        <input type="password" id="loginPassword" placeholder="Password" class="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2 mb-4">
-        <button id="doLogin" class="w-full bg-primary text-white py-2 rounded-lg font-semibold hover:bg-green-600">Login</button>
+        <input type="email" id="loginEmail" placeholder="" class="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2 mb-3" data-i18n-placeholder="emailLabel">
+        <input type="password" id="loginPassword" placeholder="" class="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2 mb-4" data-i18n-placeholder="passwordLabel">
+        <button id="doLogin" class="w-full bg-primary text-white py-2 rounded-lg font-semibold hover:bg-green-600" data-i18n="login">Login</button>
       </div>
       <div id="signupForm" class="hidden">
-        <input type="text" id="signupName" placeholder="Full Name" class="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2 mb-3">
-        <input type="email" id="signupEmail" placeholder="Email" class="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2 mb-3">
-        <input type="tel" id="signupPhone" placeholder="WhatsApp (e.g., 670922913)" class="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2 mb-3">
-        <input type="password" id="signupPassword" placeholder="Password" class="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2 mb-4">
-        <button id="doSignup" class="w-full bg-primary text-white py-2 rounded-lg font-semibold hover:bg-green-600">Create Account</button>
+        <input type="text" id="signupName" placeholder="" class="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2 mb-3" data-i18n-placeholder="fullNameLabel">
+        <input type="email" id="signupEmail" placeholder="" class="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2 mb-3" data-i18n-placeholder="emailLabel">
+        <input type="tel" id="signupPhone" placeholder="" class="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2 mb-3" data-i18n-placeholder="phoneLabel">
+        <input type="password" id="signupPassword" placeholder="" class="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2 mb-4" data-i18n-placeholder="passwordLabel">
+        <button id="doSignup" class="w-full bg-primary text-white py-2 rounded-lg font-semibold hover:bg-green-600" data-i18n="createAccount">Create Account</button>
       </div>
       <div id="message" class="mt-4 text-center text-sm hidden"></div>
     </div>
@@ -268,21 +270,111 @@
       setDarkMode(!isDark);
     });
 
+    // Language Toggle Buttons
+    const langToggle = document.getElementById('languageToggle');
+    const mobileLangToggle = document.getElementById('mobileLanguageToggle');
+    
+    if (langToggle) {
+      langToggle.addEventListener('click', () => {
+        toggleLanguage();
+        updatePageLanguage();
+        // Update tab button texts
+        document.getElementById('loginTab').textContent = t('loginTitle');
+        document.getElementById('signupTab').textContent = t('signupTitle');
+        document.getElementById('doLogin').textContent = t('login');
+        document.getElementById('doSignup').textContent = t('createAccount');
+      });
+    }
+    if (mobileLangToggle) {
+      mobileLangToggle.addEventListener('click', () => {
+        toggleLanguage();
+        updatePageLanguage();
+        document.getElementById('loginTab').textContent = t('loginTitle');
+        document.getElementById('signupTab').textContent = t('signupTitle');
+        document.getElementById('doLogin').textContent = t('login');
+        document.getElementById('doSignup').textContent = t('createAccount');
+      });
+    }
+
     document.getElementById('menuBtn')?.addEventListener('click', () => document.getElementById('mobileMenu').classList.toggle('hidden'));
 
+    // Listen for language changes
+    window.addEventListener('languageChanged', () => {
+      document.getElementById('loginTab').textContent = t('loginTitle');
+      document.getElementById('signupTab').textContent = t('signupTitle');
+      document.getElementById('doLogin').textContent = t('login');
+      document.getElementById('doSignup').textContent = t('createAccount');
+      // Update placeholders
+      document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+        const key = el.getAttribute('data-i18n-placeholder');
+        el.placeholder = t(key);
+      });
+    });
+
     const loginForm = document.getElementById('loginForm'), signupForm = document.getElementById('signupForm'), loginTab = document.getElementById('loginTab'), signupTab = document.getElementById('signupTab'), msgDiv = document.getElementById('message');
-    loginTab.onclick = () => { loginTab.classList.add('border-b-2','border-primary','text-primary'); signupTab.classList.remove('border-b-2','border-primary','text-primary'); signupTab.classList.add('text-slate-400'); loginForm.classList.remove('hidden'); signupForm.classList.add('hidden'); msgDiv.classList.add('hidden'); };
-    signupTab.onclick = () => { signupTab.classList.add('border-b-2','border-primary','text-primary'); loginTab.classList.remove('border-b-2','border-primary','text-primary'); loginTab.classList.add('text-slate-400'); signupForm.classList.remove('hidden'); loginForm.classList.add('hidden'); msgDiv.classList.add('hidden'); };
-    document.getElementById('doLogin').onclick = async () => { try { await firebase.auth().signInWithEmailAndPassword(document.getElementById('loginEmail').value, document.getElementById('loginPassword').value); msgDiv.className = 'mt-4 text-center text-sm p-2 rounded bg-green-500/20 text-green-400'; msgDiv.textContent = 'Login successful! Redirecting...'; setTimeout(() => { window.location.href = 'dashboard.html'; }, 1000); } catch (error) { msgDiv.className = 'mt-4 text-center text-sm p-2 rounded bg-red-500/20 text-red-400'; msgDiv.textContent = error.message; msgDiv.classList.remove('hidden'); } };
+    
+    loginTab.onclick = () => { 
+      loginTab.classList.add('border-b-2','border-primary','text-primary'); 
+      signupTab.classList.remove('border-b-2','border-primary','text-primary'); 
+      signupTab.classList.add('text-slate-400'); 
+      loginForm.classList.remove('hidden'); 
+      signupForm.classList.add('hidden'); 
+      msgDiv.classList.add('hidden'); 
+    };
+    
+    signupTab.onclick = () => { 
+      signupTab.classList.add('border-b-2','border-primary','text-primary'); 
+      loginTab.classList.remove('border-b-2','border-primary','text-primary'); 
+      loginTab.classList.add('text-slate-400'); 
+      signupForm.classList.remove('hidden'); 
+      loginForm.classList.add('hidden'); 
+      msgDiv.classList.add('hidden'); 
+    };
+    
+    document.getElementById('doLogin').onclick = async () => { 
+      try { 
+        await firebase.auth().signInWithEmailAndPassword(
+          document.getElementById('loginEmail').value, 
+          document.getElementById('loginPassword').value
+        ); 
+        msgDiv.className = 'mt-4 text-center text-sm p-2 rounded bg-green-500/20 text-green-400'; 
+        msgDiv.textContent = t('loginSuccess'); 
+        msgDiv.classList.remove('hidden');
+        setTimeout(() => { window.location.href = 'dashboard.html'; }, 1000); 
+      } catch (error) { 
+        msgDiv.className = 'mt-4 text-center text-sm p-2 rounded bg-red-500/20 text-red-400'; 
+        msgDiv.textContent = error.message; 
+        msgDiv.classList.remove('hidden'); 
+      } 
+    };
+    
     document.getElementById('doSignup').onclick = async () => {
-      const name = document.getElementById('signupName').value, email = document.getElementById('signupEmail').value, phone = document.getElementById('signupPhone').value, password = document.getElementById('signupPassword').value;
+      const name = document.getElementById('signupName').value, 
+            email = document.getElementById('signupEmail').value, 
+            phone = document.getElementById('signupPhone').value, 
+            password = document.getElementById('signupPassword').value;
       const phoneRegex = /^[236][0-9]{8}$/;
-      if (!phoneRegex.test(phone)) { msgDiv.className = 'mt-4 text-center text-sm p-2 rounded bg-red-500/20 text-red-400'; msgDiv.textContent = 'Please enter a valid Cameroon phone number (9 digits, starts with 2, 3, or 6)'; msgDiv.classList.remove('hidden'); return; }
+      if (!phoneRegex.test(phone)) { 
+        msgDiv.className = 'mt-4 text-center text-sm p-2 rounded bg-red-500/20 text-red-400'; 
+        msgDiv.textContent = t('invalidPhone'); 
+        msgDiv.classList.remove('hidden'); 
+        return; 
+      }
       try {
         const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
-        await db.collection('users').doc(userCredential.user.uid).set({ fullName: name, email: email, phone: phone, role: 'user', freeListingsRemaining: 5, createdAt: new Date() });
-        msgDiv.className = 'mt-4 text-center text-sm p-2 rounded bg-green-500/20 text-green-400'; msgDiv.textContent = 'Account created! Redirecting...'; setTimeout(() => { window.location.href = 'dashboard.html'; }, 1000);
-      } catch (error) { msgDiv.className = 'mt-4 text-center text-sm p-2 rounded bg-red-500/20 text-red-400'; msgDiv.textContent = error.message; msgDiv.classList.remove('hidden'); }
+        await db.collection('users').doc(userCredential.user.uid).set({ 
+          fullName: name, email: email, phone: phone, role: 'user', 
+          freeListingsRemaining: 5, createdAt: new Date() 
+        });
+        msgDiv.className = 'mt-4 text-center text-sm p-2 rounded bg-green-500/20 text-green-400'; 
+        msgDiv.textContent = t('accountCreated'); 
+        msgDiv.classList.remove('hidden');
+        setTimeout(() => { window.location.href = 'dashboard.html'; }, 1000);
+      } catch (error) { 
+        msgDiv.className = 'mt-4 text-center text-sm p-2 rounded bg-red-500/20 text-red-400'; 
+        msgDiv.textContent = error.message; 
+        msgDiv.classList.remove('hidden'); 
+      }
     };
   </script>
 

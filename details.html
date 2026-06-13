@@ -10,6 +10,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
   <script src="js/firebase-config.js"></script>
+  <script src="js/languages.js"></script>
   <style>
     .bg-primary { background-color: #22C55E; }
     .bg-whatsapp { background-color: #25D366; }
@@ -86,7 +87,7 @@
       padding: 12px 16px;
       border-left: 3px solid #3B82F6;
     }
-    <style>
+
     /* Language Selection Modal */
     .lang-modal-overlay {
         position: fixed;
@@ -187,7 +188,6 @@
     .hidden-modal {
         display: none !important;
     }
-</style>
   </style>
 </head>
 <body>
@@ -195,57 +195,62 @@
   <div id="languageModal" class="lang-modal-overlay">
       <div class="lang-modal">
           <div class="lang-flag">🇨🇲</div>
-          <h2 class="lang-title">Welcome to StudentStay</h2>
-          <p class="lang-subtitle">Bienvenue sur StudentStay</p>
+          <h2 class="lang-title" data-i18n="modalWelcome">Welcome to StudentStay</h2>
+          <p class="lang-subtitle" data-i18n="modalSubtitle">Bienvenue sur StudentStay</p>
           <div class="lang-buttons">
               <div class="lang-btn" onclick="selectLanguage('en')">
                   <div class="lang-btn-flag">🇬🇧</div>
-                  <div class="lang-btn-text">English</div>
-                  <div class="lang-btn-sub">Continue in English</div>
+                  <div class="lang-btn-text" data-i18n="modalEnglish">English</div>
+                  <div class="lang-btn-sub" data-i18n="modalEnglishSub">Continue in English</div>
               </div>
               <div class="lang-btn" onclick="selectLanguage('fr')">
                   <div class="lang-btn-flag">🇫🇷</div>
-                  <div class="lang-btn-text">Français</div>
-                  <div class="lang-btn-sub">Continuer en français</div>
+                  <div class="lang-btn-text" data-i18n="modalFrench">Français</div>
+                  <div class="lang-btn-sub" data-i18n="modalFrenchSub">Continuer en français</div>
               </div>
           </div>
       </div>
   </div>
+
   <nav class="bg-slate-900/90 backdrop-blur-sm border-b border-slate-700">
     <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
       <a href="index.html" class="flex items-center gap-3">
         <div class="h-9 w-9 bg-primary rounded-lg flex items-center justify-center"><span class="text-white font-bold text-base">S</span></div>
         <div>
-          <h1 class="text-2xl font-bold text-white tracking-tight">StudentStay</h1>
-          <p class="text-xs text-slate-300">Find Rooms. No Stress.</p>
+          <h1 class="text-2xl font-bold text-white tracking-tight" data-i18n="appName">StudentStay</h1>
+          <p class="text-xs text-slate-300" data-i18n="tagline">Find Rooms. No Stress.</p>
         </div>
       </a>
       <div class="hidden md:flex gap-3">
-        <a href="index.html" class="nav-btn text-white hover:text-primary">Home</a>
-        <a href="listings.html" class="nav-btn text-slate-300 hover:text-primary">Browse</a>
-        <a href="dashboard.html" class="nav-btn text-slate-300 hover:text-primary">Dashboard</a>
-        <button id="darkModeToggle" class="nav-btn text-slate-300 hover:text-primary">🌓 Dark/Light</button>
-        <a href="#" id="desktopLogoutBtn" class="nav-btn text-slate-300 hover:text-primary">Login</a>
-        <button id="languageToggle" class="nav-btn text-slate-300 hover:text-primary">🇫🇷 FR</button>
+        <a href="index.html" class="nav-btn text-white hover:text-primary" data-i18n="home">Home</a>
+        <a href="listings.html" class="nav-btn text-slate-300 hover:text-primary" data-i18n="browse">Browse</a>
+        <a href="dashboard.html" class="nav-btn text-slate-300 hover:text-primary" data-i18n="dashboard">Dashboard</a>
+        <button id="darkModeToggle" class="nav-btn text-slate-300 hover:text-primary" data-i18n="darkLight">🌓 Dark/Light</button>
+        <button id="languageToggle" class="nav-btn text-slate-300 hover:text-primary">🌐 FR/EN</button>
+        <a href="#" id="desktopLogoutBtn" class="nav-btn text-slate-300 hover:text-primary" data-i18n="login">Login</a>
       </div>
       <button id="menuBtn" class="md:hidden text-white"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg></button>
     </div>
     <div id="mobileMenu" class="hidden md:hidden bg-slate-800 border-t border-slate-700 py-3 px-4 flex flex-col gap-2">
-      <a href="index.html" class="nav-btn text-white hover:text-primary block text-left">Home</a>
-      <a href="listings.html" class="nav-btn text-slate-300 hover:text-primary block text-left">Browse</a>
-      <a href="dashboard.html" class="nav-btn text-slate-300 hover:text-primary block text-left">Dashboard</a>
-      <button id="mobileDarkModeToggle" class="nav-btn text-slate-300 hover:text-primary text-left w-full">🌓 Dark/Light</button>
-      <a href="#" id="mobileLogoutBtn" class="nav-btn text-slate-300 hover:text-primary block text-left">Login</a>
+      <a href="index.html" class="nav-btn text-white hover:text-primary block text-left" data-i18n="home">Home</a>
+      <a href="listings.html" class="nav-btn text-slate-300 hover:text-primary block text-left" data-i18n="browse">Browse</a>
+      <a href="dashboard.html" class="nav-btn text-slate-300 hover:text-primary block text-left" data-i18n="dashboard">Dashboard</a>
+      <button id="mobileDarkModeToggle" class="nav-btn text-slate-300 hover:text-primary text-left w-full" data-i18n="darkLight">🌓 Dark/Light</button>
+      <button id="mobileLanguageToggle" class="nav-btn text-slate-300 hover:text-primary text-left w-full">🌐 FR/EN</button>
+      <a href="#" id="mobileLogoutBtn" class="nav-btn text-slate-300 hover:text-primary block text-left" data-i18n="login">Login</a>
     </div>
   </nav>
 
   <div class="max-w-4xl mx-auto px-4 py-8">
-    <div id="roomContent" class="bg-slate-800 rounded-xl overflow-hidden border border-slate-700"><div class="text-center py-20 text-slate-300">Loading...</div></div>
-    <div class="mt-4 flex gap-3"><a href="listings.html" class="inline-block text-primary hover:underline">← Back to listings</a><div id="editButtonContainer"></div></div>
+    <div id="roomContent" class="bg-slate-800 rounded-xl overflow-hidden border border-slate-700"><div class="text-center py-20 text-slate-300" data-i18n="loadingText">Loading...</div></div>
+    <div class="mt-4 flex gap-3">
+      <a href="listings.html" class="inline-block text-primary hover:underline" data-i18n="backToListings">← Back to listings</a>
+      <div id="editButtonContainer"></div>
+    </div>
   </div>
 
   <script>
-    // Helper function to format price display based on pricing type
+    // Helper function to format price display based on pricing type (with translations)
     function formatPriceDisplay(room) {
       const pricingType = room.pricingType || 'monthly';
       
@@ -254,28 +259,27 @@
         return `
           <div class="price-yearly-card mb-2">
             <div class="text-3xl font-bold text-blue-400">${yearlyPrice.toLocaleString()} FCFA</div>
-            <div class="text-slate-400 text-sm">per school year (9-10 months)</div>
-            <div class="text-slate-500 text-xs mt-1">💡 Most students prefer yearly payment</div>
+            <div class="text-slate-400 text-sm">${t('yearlyPrice')}</div>
+            <div class="text-slate-500 text-xs mt-1">💡 ${t('yearlyNote')}</div>
           </div>
         `;
       } 
       else if (pricingType === 'both') {
         const monthlyPrice = room.monthlyPrice || room.price || 0;
         const yearlyPrice = room.yearlyPrice || (monthlyPrice * 9) || 0;
-        // Calculate savings if yearly is cheaper
         const expectedYearly = monthlyPrice * 9;
         const savings = expectedYearly - yearlyPrice;
-        const savingsText = savings > 0 ? `<span class="text-green-400 text-sm ml-2">(Save ${savings.toLocaleString()} FCFA!)</span>` : '';
+        const savingsText = savings > 0 ? `<span class="text-green-400 text-sm ml-2">(${t('saveAmount')} ${savings.toLocaleString()} FCFA!)</span>` : '';
         
         return `
           <div class="price-card mb-3">
             <div class="text-2xl font-bold text-primary">${monthlyPrice.toLocaleString()} FCFA</div>
-            <div class="text-slate-400 text-sm">per month</div>
+            <div class="text-slate-400 text-sm">${t('bothMonthly')}</div>
           </div>
           <div class="price-yearly-card">
             <div class="text-2xl font-bold text-blue-400">${yearlyPrice.toLocaleString()} FCFA ${savingsText}</div>
-            <div class="text-slate-400 text-sm">per school year (9-10 months)</div>
-            <div class="text-slate-500 text-xs mt-1">💰 Pay yearly and save money!</div>
+            <div class="text-slate-400 text-sm">${t('bothYearly')}</div>
+            <div class="text-slate-500 text-xs mt-1">💰 ${t('bothSavings')}</div>
           </div>
         `;
       }
@@ -285,8 +289,8 @@
         return `
           <div class="price-card mb-2">
             <div class="text-3xl font-bold text-primary">${monthlyPrice.toLocaleString()} FCFA</div>
-            <div class="text-slate-400 text-sm">per month</div>
-            <div class="text-slate-500 text-xs mt-1">≈ ${yearlyEquivalent.toLocaleString()} FCFA per school year</div>
+            <div class="text-slate-400 text-sm">${t('monthlyPrice')}</div>
+            <div class="text-slate-500 text-xs mt-1">≈ ${yearlyEquivalent.toLocaleString()} FCFA ${t('yearlyPrice')}</div>
           </div>
         `;
       }
@@ -314,6 +318,24 @@
       setDarkMode(!isDark);
     });
 
+    // Language Toggle Buttons
+    const langToggle = document.getElementById('languageToggle');
+    const mobileLangToggle = document.getElementById('mobileLanguageToggle');
+    
+    if (langToggle) {
+      langToggle.addEventListener('click', () => {
+        toggleLanguage();
+        // Reload room data after language change
+        loadRoomData();
+      });
+    }
+    if (mobileLangToggle) {
+      mobileLangToggle.addEventListener('click', () => {
+        toggleLanguage();
+        loadRoomData();
+      });
+    }
+
     document.getElementById('menuBtn')?.addEventListener('click', () => document.getElementById('mobileMenu').classList.toggle('hidden'));
 
     const urlParams = new URLSearchParams(window.location.search);
@@ -321,33 +343,28 @@
     if (!roomId) document.getElementById('roomContent').innerHTML = '<div class="p-8 text-center text-red-400">No room ID</div>';
     
     let room = null;
-    firebase.auth().onAuthStateChanged(async (user) => {
-      const desktopLogout = document.getElementById('desktopLogoutBtn');
-      const mobileLogout = document.getElementById('mobileLogoutBtn');
-      if (user) {
-        if (desktopLogout) { desktopLogout.textContent = 'Logout'; desktopLogout.onclick = (e) => { e.preventDefault(); firebase.auth().signOut(); window.location.href = 'login.html'; }; }
-        if (mobileLogout) { mobileLogout.textContent = 'Logout'; mobileLogout.onclick = (e) => { e.preventDefault(); firebase.auth().signOut(); window.location.href = 'login.html'; }; }
-      } else {
-        if (desktopLogout) { desktopLogout.textContent = 'Login'; desktopLogout.href = 'login.html'; desktopLogout.onclick = null; }
-        if (mobileLogout) { mobileLogout.textContent = 'Login'; mobileLogout.href = 'login.html'; mobileLogout.onclick = null; }
-      }
-
+    
+    async function loadRoomData() {
+      if (!roomId) return;
+      
       const doc = await db.collection('rooms').doc(roomId).get();
-      if (!doc.exists) { document.getElementById('roomContent').innerHTML = '<div class="p-8 text-center text-red-400">Room not found</div>'; return; }
+      if (!doc.exists) { 
+        document.getElementById('roomContent').innerHTML = '<div class="p-8 text-center text-red-400">Room not found</div>'; 
+        return; 
+      }
       room = doc.data();
       
       // Get the display price for WhatsApp message
       const displayPrice = room.pricingType === 'yearly' 
-        ? `${(room.yearlyPrice || room.price || 0).toLocaleString()} FCFA per school year`
+        ? `${(room.yearlyPrice || room.price || 0).toLocaleString()} FCFA ${t('yearlyPrice')}`
         : (room.pricingType === 'both'
-          ? `${(room.monthlyPrice || room.price || 0).toLocaleString()} FCFA/month or ${(room.yearlyPrice || (room.monthlyPrice * 9) || 0).toLocaleString()} FCFA/year`
-          : `${(room.monthlyPrice || room.price || 0).toLocaleString()} FCFA/month`);
+          ? `${(room.monthlyPrice || room.price || 0).toLocaleString()} FCFA/${t('monthlyPrice')} or ${(room.yearlyPrice || (room.monthlyPrice * 9) || 0).toLocaleString()} FCFA/${t('yearlyPrice')}`
+          : `${(room.monthlyPrice || room.price || 0).toLocaleString()} FCFA/${t('monthlyPrice')}`);
       
       const msg = encodeURIComponent(`Hello, I saw your ${room.title} on StudentStay for ${displayPrice} and I am interested.`);
       const whatsappUrl = `https://wa.me/237${(room.phone || '').replace(/[^0-9]/g, '')}?text=${msg}`;
       const imagesHtml = room.images && room.images.length ? room.images.map(img => `<img src="${img}" class="w-full h-80 object-cover">`).join('') : '<div class="w-full h-80 bg-slate-700 flex items-center justify-center text-slate-400">📷 No images</div>';
       
-      // Build the full HTML with dynamic pricing
       const pricingHtml = formatPriceDisplay(room);
       
       document.getElementById('roomContent').innerHTML = `
@@ -356,10 +373,9 @@
           <div class="p-6">
             <div class="flex justify-between items-start flex-wrap gap-2 mb-4">
               <h1 class="text-2xl font-bold text-white">${escapeHtml(room.title)}</h1>
-              <span class="bg-green-500/20 text-green-400 px-3 py-1 rounded-full text-sm font-semibold">✅ Verified</span>
+              <span class="bg-green-500/20 text-green-400 px-3 py-1 rounded-full text-sm font-semibold">✅ ${t('verified')}</span>
             </div>
             
-            <!-- PRICE SECTION - DYNAMIC -->
             <div class="mb-4">
               ${pricingHtml}
             </div>
@@ -368,7 +384,7 @@
               <span>📍</span>
               <span>${escapeHtml(room.city)}${room.area ? `, ${escapeHtml(room.area)}` : ''}</span>
               <span>•</span>
-              <span>🚶 ${room.distance || '?'} km from University</span>
+              <span>🚶 ${room.distance || '?'} km ${t('fromUni')}</span>
             </div>
             
             <div class="flex flex-wrap gap-2 mb-4">
@@ -376,28 +392,53 @@
             </div>
             
             <div class="border-t border-slate-700 pt-4">
-              <h3 class="font-semibold text-white mb-2">Description</h3>
+              <h3 class="font-semibold text-white mb-2" data-i18n="description">Description</h3>
               <p class="text-slate-300 leading-relaxed">${escapeHtml(room.description || 'No description provided')}</p>
             </div>
             
             <div class="border-t border-slate-700 pt-4 mt-4">
               <a href="${whatsappUrl}" target="_blank" class="bg-whatsapp text-white text-center py-3 px-6 rounded-full font-semibold inline-flex items-center gap-2 w-full sm:w-auto justify-center transition">
-                📲 Contact Landlord on WhatsApp
+                📲 ${t('contactWhatsApp')}
               </a>
             </div>
           </div>
         </div>
       `;
       
+      // Apply translations to dynamic content
+      updatePageLanguage();
+      
+      const user = firebase.auth().currentUser;
       if (user) {
         const userDoc = await db.collection('users').doc(user.uid).get();
         const userData = userDoc.data();
         const isOwner = room.landlordId === user.uid;
         const isAdmin = userData?.role === 'admin';
         if (isOwner || isAdmin) {
-          document.getElementById('editButtonContainer').innerHTML = `<a href="edit-room.html?id=${roomId}" class="bg-yellow-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-yellow-700 inline-block transition">✏️ Edit Room</a>`;
+          document.getElementById('editButtonContainer').innerHTML = `<a href="edit-room.html?id=${roomId}" class="bg-yellow-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-yellow-700 inline-block transition">✏️ ${t('editRoom')}</a>`;
         }
       }
+    }
+    
+    // Listen for language changes
+    window.addEventListener('languageChanged', () => {
+      if (room) {
+        loadRoomData();
+      }
+    });
+    
+    firebase.auth().onAuthStateChanged(async (user) => {
+      const desktopLogout = document.getElementById('desktopLogoutBtn');
+      const mobileLogout = document.getElementById('mobileLogoutBtn');
+      if (user) {
+        if (desktopLogout) { desktopLogout.textContent = t('logout'); desktopLogout.onclick = (e) => { e.preventDefault(); firebase.auth().signOut(); window.location.href = 'login.html'; }; }
+        if (mobileLogout) { mobileLogout.textContent = t('logout'); mobileLogout.onclick = (e) => { e.preventDefault(); firebase.auth().signOut(); window.location.href = 'login.html'; }; }
+      } else {
+        if (desktopLogout) { desktopLogout.textContent = t('login'); desktopLogout.href = 'login.html'; desktopLogout.onclick = null; }
+        if (mobileLogout) { mobileLogout.textContent = t('login'); mobileLogout.href = 'login.html'; mobileLogout.onclick = null; }
+      }
+      
+      loadRoomData();
     });
     
     // Simple escape function to prevent XSS

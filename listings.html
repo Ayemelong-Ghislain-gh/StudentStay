@@ -10,6 +10,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
   <script src="js/firebase-config.js"></script>
+  <script src="js/languages.js"></script>
   <style>
     .bg-primary { background-color: #22C55E; }
     .card { background-color: #1E293B; border-radius: 16px; overflow: hidden; border: 1px solid #334155; transition: all 0.2s; }
@@ -139,7 +140,7 @@
     body.light-mode #mobileMenu button {
       color: #FFFFFF !important;
     }
-    <style>
+
     /* Language Selection Modal */
     .lang-modal-overlay {
         position: fixed;
@@ -240,7 +241,6 @@
     .hidden-modal {
         display: none !important;
     }
-</style>
   </style>
 </head>
 <body>
@@ -248,62 +248,64 @@
   <div id="languageModal" class="lang-modal-overlay">
       <div class="lang-modal">
           <div class="lang-flag">🇨🇲</div>
-          <h2 class="lang-title">Welcome to StudentStay</h2>
-          <p class="lang-subtitle">Bienvenue sur StudentStay</p>
+          <h2 class="lang-title" data-i18n="modalWelcome">Welcome to StudentStay</h2>
+          <p class="lang-subtitle" data-i18n="modalSubtitle">Bienvenue sur StudentStay</p>
           <div class="lang-buttons">
               <div class="lang-btn" onclick="selectLanguage('en')">
                   <div class="lang-btn-flag">🇬🇧</div>
-                  <div class="lang-btn-text">English</div>
-                  <div class="lang-btn-sub">Continue in English</div>
+                  <div class="lang-btn-text" data-i18n="modalEnglish">English</div>
+                  <div class="lang-btn-sub" data-i18n="modalEnglishSub">Continue in English</div>
               </div>
               <div class="lang-btn" onclick="selectLanguage('fr')">
                   <div class="lang-btn-flag">🇫🇷</div>
-                  <div class="lang-btn-text">Français</div>
-                  <div class="lang-btn-sub">Continuer en français</div>
+                  <div class="lang-btn-text" data-i18n="modalFrench">Français</div>
+                  <div class="lang-btn-sub" data-i18n="modalFrenchSub">Continuer en français</div>
               </div>
           </div>
       </div>
   </div>
+
   <nav class="bg-slate-900/90 backdrop-blur-sm border-b border-slate-700">
     <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
       <a href="index.html" class="flex items-center gap-3">
         <div class="h-9 w-9 bg-primary rounded-lg flex items-center justify-center"><span class="text-white font-bold text-base">S</span></div>
         <div>
-          <h1 class="text-2xl font-bold text-white tracking-tight">StudentStay</h1>
-          <p class="text-xs text-slate-300">Find Rooms. No Stress.</p>
+          <h1 class="text-2xl font-bold text-white tracking-tight" data-i18n="appName">StudentStay</h1>
+          <p class="text-xs text-slate-300" data-i18n="tagline">Find Rooms. No Stress.</p>
         </div>
       </a>
       <div class="hidden md:flex gap-3">
-        <a href="index.html" class="nav-btn text-white hover:text-primary">Home</a>
-        <a href="listings.html" class="nav-btn text-primary hover:text-primary">Browse</a>
-        <a href="dashboard.html" class="nav-btn text-slate-300 hover:text-primary">List a Room</a>
-        <button id="darkModeToggle" class="nav-btn text-slate-300 hover:text-primary">🌓 Dark/Light</button>
-        <a href="#" id="desktopLogoutBtn" class="nav-btn text-slate-300 hover:text-primary">Login</a>
-        <button id="languageToggle" class="nav-btn text-slate-300 hover:text-primary">🇫🇷 FR</button>
+        <a href="index.html" class="nav-btn text-white hover:text-primary" data-i18n="home">Home</a>
+        <a href="listings.html" class="nav-btn text-primary hover:text-primary" data-i18n="browse">Browse</a>
+        <a href="dashboard.html" class="nav-btn text-slate-300 hover:text-primary" data-i18n="listRoom">List a Room</a>
+        <button id="darkModeToggle" class="nav-btn text-slate-300 hover:text-primary" data-i18n="darkLight">🌓 Dark/Light</button>
+        <button id="languageToggle" class="nav-btn text-slate-300 hover:text-primary">🌐 FR/EN</button>
+        <a href="#" id="desktopLogoutBtn" class="nav-btn text-slate-300 hover:text-primary" data-i18n="login">Login</a>
       </div>
       <button id="menuBtn" class="md:hidden text-white"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg></button>
     </div>
     <div id="mobileMenu" class="hidden md:hidden bg-slate-800 border-t border-slate-700 py-3 px-4 flex flex-col gap-2">
-      <a href="index.html" class="nav-btn text-white hover:text-primary block text-left">Home</a>
-      <a href="listings.html" class="nav-btn text-primary hover:text-primary block text-left">Browse</a>
-      <a href="dashboard.html" class="nav-btn text-slate-300 hover:text-primary block text-left">List a Room</a>
-      <button id="mobileDarkModeToggle" class="nav-btn text-slate-300 hover:text-primary text-left w-full">🌓 Dark/Light</button>
-      <a href="#" id="mobileLogoutBtn" class="nav-btn text-slate-300 hover:text-primary block text-left">Login</a>
+      <a href="index.html" class="nav-btn text-white hover:text-primary block text-left" data-i18n="home">Home</a>
+      <a href="listings.html" class="nav-btn text-primary hover:text-primary block text-left" data-i18n="browse">Browse</a>
+      <a href="dashboard.html" class="nav-btn text-slate-300 hover:text-primary block text-left" data-i18n="listRoom">List a Room</a>
+      <button id="mobileDarkModeToggle" class="nav-btn text-slate-300 hover:text-primary text-left w-full" data-i18n="darkLight">🌓 Dark/Light</button>
+      <button id="mobileLanguageToggle" class="nav-btn text-slate-300 hover:text-primary text-left w-full">🌐 FR/EN</button>
+      <a href="#" id="mobileLogoutBtn" class="nav-btn text-slate-300 hover:text-primary block text-left" data-i18n="login">Login</a>
     </div>
   </nav>
 
   <div class="max-w-6xl mx-auto px-4 py-8">
-    <h1 class="text-3xl font-bold text-white mb-6">Browse Rooms</h1>
+    <h1 class="text-3xl font-bold text-white mb-6" data-i18n="browseTitle">Browse Rooms</h1>
     
-    <!-- FILTER SECTION - UPDATED -->
+    <!-- FILTER SECTION -->
     <div class="bg-slate-800 rounded-xl p-4 mb-8 border border-slate-700">
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
         
         <!-- City Filter with Search -->
         <div>
-          <label class="block text-slate-400 text-xs mb-1">City / Town</label>
+          <label class="block text-slate-400 text-xs mb-1" data-i18n="cityLabel">City / Town</label>
           <div class="searchable-dropdown">
-            <input type="text" id="citySearch" placeholder="Search city..." class="dropdown-input" autocomplete="off">
+            <input type="text" id="citySearch" placeholder="" class="dropdown-input" autocomplete="off" data-i18n-placeholder="searchCity">
             <div id="cityDropdownList" class="dropdown-list"></div>
           </div>
           <input type="hidden" id="selectedCityFilter">
@@ -311,69 +313,59 @@
         
         <!-- Pricing Type Filter -->
         <div>
-          <label class="block text-slate-400 text-xs mb-1">Pricing Type</label>
+          <label class="block text-slate-400 text-xs mb-1" data-i18n="pricingTypeLabel">Pricing Type</label>
           <select id="pricingTypeFilter" class="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2">
-            <option value="">All</option>
-            <option value="monthly">Monthly</option>
-            <option value="yearly">Yearly (School Year)</option>
-            <option value="both">Both Options</option>
+            <option value="" data-i18n="allPricing">All</option>
+            <option value="monthly" data-i18n="monthly">Monthly</option>
+            <option value="yearly" data-i18n="yearly">Yearly (School Year)</option>
+            <option value="both" data-i18n="both">Both Options</option>
           </select>
         </div>
         
         <!-- Min Price -->
         <div>
-          <label class="block text-slate-400 text-xs mb-1">Min Price (FCFA)</label>
-          <input type="number" id="minPrice" placeholder="e.g., 50000" class="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2 placeholder-slate-400">
+          <label class="block text-slate-400 text-xs mb-1" data-i18n="minPriceLabel">Min Price (FCFA)</label>
+          <input type="number" id="minPrice" placeholder="" class="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2 placeholder-slate-400" data-i18n-placeholder="minPricePlaceholder">
         </div>
         
         <!-- Max Price -->
         <div>
-          <label class="block text-slate-400 text-xs mb-1">Max Price (FCFA)</label>
-          <input type="number" id="maxPrice" placeholder="e.g., 200000" class="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2 placeholder-slate-400">
+          <label class="block text-slate-400 text-xs mb-1" data-i18n="maxPriceLabel">Max Price (FCFA)</label>
+          <input type="number" id="maxPrice" placeholder="" class="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2 placeholder-slate-400" data-i18n-placeholder="maxPricePlaceholder">
         </div>
         
         <!-- Apply Button -->
         <div class="flex items-end">
-          <button id="applyFilters" class="w-full bg-primary text-white rounded-lg py-2 font-semibold hover:bg-green-600">Apply Filters</button>
+          <button id="applyFilters" class="w-full bg-primary text-white rounded-lg py-2 font-semibold hover:bg-green-600" data-i18n="applyFilters">Apply Filters</button>
         </div>
       </div>
       <div class="mt-3 flex justify-between items-center flex-wrap gap-2">
-        <button id="resetFilters" class="text-sm text-slate-400 hover:text-primary">Reset all filters</button>
+        <button id="resetFilters" class="text-sm text-slate-400 hover:text-primary" data-i18n="resetFilters">Reset all filters</button>
         <div id="activeFilters" class="flex flex-wrap gap-2"></div>
       </div>
     </div>
     
-    <p id="resultsCount" class="text-slate-300 mb-4">Loading...</p>
+    <p id="resultsCount" class="text-slate-300 mb-4" data-i18n="loading">Loading...</p>
     <div id="roomsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
   </div>
 
   <footer class="bg-slate-900 border-t border-slate-800 py-8 text-center text-slate-400 text-sm">
-    <p><span class="text-primary font-bold">StudentStay</span> — Find Rooms. No Stress.</p>
-    <p class="mt-1">📍 All major university cities across Cameroon</p>
+    <p><span class="text-primary font-bold" data-i18n="appName">StudentStay</span> — <span data-i18n="footerTagline">Find Rooms. No Stress.</span></p>
+    <p class="mt-1" data-i18n="footerLocation">📍 All major university cities across Cameroon</p>
   </footer>
 
   <script>
     // Complete list of Cameroonian cities (all university zones)
     const CAMEROON_CITIES = [
-      // North-West Region
       "Bamenda", "Bambili", "Mankon", "Nkwen", "Up Station", "Kumbo", "Ndop", "Fundong", "Bali", "Santa", "Wum",
-      // South-West Region
       "Buea", "Limbe", "Kumba", "Tiko", "Muyuka", "Mamfe",
-      // Littoral Region
       "Douala", "Bonaberi", "Nkongsamba", "Edéa", "Loum", "Manjo",
-      // Centre Region
       "Yaoundé", "Soa", "Mbalmayo", "Ebolowa", "Mfou", "Obala", "Ngoumou",
-      // West Region
       "Dschang", "Bafoussam", "Bangangté", "Foumban", "Mbouda", "Bafang", "Bandjoun",
-      // Adamawa Region
       "Ngaoundéré", "Tibati", "Meiganga", "Ngaoundal", "Banyo",
-      // Far-North Region
       "Maroua", "Mokolo", "Kousséri", "Yagoua", "Mora", "Kaélé",
-      // North Region
       "Garoua", "Rey Bouba", "Lagdo", "Poli", "Tcholliré",
-      // East Region
       "Bertoua", "Batouri", "Abong-Mbang", "Yokadouma", "Doumé",
-      // South Region
       "Kribi", "Ambam", "Sangmélima"
     ].sort();
 
@@ -388,7 +380,7 @@
           city.toLowerCase().includes(filter.toLowerCase())
         );
         if (filtered.length === 0) {
-          dropdownList.innerHTML = '<div class="dropdown-item text-slate-500">No cities found</div>';
+          dropdownList.innerHTML = '<div class="dropdown-item text-slate-500">' + t('noCitiesFound') + '</div>';
         } else {
           dropdownList.innerHTML = filtered.map(city => 
             `<div class="dropdown-item" data-city="${city}">${city}</div>`
@@ -418,22 +410,25 @@
       renderCities('');
     }
 
-    // Helper function to get display price for card
+    // Helper function to get display price for card (with translations)
     function getCardPriceDisplay(room) {
       const pricingType = room.pricingType || 'monthly';
+      const perMonthText = t('perMonth');
+      const perYearText = t('perYear');
+      const yearlyOptionText = t('yearlyOption');
       
       if (pricingType === 'yearly') {
         const yearlyPrice = room.yearlyPrice || room.price || 0;
-        return `<div class="text-green-400 font-bold text-2xl">${yearlyPrice.toLocaleString()} FCFA<span class="text-sm text-slate-300">/year</span></div>`;
+        return `<div class="text-green-400 font-bold text-2xl">${yearlyPrice.toLocaleString()} FCFA<span class="text-sm text-slate-300">${perYearText}</span></div>`;
       } 
       else if (pricingType === 'both') {
         const monthlyPrice = room.monthlyPrice || room.price || 0;
-        return `<div class="text-green-400 font-bold text-xl">${monthlyPrice.toLocaleString()} FCFA<span class="text-sm text-slate-300">/mo</span></div>
-                <div class="text-green-400/80 font-semibold text-sm">or yearly available</div>`;
+        return `<div class="text-green-400 font-bold text-xl">${monthlyPrice.toLocaleString()} FCFA<span class="text-sm text-slate-300">${perMonthText}</span></div>
+                <div class="text-green-400/80 font-semibold text-sm">${yearlyOptionText}</div>`;
       }
       else {
         const monthlyPrice = room.monthlyPrice || room.price || 0;
-        return `<div class="text-green-400 font-bold text-2xl">${monthlyPrice.toLocaleString()} FCFA<span class="text-sm text-slate-300">/mo</span></div>`;
+        return `<div class="text-green-400 font-bold text-2xl">${monthlyPrice.toLocaleString()} FCFA<span class="text-sm text-slate-300">${perMonthText}</span></div>`;
       }
     }
 
@@ -459,30 +454,80 @@
       setDarkMode(!isDark);
     });
 
+    // Language Toggle Buttons
+    const langToggle = document.getElementById('languageToggle');
+    const mobileLangToggle = document.getElementById('mobileLanguageToggle');
+    
+    if (langToggle) {
+      langToggle.addEventListener('click', () => {
+        toggleLanguage();
+        // Update placeholder after language change
+        const citySearch = document.getElementById('citySearch');
+        if (citySearch) citySearch.placeholder = t('searchCity');
+        displayRooms();
+      });
+    }
+    if (mobileLangToggle) {
+      mobileLangToggle.addEventListener('click', () => {
+        toggleLanguage();
+        const citySearch = document.getElementById('citySearch');
+        if (citySearch) citySearch.placeholder = t('searchCity');
+        displayRooms();
+      });
+    }
+
     document.getElementById('menuBtn')?.addEventListener('click', () => document.getElementById('mobileMenu').classList.toggle('hidden'));
     
     firebase.auth().onAuthStateChanged((user) => {
       const desktopBtn = document.getElementById('desktopLogoutBtn'), mobileBtn = document.getElementById('mobileLogoutBtn');
       if (user) {
-        if (desktopBtn) { desktopBtn.textContent = 'Logout'; desktopBtn.onclick = (e) => { e.preventDefault(); firebase.auth().signOut(); window.location.href = 'login.html'; }; }
-        if (mobileBtn) { mobileBtn.textContent = 'Logout'; mobileBtn.onclick = (e) => { e.preventDefault(); firebase.auth().signOut(); window.location.href = 'login.html'; }; }
+        if (desktopBtn) { desktopBtn.textContent = t('logout'); desktopBtn.onclick = (e) => { e.preventDefault(); firebase.auth().signOut(); window.location.href = 'login.html'; }; }
+        if (mobileBtn) { mobileBtn.textContent = t('logout'); mobileBtn.onclick = (e) => { e.preventDefault(); firebase.auth().signOut(); window.location.href = 'login.html'; }; }
       } else {
-        if (desktopBtn) { desktopBtn.textContent = 'Login'; desktopBtn.href = 'login.html'; desktopBtn.onclick = null; }
-        if (mobileBtn) { mobileBtn.textContent = 'Login'; mobileBtn.href = 'login.html'; mobileBtn.onclick = null; }
+        if (desktopBtn) { desktopBtn.textContent = t('login'); desktopBtn.href = 'login.html'; desktopBtn.onclick = null; }
+        if (mobileBtn) { mobileBtn.textContent = t('login'); mobileBtn.href = 'login.html'; mobileBtn.onclick = null; }
       }
+    });
+    
+    // Listen for language changes
+    window.addEventListener('languageChanged', () => {
+      displayRooms();
+      // Update login/logout buttons
+      const user = firebase.auth().currentUser;
+      const desktopBtn = document.getElementById('desktopLogoutBtn');
+      const mobileBtn = document.getElementById('mobileLogoutBtn');
+      if (user) {
+        if (desktopBtn) desktopBtn.textContent = t('logout');
+        if (mobileBtn) mobileBtn.textContent = t('logout');
+      } else {
+        if (desktopBtn) desktopBtn.textContent = t('login');
+        if (mobileBtn) mobileBtn.textContent = t('login');
+      }
+      // Update filter dropdown options text
+      const pricingFilter = document.getElementById('pricingTypeFilter');
+      if (pricingFilter) {
+        pricingFilter.options[0].text = t('allPricing');
+        pricingFilter.options[1].text = t('monthly');
+        pricingFilter.options[2].text = t('yearly');
+        pricingFilter.options[3].text = t('both');
+      }
+      // Update placeholders
+      document.getElementById('citySearch').placeholder = t('searchCity');
+      document.getElementById('minPrice').placeholder = t('minPricePlaceholder');
+      document.getElementById('maxPrice').placeholder = t('maxPricePlaceholder');
     });
     
     let allRooms = [], filteredRooms = [];
     
     async function loadRooms() {
       const grid = document.getElementById('roomsGrid');
-      grid.innerHTML = '<div class="col-span-full text-center text-slate-300 py-10">Loading rooms...</div>';
+      grid.innerHTML = '<div class="col-span-full text-center text-slate-300 py-10" data-i18n="loading">Loading...</div>';
       try {
         const snapshot = await db.collection('rooms').where('status', '==', 'approved').get();
         allRooms = []; snapshot.forEach(doc => allRooms.push({ id: doc.id, ...doc.data() }));
         filteredRooms = [...allRooms]; displayRooms();
       } catch (error) { 
-        grid.innerHTML = '<div class="col-span-full text-center text-red-400 py-10">Error loading rooms</div>';
+        grid.innerHTML = '<div class="col-span-full text-center text-red-400 py-10" data-i18n="errorLoading">Error loading rooms</div>';
       }
     }
     
@@ -491,12 +536,13 @@
       const count = document.getElementById('resultsCount');
       
       if (!filteredRooms.length) { 
-        grid.innerHTML = '<div class="col-span-full text-center text-slate-300 py-10">No rooms found</div>'; 
-        count.innerHTML = '0 rooms found'; 
+        grid.innerHTML = '<div class="col-span-full text-center text-slate-300 py-10" data-i18n="noRoomsFound">No rooms found</div>'; 
+        count.innerHTML = '0 ' + t('roomsFound'); 
         return; 
       }
       
-      count.innerHTML = `${filteredRooms.length} room${filteredRooms.length > 1 ? 's' : ''} found`;
+      const roomsText = filteredRooms.length === 1 ? t('roomFound') : t('roomsFound');
+      count.innerHTML = `${filteredRooms.length} ${roomsText}`;
       
       grid.innerHTML = filteredRooms.map(room => `
         <div class="card">
@@ -504,14 +550,17 @@
           <div class="p-4">
             <div class="mb-2">${getCardPriceDisplay(room)}</div>
             <h4 class="font-semibold text-white text-lg mt-1 truncate">${escapeHtml(room.title || 'Untitled')}</h4>
-            <p class="text-slate-300 text-sm">📍 ${escapeHtml(room.city || 'Unknown')} • ${room.distance || '?'} km from Uni</p>
+            <p class="text-slate-300 text-sm">📍 ${escapeHtml(room.city || 'Unknown')} • ${room.distance || '?'} ${t('fromUni')}</p>
             <div class="flex flex-wrap gap-1 mt-2">
               ${room.features?.slice(0,3).map(f => `<span class="feature-badge">${escapeHtml(f)}</span>`).join('') || ''}
             </div>
-            <a href="details.html?id=${room.id}" class="block mt-3 text-center bg-primary text-white py-2 rounded-lg font-medium hover:bg-green-600 transition">View Details →</a>
+            <a href="details.html?id=${room.id}" class="block mt-3 text-center bg-primary text-white py-2 rounded-lg font-medium hover:bg-green-600 transition" data-i18n="viewDetails">View Details →</a>
           </div>
         </div>
       `).join('');
+      
+      // Apply translations to dynamic content
+      updatePageLanguage();
     }
     
     function applyFilters() {
@@ -521,19 +570,15 @@
       let max = parseInt(document.getElementById('maxPrice').value) || Infinity;
       
       filteredRooms = allRooms.filter(room => {
-        // City filter
         if (city && room.city !== city) return false;
         
-        // Pricing type filter
         const roomPricing = room.pricingType || 'monthly';
         if (pricingType && roomPricing !== pricingType) return false;
         
-        // Price filter - need to check appropriate price based on type
         let roomPrice;
         if (roomPricing === 'yearly') {
           roomPrice = room.yearlyPrice || room.price || 0;
         } else if (roomPricing === 'both') {
-          // For both, check monthly price (user can always choose cheaper option)
           roomPrice = room.monthlyPrice || room.price || 0;
         } else {
           roomPrice = room.monthlyPrice || room.price || 0;
@@ -552,14 +597,14 @@
       
       if (city) filters.push(`<span class="bg-slate-700 px-2 py-1 rounded text-sm">📍 ${escapeHtml(city)}</span>`);
       if (pricingType) {
-        let typeText = pricingType === 'monthly' ? 'Monthly' : (pricingType === 'yearly' ? 'Yearly (School Year)' : 'Both Options');
+        let typeText = pricingType === 'monthly' ? t('monthly') : (pricingType === 'yearly' ? t('yearly') : t('both'));
         filters.push(`<span class="bg-slate-700 px-2 py-1 rounded text-sm">💰 ${typeText}</span>`);
       }
-      if (min > 0) filters.push(`<span class="bg-slate-700 px-2 py-1 rounded text-sm">Min: ${min.toLocaleString()} FCFA</span>`);
-      if (max !== Infinity) filters.push(`<span class="bg-slate-700 px-2 py-1 rounded text-sm">Max: ${max.toLocaleString()} FCFA</span>`);
+      if (min > 0) filters.push(`<span class="bg-slate-700 px-2 py-1 rounded text-sm">${t('minPriceLabel')}: ${min.toLocaleString()} FCFA</span>`);
+      if (max !== Infinity) filters.push(`<span class="bg-slate-700 px-2 py-1 rounded text-sm">${t('maxPriceLabel')}: ${max.toLocaleString()} FCFA</span>`);
       
       container.innerHTML = filters.join('');
-      if (filters.length === 0) container.innerHTML = '<span class="text-slate-500 text-sm">No active filters</span>';
+      if (filters.length === 0) container.innerHTML = '<span class="text-slate-500 text-sm">' + t('noActiveFilters') + '</span>';
     }
     
     function resetFilters() {
@@ -586,7 +631,6 @@
     document.getElementById('applyFilters').onclick = applyFilters;
     document.getElementById('resetFilters').onclick = resetFilters;
     
-    // Add Enter key support for price inputs
     document.getElementById('minPrice').addEventListener('keypress', (e) => { if (e.key === 'Enter') applyFilters(); });
     document.getElementById('maxPrice').addEventListener('keypress', (e) => { if (e.key === 'Enter') applyFilters(); });
     

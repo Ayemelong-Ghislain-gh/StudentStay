@@ -10,6 +10,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
   <script src="js/firebase-config.js"></script>
+  <script src="js/languages.js"></script>
   <style>
     .bg-primary { background-color: #22C55E; }
     .text-primary { color: #22C55E; }
@@ -92,7 +93,7 @@
     body.light-mode #mobileMenu button {
       color: #FFFFFF !important;
     }
-    <style>
+
     /* Language Selection Modal */
     .lang-modal-overlay {
         position: fixed;
@@ -193,7 +194,6 @@
     .hidden-modal {
         display: none !important;
     }
-</style>
   </style>
 </head>
 <body>
@@ -201,52 +201,54 @@
   <div id="languageModal" class="lang-modal-overlay">
       <div class="lang-modal">
           <div class="lang-flag">🇨🇲</div>
-          <h2 class="lang-title">Welcome to StudentStay</h2>
-          <p class="lang-subtitle">Bienvenue sur StudentStay</p>
+          <h2 class="lang-title" data-i18n="modalWelcome">Welcome to StudentStay</h2>
+          <p class="lang-subtitle" data-i18n="modalSubtitle">Bienvenue sur StudentStay</p>
           <div class="lang-buttons">
               <div class="lang-btn" onclick="selectLanguage('en')">
                   <div class="lang-btn-flag">🇬🇧</div>
-                  <div class="lang-btn-text">English</div>
-                  <div class="lang-btn-sub">Continue in English</div>
+                  <div class="lang-btn-text" data-i18n="modalEnglish">English</div>
+                  <div class="lang-btn-sub" data-i18n="modalEnglishSub">Continue in English</div>
               </div>
               <div class="lang-btn" onclick="selectLanguage('fr')">
                   <div class="lang-btn-flag">🇫🇷</div>
-                  <div class="lang-btn-text">Français</div>
-                  <div class="lang-btn-sub">Continuer en français</div>
+                  <div class="lang-btn-text" data-i18n="modalFrench">Français</div>
+                  <div class="lang-btn-sub" data-i18n="modalFrenchSub">Continuer en français</div>
               </div>
           </div>
       </div>
   </div>
+
   <nav class="bg-slate-900/90 backdrop-blur-sm border-b border-slate-700">
     <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
       <a href="index.html" class="flex items-center gap-3">
         <div class="h-9 w-9 bg-primary rounded-lg flex items-center justify-center"><span class="text-white font-bold text-base">S</span></div>
         <div>
-          <h1 class="text-2xl font-bold text-white tracking-tight">StudentStay</h1>
-          <p class="text-xs text-slate-300">Find Rooms. No Stress.</p>
+          <h1 class="text-2xl font-bold text-white tracking-tight" data-i18n="appName">StudentStay</h1>
+          <p class="text-xs text-slate-300" data-i18n="tagline">Find Rooms. No Stress.</p>
         </div>
       </a>
       <div class="hidden md:flex gap-3">
-        <a href="index.html" class="nav-btn text-white hover:text-primary">Home</a>
-        <a href="listings.html" class="nav-btn text-slate-300 hover:text-primary">Browse</a>
-        <a href="dashboard.html" class="nav-btn text-primary hover:text-primary">Dashboard</a>
-        <button id="darkModeToggle" class="nav-btn text-slate-300 hover:text-primary">🌓 Dark/Light</button>
-        <a href="#" id="logoutBtn" class="nav-btn text-slate-300 hover:text-primary">Logout</a>
+        <a href="index.html" class="nav-btn text-white hover:text-primary" data-i18n="home">Home</a>
+        <a href="listings.html" class="nav-btn text-slate-300 hover:text-primary" data-i18n="browse">Browse</a>
+        <a href="dashboard.html" class="nav-btn text-primary hover:text-primary" data-i18n="dashboard">Dashboard</a>
+        <button id="darkModeToggle" class="nav-btn text-slate-300 hover:text-primary" data-i18n="darkLight">🌓 Dark/Light</button>
+        <button id="languageToggle" class="nav-btn text-slate-300 hover:text-primary">🌐 FR/EN</button>
+        <a href="#" id="logoutBtn" class="nav-btn text-slate-300 hover:text-primary" data-i18n="logout">Logout</a>
       </div>
       <button id="menuBtn" class="md:hidden text-white"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg></button>
     </div>
     <div id="mobileMenu" class="hidden md:hidden bg-slate-800 border-t border-slate-700 py-3 px-4 flex flex-col gap-2">
-      <a href="index.html" class="nav-btn text-white hover:text-primary block text-left">Home</a>
-      <a href="listings.html" class="nav-btn text-slate-300 hover:text-primary block text-left">Browse</a>
-      <a href="dashboard.html" class="nav-btn text-primary hover:text-primary block text-left">Dashboard</a>
-      <button id="mobileDarkModeToggle" class="nav-btn text-slate-300 hover:text-primary text-left w-full">🌓 Dark/Light</button>
-      <a href="#" id="mobileLogoutBtn" class="nav-btn text-slate-300 hover:text-primary block text-left">Logout</a>
-      <button id="languageToggle" class="nav-btn text-slate-300 hover:text-primary">🇫🇷 FR</button>
+      <a href="index.html" class="nav-btn text-white hover:text-primary block text-left" data-i18n="home">Home</a>
+      <a href="listings.html" class="nav-btn text-slate-300 hover:text-primary block text-left" data-i18n="browse">Browse</a>
+      <a href="dashboard.html" class="nav-btn text-primary hover:text-primary block text-left" data-i18n="dashboard">Dashboard</a>
+      <button id="mobileDarkModeToggle" class="nav-btn text-slate-300 hover:text-primary text-left w-full" data-i18n="darkLight">🌓 Dark/Light</button>
+      <button id="mobileLanguageToggle" class="nav-btn text-slate-300 hover:text-primary text-left w-full">🌐 FR/EN</button>
+      <a href="#" id="mobileLogoutBtn" class="nav-btn text-slate-300 hover:text-primary block text-left" data-i18n="logout">Logout</a>
     </div>
   </nav>
 
   <div class="max-w-4xl mx-auto px-4 py-8">
-    <div id="dashboardContent" class="bg-slate-800 rounded-xl border border-slate-700 p-6"><div class="text-center py-10 text-slate-400">Loading...</div></div>
+    <div id="dashboardContent" class="bg-slate-800 rounded-xl border border-slate-700 p-6"><div class="text-center py-10 text-slate-400" data-i18n="loadingText">Loading...</div></div>
   </div>
 
   <script>
@@ -272,8 +274,25 @@
       setDarkMode(!isDark);
     });
 
+    // Language Toggle Buttons
+    const langToggle = document.getElementById('languageToggle');
+    const mobileLangToggle = document.getElementById('mobileLanguageToggle');
+    
+    if (langToggle) {
+      langToggle.addEventListener('click', () => {
+        toggleLanguage();
+        loadDashboardData();
+      });
+    }
+    if (mobileLangToggle) {
+      mobileLangToggle.addEventListener('click', () => {
+        toggleLanguage();
+        loadDashboardData();
+      });
+    }
+
     window.deleteRoom = async (roomId) => {
-      if (confirm('Delete this room permanently? This action cannot be undone.')) {
+      if (confirm(t('confirm') + '? ' + t('deleteRoom'))) {
         await db.collection('rooms').doc(roomId).delete();
         window.location.reload();
       }
@@ -281,8 +300,10 @@
 
     document.getElementById('menuBtn')?.addEventListener('click', () => document.getElementById('mobileMenu').classList.toggle('hidden'));
 
-    firebase.auth().onAuthStateChanged(async (user) => {
+    async function loadDashboardData() {
+      const user = firebase.auth().currentUser;
       if (!user) { window.location.href = 'login.html'; return; }
+      
       const userDoc = await db.collection('users').doc(user.uid).get();
       const userData = userDoc.data() || { fullName: user.email, role: 'user', freeListingsRemaining: 5 };
       const applications = await db.collection('applications').where('userId', '==', user.uid).where('status', '==', 'pending').get();
@@ -291,18 +312,103 @@
       const roomsSnapshot = await db.collection('rooms').where('landlordId', '==', user.uid).get();
       
       let landlordSection = '';
-      if (!isLandlord && !hasPending && userData.role !== 'admin') landlordSection = `<div class="bg-slate-700/50 rounded-lg p-4 mb-6"><p class="text-white font-semibold mb-2">Want to list rooms?</p><button id="becomeLandlordBtn" class="bg-primary text-white px-4 py-2 rounded-lg text-sm font-semibold">Request to become Landlord</button></div>`;
-      else if (hasPending) landlordSection = `<div class="bg-yellow-500/20 border border-yellow-500/30 rounded-lg p-4 mb-6"><p class="text-yellow-400 font-semibold">⏳ Pending Approval</p><p class="text-yellow-300 text-sm">Your landlord application is being reviewed.</p></div>`;
-      else if (isLandlord) landlordSection = `<div class="bg-green-500/20 border border-green-500/30 rounded-lg p-4 mb-6"><p class="text-green-400 font-semibold">✅ Verified Landlord</p><p class="text-green-300 text-sm">You have ${userData.freeListingsRemaining || 5} free listings remaining.</p><a href="post-room.html" class="inline-block mt-3 bg-primary text-white px-4 py-2 rounded-lg text-sm font-semibold">+ Post New Room</a></div>`;
+      if (!isLandlord && !hasPending && userData.role !== 'admin') {
+        landlordSection = `<div class="bg-slate-700/50 rounded-lg p-4 mb-6">
+          <p class="text-white font-semibold mb-2" data-i18n="wantToListRooms">Want to list rooms?</p>
+          <button id="becomeLandlordBtn" class="bg-primary text-white px-4 py-2 rounded-lg text-sm font-semibold" data-i18n="requestLandlord">Request to become Landlord</button>
+        </div>`;
+      } else if (hasPending) {
+        landlordSection = `<div class="bg-yellow-500/20 border border-yellow-500/30 rounded-lg p-4 mb-6">
+          <p class="text-yellow-400 font-semibold" data-i18n="pendingApproval">⏳ Pending Approval</p>
+          <p class="text-yellow-300 text-sm" data-i18n="pendingApprovalText">Your landlord application is being reviewed.</p>
+        </div>`;
+      } else if (isLandlord) {
+        landlordSection = `<div class="bg-green-500/20 border border-green-500/30 rounded-lg p-4 mb-6">
+          <p class="text-green-400 font-semibold" data-i18n="verifiedLandlord">✅ Verified Landlord</p>
+          <p class="text-green-300 text-sm" data-i18n="freeListings">You have ${userData.freeListingsRemaining || 5} <span data-i18n="freeListingsRemaining">free listings remaining.</span></p>
+          <a href="post-room.html" class="inline-block mt-3 bg-primary text-white px-4 py-2 rounded-lg text-sm font-semibold" data-i18n="postNewRoom">+ Post New Room</a>
+        </div>`;
+      }
       
-      let myRoomsHtml = '<div class="space-y-3">';
-      roomsSnapshot.forEach(doc => { const room = doc.data(); myRoomsHtml += `<div class="bg-slate-700 rounded-lg p-3 flex justify-between items-center flex-wrap gap-2"><div><h4 class="text-white font-semibold">${room.title}</h4><p class="text-slate-400 text-sm">${room.price.toLocaleString()} FCFA/mo • ${room.city}</p><span class="text-xs px-2 py-0.5 rounded ${room.status === 'approved' ? 'bg-green-500/20 text-green-400' : room.status === 'pending' ? 'bg-yellow-500/20 text-yellow-400' : 'bg-red-500/20 text-red-400'}">${room.status}</span></div><div class="flex gap-2"><a href="edit-room.html?id=${doc.id}" class="bg-yellow-600 text-white px-3 py-1 rounded text-sm hover:bg-yellow-700">Edit</a><button onclick="deleteRoom('${doc.id}')" class="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700">Delete</button><a href="details.html?id=${doc.id}" class="bg-primary text-white px-3 py-1 rounded text-sm hover:bg-green-600">View</a></div></div>`; });
-      myRoomsHtml += roomsSnapshot.empty ? '<p class="text-slate-400 text-sm">No rooms posted yet.</p>' : '</div>';
+      let myRoomsHtml = '<div class="space-y-3"><h3 class="font-semibold text-white mb-3" data-i18n="myRooms">My Rooms</h3>';
+      for (const doc of roomsSnapshot.docs) { 
+        const room = doc.data(); 
+        const pricingType = room.pricingType || 'monthly';
+        let priceDisplay = '';
+        if (pricingType === 'yearly') {
+          priceDisplay = `${(room.yearlyPrice || room.price || 0).toLocaleString()} FCFA/${t('perYear')}`;
+        } else if (pricingType === 'both') {
+          priceDisplay = `${(room.monthlyPrice || room.price || 0).toLocaleString()} FCFA/${t('perMonth')} • ${(room.yearlyPrice || (room.monthlyPrice * 9) || 0).toLocaleString()} FCFA/${t('perYear')}`;
+        } else {
+          priceDisplay = `${(room.monthlyPrice || room.price || 0).toLocaleString()} FCFA/${t('perMonth')}`;
+        }
+        
+        myRoomsHtml += `<div class="bg-slate-700 rounded-lg p-3 flex justify-between items-center flex-wrap gap-2">
+          <div>
+            <h4 class="text-white font-semibold">${escapeHtml(room.title)}</h4>
+            <p class="text-slate-400 text-sm">${priceDisplay} • ${escapeHtml(room.city)}</p>
+            <span class="text-xs px-2 py-0.5 rounded ${room.status === 'approved' ? 'bg-green-500/20 text-green-400' : room.status === 'pending' ? 'bg-yellow-500/20 text-yellow-400' : 'bg-red-500/20 text-red-400'}">${room.status}</span>
+          </div>
+          <div class="flex gap-2">
+            <a href="edit-room.html?id=${doc.id}" class="bg-yellow-600 text-white px-3 py-1 rounded text-sm hover:bg-yellow-700" data-i18n="edit">Edit</a>
+            <button onclick="deleteRoom('${doc.id}')" class="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700" data-i18n="delete">Delete</button>
+            <a href="details.html?id=${doc.id}" class="bg-primary text-white px-3 py-1 rounded text-sm hover:bg-green-600" data-i18n="viewDetails">View</a>
+          </div>
+        </div>`;
+      }
+      myRoomsHtml += roomsSnapshot.empty ? `<p class="text-slate-400 text-sm" data-i18n="noRoomsYet">No rooms posted yet.</p>` : '</div>';
       
-      document.getElementById('dashboardContent').innerHTML = `<div><div class="flex justify-between items-start mb-6"><div><h2 class="text-2xl font-bold text-white">Welcome, ${userData.fullName || user.email}!</h2><p class="text-slate-400 text-sm">${user.email}</p><p class="text-slate-400 text-sm">Role: <span class="text-primary">${userData.role || 'user'}</span></p></div></div>${landlordSection}<div class="border-t border-slate-700 pt-4"><h3 class="font-semibold text-white mb-3">My Rooms</h3>${myRoomsHtml}</div></div>`;
+      const dashboardHtml = `<div>
+        <div class="flex justify-between items-start mb-6">
+          <div>
+            <h2 class="text-2xl font-bold text-white" data-i18n="welcome">Welcome</h2>
+            <p class="text-slate-400 text-sm">${escapeHtml(userData.fullName || user.email)}!</p>
+            <p class="text-slate-400 text-sm">${user.email}</p>
+            <p class="text-slate-400 text-sm" data-i18n="role">Role: <span class="text-primary">${userData.role || 'user'}</span></p>
+          </div>
+        </div>
+        ${landlordSection}
+        <div class="border-t border-slate-700 pt-4">
+          ${myRoomsHtml}
+        </div>
+      </div>`;
+      
+      document.getElementById('dashboardContent').innerHTML = dashboardHtml;
+      
+      // Re-apply translations to dynamic content
+      updatePageLanguage();
       
       const becomeBtn = document.getElementById('becomeLandlordBtn');
-      if (becomeBtn) becomeBtn.onclick = async () => { await db.collection('applications').add({ userId: user.uid, userEmail: user.email, requestedRole: 'landlord', status: 'pending', createdAt: new Date() }); alert('Application submitted!'); window.location.reload(); };
+      if (becomeBtn) {
+        becomeBtn.onclick = async () => { 
+          await db.collection('applications').add({ userId: user.uid, userEmail: user.email, requestedRole: 'landlord', status: 'pending', createdAt: new Date() }); 
+          alert(t('requestLandlord') + '!'); 
+          window.location.reload(); 
+        };
+      }
+    }
+    
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+    
+    // Listen for language changes
+    window.addEventListener('languageChanged', () => {
+      loadDashboardData();
+    });
+    
+    firebase.auth().onAuthStateChanged(async (user) => {
+      if (!user) { 
+        window.location.href = 'login.html'; 
+        return; 
+      }
+      loadDashboardData();
       
       const mobileLogout = document.getElementById('mobileLogoutBtn');
       if (mobileLogout) {

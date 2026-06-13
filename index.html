@@ -10,6 +10,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
   <script src="js/firebase-config.js"></script>
+  <script src="js/languages.js"></script>
   <style>
     .bg-primary { background-color: #22C55E; }
     .text-primary { color: #22C55E; }
@@ -115,7 +116,7 @@
     body.light-mode #mobileMenu button {
       color: #FFFFFF !important;
     }
-    <style>
+
     /* Language Selection Modal */
     .lang-modal-overlay {
         position: fixed;
@@ -216,7 +217,6 @@
     .hidden-modal {
         display: none !important;
     }
-</style>
   </style>
 </head>
 <body>
@@ -224,92 +224,98 @@
   <div id="languageModal" class="lang-modal-overlay">
       <div class="lang-modal">
           <div class="lang-flag">🇨🇲</div>
-          <h2 class="lang-title">Welcome to StudentStay</h2>
-          <p class="lang-subtitle">Bienvenue sur StudentStay</p>
+          <h2 class="lang-title" data-i18n="modalWelcome">Welcome to StudentStay</h2>
+          <p class="lang-subtitle" data-i18n="modalSubtitle">Bienvenue sur StudentStay</p>
           <div class="lang-buttons">
               <div class="lang-btn" onclick="selectLanguage('en')">
                   <div class="lang-btn-flag">🇬🇧</div>
-                  <div class="lang-btn-text">English</div>
-                  <div class="lang-btn-sub">Continue in English</div>
+                  <div class="lang-btn-text" data-i18n="modalEnglish">English</div>
+                  <div class="lang-btn-sub" data-i18n="modalEnglishSub">Continue in English</div>
               </div>
               <div class="lang-btn" onclick="selectLanguage('fr')">
                   <div class="lang-btn-flag">🇫🇷</div>
-                  <div class="lang-btn-text">Français</div>
-                  <div class="lang-btn-sub">Continuer en français</div>
+                  <div class="lang-btn-text" data-i18n="modalFrench">Français</div>
+                  <div class="lang-btn-sub" data-i18n="modalFrenchSub">Continuer en français</div>
               </div>
           </div>
       </div>
   </div>
+
   <nav class="bg-slate-900/90 backdrop-blur-sm border-b border-slate-700 sticky top-0 z-10">
     <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
       <a href="index.html" class="flex items-center gap-3">
         <div class="h-9 w-9 bg-primary rounded-lg flex items-center justify-center"><span class="text-white font-bold text-base">S</span></div>
         <div>
-          <h1 class="text-2xl font-bold text-white tracking-tight">StudentStay</h1>
-          <p class="text-xs text-slate-300">Find Rooms. No Stress.</p>
+          <h1 class="text-2xl font-bold text-white tracking-tight" data-i18n="appName">StudentStay</h1>
+          <p class="text-xs text-slate-300" data-i18n="tagline">Find Rooms. No Stress.</p>
         </div>
       </a>
       <div class="hidden md:flex gap-3">
-        <a href="index.html" class="nav-btn text-white hover:text-primary">Home</a>
-        <a href="listings.html" class="nav-btn text-slate-300 hover:text-primary">Browse</a>
-        <a href="dashboard.html" class="nav-btn text-slate-300 hover:text-primary">List a Room</a>
-        <button id="darkModeToggle" class="nav-btn text-slate-300 hover:text-primary">🌓 Dark/Light</button>
-        <a href="#" id="desktopLogoutBtn" class="nav-btn text-slate-300 hover:text-primary">Login</a>
-        <button id="languageToggle" class="nav-btn text-slate-300 hover:text-primary">🇫🇷 FR</button>
+        <a href="index.html" class="nav-btn text-white hover:text-primary" data-i18n="home">Home</a>
+        <a href="listings.html" class="nav-btn text-slate-300 hover:text-primary" data-i18n="browse">Browse</a>
+        <a href="dashboard.html" class="nav-btn text-slate-300 hover:text-primary" data-i18n="listRoom">List a Room</a>
+        <button id="darkModeToggle" class="nav-btn text-slate-300 hover:text-primary" data-i18n="darkLight">🌓 Dark/Light</button>
+        <button id="languageToggle" class="nav-btn text-slate-300 hover:text-primary">🌐 FR/EN</button>
+        <a href="#" id="desktopLogoutBtn" class="nav-btn text-slate-300 hover:text-primary" data-i18n="login">Login</a>
       </div>
       <button id="menuBtn" class="md:hidden text-white"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg></button>
     </div>
     <div id="mobileMenu" class="hidden md:hidden bg-slate-800 border-t border-slate-700 py-3 px-4 flex flex-col gap-2">
-      <a href="index.html" class="nav-btn text-white hover:text-primary block text-left">Home</a>
-      <a href="listings.html" class="nav-btn text-slate-300 hover:text-primary block text-left">Browse</a>
-      <a href="dashboard.html" class="nav-btn text-slate-300 hover:text-primary block text-left">List a Room</a>
-      <button id="mobileDarkModeToggle" class="nav-btn text-slate-300 hover:text-primary text-left w-full">🌓 Dark/Light</button>
-      <a href="#" id="mobileLogoutBtn" class="nav-btn text-slate-300 hover:text-primary block text-left">Login</a>
+      <a href="index.html" class="nav-btn text-white hover:text-primary block text-left" data-i18n="home">Home</a>
+      <a href="listings.html" class="nav-btn text-slate-300 hover:text-primary block text-left" data-i18n="browse">Browse</a>
+      <a href="dashboard.html" class="nav-btn text-slate-300 hover:text-primary block text-left" data-i18n="listRoom">List a Room</a>
+      <button id="mobileDarkModeToggle" class="nav-btn text-slate-300 hover:text-primary text-left w-full" data-i18n="darkLight">🌓 Dark/Light</button>
+      <button id="mobileLanguageToggle" class="nav-btn text-slate-300 hover:text-primary text-left w-full">🌐 FR/EN</button>
+      <a href="#" id="mobileLogoutBtn" class="nav-btn text-slate-300 hover:text-primary block text-left" data-i18n="login">Login</a>
     </div>
   </nav>
 
   <section class="py-16 text-center">
     <div class="max-w-2xl mx-auto px-4">
-      <h2 class="text-4xl md:text-5xl font-bold text-white mb-2">Find Student Rooms.<br><span class="text-primary">No Stress.</span></h2>
-      <p class="text-slate-300 mb-6">Browse verified rooms across Cameroon. Connect with landlords directly on WhatsApp.</p>
+      <h2 class="text-4xl md:text-5xl font-bold text-white mb-2"><span data-i18n="heroTitle">Find Student Rooms.</span><br><span class="text-primary" data-i18n="heroTitleGreen">No Stress.</span></h2>
+      <p class="text-slate-300 mb-6" data-i18n="heroSubtitle">Browse verified rooms across Cameroon. Connect with landlords directly on WhatsApp.</p>
       <div class="flex flex-col sm:flex-row gap-4 justify-center">
-        <a href="listings.html" class="btn-primary">Browse Rooms →</a>
-        <a href="dashboard.html" class="btn-primary">List a Room</a>
-        <button id="installAppBtnHero" style="display:none; background:#22C55E; color:white; border:none; padding:12px 24px; border-radius:9999px; font-weight:600; cursor:pointer;" class="btn-primary">📲 Install App</button>
+        <a href="listings.html" class="btn-primary" data-i18n="browseRooms">Browse Rooms →</a>
+        <a href="dashboard.html" class="btn-primary" data-i18n="listRoomBtn">List a Room</a>
+        <button id="installAppBtnHero" style="display:none; background:#22C55E; color:white; border:none; padding:12px 24px; border-radius:9999px; font-weight:600; cursor:pointer;" class="btn-primary" data-i18n="installApp">📲 Install App</button>
       </div>
     </div>
   </section>
 
   <section class="py-12 px-4">
     <div class="max-w-6xl mx-auto">
-      <h3 class="text-2xl font-bold text-white mb-2">Latest Rooms</h3>
-      <p class="text-slate-300 mb-6">Recently posted by verified landlords from all university cities</p>
+      <h3 class="text-2xl font-bold text-white mb-2" data-i18n="latestRooms">Latest Rooms</h3>
+      <p class="text-slate-300 mb-6" data-i18n="latestSubtitle">Recently posted by verified landlords from all university cities</p>
       <div id="roomsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
     </div>
   </section>
 
   <footer class="bg-slate-900 border-t border-slate-800 py-8 text-center text-slate-400 text-sm">
-    <p><span class="text-primary font-bold">StudentStay</span> — Find Rooms. No Stress.</p>
-    <p class="mt-1">📍 All major university cities across Cameroon</p>
+    <p><span class="text-primary font-bold" data-i18n="appName">StudentStay</span> — <span data-i18n="footerTagline">Find Rooms. No Stress.</span></p>
+    <p class="mt-1" data-i18n="footerLocation">📍 All major university cities across Cameroon</p>
   </footer>
 
   <script>
-    // Helper function to get card price display based on pricing type
+    // Helper function to get card price display based on pricing type (with translations)
     function getCardPriceDisplay(room) {
       const pricingType = room.pricingType || 'monthly';
+      const perMonthText = t('perMonth');
+      const perYearText = t('perYear');
+      const schoolYearText = t('schoolYear');
+      const yearlyOptionText = t('yearlyOption');
       
       if (pricingType === 'yearly') {
         const yearlyPrice = room.yearlyPrice || room.price || 0;
-        return `<div class="text-primary font-bold text-xl">${yearlyPrice.toLocaleString()} FCFA<span class="text-sm text-slate-400">/year</span><span class="yearly-badge">School Year</span></div>`;
+        return `<div class="text-primary font-bold text-xl">${yearlyPrice.toLocaleString()} FCFA<span class="text-sm text-slate-400">${perYearText}</span><span class="yearly-badge">${schoolYearText}</span></div>`;
       } 
       else if (pricingType === 'both') {
         const monthlyPrice = room.monthlyPrice || room.price || 0;
-        return `<div class="text-primary font-bold text-xl">${monthlyPrice.toLocaleString()} FCFA<span class="text-sm text-slate-400">/mo</span></div>
-                <div class="text-xs text-blue-400 mt-0.5">✨ Yearly option available</div>`;
+        return `<div class="text-primary font-bold text-xl">${monthlyPrice.toLocaleString()} FCFA<span class="text-sm text-slate-400">${perMonthText}</span></div>
+                <div class="text-xs text-blue-400 mt-0.5">✨ ${yearlyOptionText}</div>`;
       }
       else {
         const monthlyPrice = room.monthlyPrice || room.price || 0;
-        return `<div class="text-primary font-bold text-xl">${monthlyPrice.toLocaleString()} FCFA<span class="text-sm text-slate-400">/mo</span></div>`;
+        return `<div class="text-primary font-bold text-xl">${monthlyPrice.toLocaleString()} FCFA<span class="text-sm text-slate-400">${perMonthText}</span></div>`;
       }
     }
 
@@ -335,16 +341,33 @@
       setDarkMode(!isDark);
     });
 
+    // Language Toggle Buttons
+    const langToggle = document.getElementById('languageToggle');
+    const mobileLangToggle = document.getElementById('mobileLanguageToggle');
+    
+    if (langToggle) {
+      langToggle.addEventListener('click', () => {
+        toggleLanguage();
+        loadRooms();
+      });
+    }
+    if (mobileLangToggle) {
+      mobileLangToggle.addEventListener('click', () => {
+        toggleLanguage();
+        loadRooms();
+      });
+    }
+
     document.getElementById('menuBtn')?.addEventListener('click', () => document.getElementById('mobileMenu').classList.toggle('hidden'));
     
     firebase.auth().onAuthStateChanged((user) => {
       const desktopBtn = document.getElementById('desktopLogoutBtn'), mobileBtn = document.getElementById('mobileLogoutBtn');
       if (user) {
-        if (desktopBtn) { desktopBtn.textContent = 'Logout'; desktopBtn.onclick = (e) => { e.preventDefault(); firebase.auth().signOut(); window.location.href = 'login.html'; }; }
-        if (mobileBtn) { mobileBtn.textContent = 'Logout'; mobileBtn.onclick = (e) => { e.preventDefault(); firebase.auth().signOut(); window.location.href = 'login.html'; }; }
+        if (desktopBtn) { desktopBtn.textContent = t('logout'); desktopBtn.onclick = (e) => { e.preventDefault(); firebase.auth().signOut(); window.location.href = 'login.html'; }; }
+        if (mobileBtn) { mobileBtn.textContent = t('logout'); mobileBtn.onclick = (e) => { e.preventDefault(); firebase.auth().signOut(); window.location.href = 'login.html'; }; }
       } else {
-        if (desktopBtn) { desktopBtn.textContent = 'Login'; desktopBtn.href = 'login.html'; desktopBtn.onclick = null; }
-        if (mobileBtn) { mobileBtn.textContent = 'Login'; mobileBtn.href = 'login.html'; mobileBtn.onclick = null; }
+        if (desktopBtn) { desktopBtn.textContent = t('login'); desktopBtn.href = 'login.html'; desktopBtn.onclick = null; }
+        if (mobileBtn) { mobileBtn.textContent = t('login'); mobileBtn.href = 'login.html'; mobileBtn.onclick = null; }
       }
     });
     
@@ -359,16 +382,32 @@
         .replace(/'/g, '&#39;');
     }
     
+    // Listen for language changes to reload rooms
+    window.addEventListener('languageChanged', () => {
+      loadRooms();
+      // Update login/logout buttons
+      const user = firebase.auth().currentUser;
+      const desktopBtn = document.getElementById('desktopLogoutBtn');
+      const mobileBtn = document.getElementById('mobileLogoutBtn');
+      if (user) {
+        if (desktopBtn) desktopBtn.textContent = t('logout');
+        if (mobileBtn) mobileBtn.textContent = t('logout');
+      } else {
+        if (desktopBtn) desktopBtn.textContent = t('login');
+        if (mobileBtn) mobileBtn.textContent = t('login');
+      }
+    });
+    
     async function loadRooms() {
       const grid = document.getElementById('roomsGrid');
-      grid.innerHTML = '<div class="col-span-full text-center text-slate-300 py-10">Loading...</div>';
+      grid.innerHTML = '<div class="col-span-full text-center text-slate-300 py-10" data-i18n="loadingText">Loading...</div>';
       try {
         const snapshot = await db.collection('rooms').where('status', '==', 'approved').limit(6).get();
         const rooms = []; 
         snapshot.forEach(doc => rooms.push({ id: doc.id, ...doc.data() }));
         
         if (rooms.length === 0) { 
-          grid.innerHTML = '<div class="col-span-full text-center text-slate-300 py-10">No rooms yet. Check back soon!</div>'; 
+          grid.innerHTML = '<div class="col-span-full text-center text-slate-300 py-10" data-i18n="noRoomsYet">No rooms yet. Check back soon!</div>'; 
           return; 
         }
         
@@ -378,17 +417,20 @@
             <div class="p-4">
               <div class="mb-1">${getCardPriceDisplay(room)}</div>
               <h4 class="font-semibold text-white text-lg mt-1 truncate">${escapeHtml(room.title || 'Untitled')}</h4>
-              <p class="text-slate-300 text-sm">📍 ${escapeHtml(room.city || 'Unknown')} • ${room.distance || '?'} km from Uni</p>
+              <p class="text-slate-300 text-sm">📍 ${escapeHtml(room.city || 'Unknown')} • ${room.distance || '?'} ${t('fromUni')}</p>
               <div class="flex flex-wrap gap-1 mt-2">
                 ${room.features?.slice(0,3).map(f => `<span class="feature-badge">${escapeHtml(f)}</span>`).join('') || ''}
               </div>
-              <a href="details.html?id=${room.id}" class="block mt-3 text-center bg-primary text-white py-2 rounded-lg font-medium hover:bg-green-600 transition">View Details →</a>
+              <a href="details.html?id=${room.id}" class="block mt-3 text-center bg-primary text-white py-2 rounded-lg font-medium hover:bg-green-600 transition" data-i18n="viewDetails">View Details →</a>
             </div>
           </div>
         `).join('');
+        
+        // Apply translations to dynamic content
+        updatePageLanguage();
       } catch (error) { 
         console.error('Error loading rooms:', error);
-        grid.innerHTML = '<div class="col-span-full text-center text-red-400 py-10">Error loading rooms</div>'; 
+        grid.innerHTML = '<div class="col-span-full text-center text-red-400 py-10" data-i18n="errorLoading">Error loading rooms</div>'; 
       }
     }
     loadRooms();
