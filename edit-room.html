@@ -41,6 +41,39 @@
       color: white !important;
     }
 
+    /* Searchable dropdown styles */
+    .searchable-dropdown {
+      position: relative;
+    }
+    .dropdown-input {
+      width: 100%;
+      background-color: #334155;
+      border: 1px solid #475569;
+      color: white;
+      border-radius: 8px;
+      padding: 8px 12px;
+    }
+    .dropdown-list {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      max-height: 200px;
+      overflow-y: auto;
+      background-color: #1E293B;
+      border: 1px solid #475569;
+      border-radius: 8px;
+      z-index: 10;
+      display: none;
+    }
+    .dropdown-list.show { display: block; }
+    .dropdown-item {
+      padding: 8px 12px;
+      cursor: pointer;
+      color: #CBD5E1;
+    }
+    .dropdown-item:hover { background-color: #22C55E; color: white; }
+
     /* === DARK MODE (default) === */
     body {
       background-color: #0F172A;
@@ -70,6 +103,9 @@
     body.light-mode .text-green-400 { color: #059669 !important; }
     body.light-mode .bg-red-500\/20 { background-color: #FEE2E2 !important; }
     body.light-mode .text-red-400 { color: #DC2626 !important; }
+    body.light-mode .dropdown-list { background-color: #FFFFFF; border-color: #E5E7EB; }
+    body.light-mode .dropdown-item { color: #374151; }
+    body.light-mode .dropdown-input { background-color: #F3F4F6; border-color: #E5E7EB; color: #111827; }
 
     /* Navbar stays dark with white text in both modes */
     body.light-mode nav,
@@ -131,18 +167,50 @@
       <form id="roomForm" style="display:none;">
         <input type="hidden" id="roomId">
         <div class="mb-4"><label class="block text-slate-300 text-sm font-semibold mb-1">Title *</label><input type="text" id="title" required class="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2"></div>
-        <div class="mb-4"><label class="block text-slate-300 text-sm font-semibold mb-1">Price (FCFA) *</label><input type="number" id="price" required class="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2"></div>
-        <div class="grid grid-cols-2 gap-4 mb-4"><div><label class="block text-slate-300 text-sm font-semibold mb-1">City *</label><select id="city" class="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2"><option value="Bambili">Bambili</option><option value="Bamenda">Bamenda</option><option value="Mankon">Mankon</option><option value="Up Station">Up Station</option><option value="Nkwen">Nkwen</option></select></div><div><label class="block text-slate-300 text-sm font-semibold mb-1">Area</label><input type="text" id="area" class="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2"></div></div>
-        <div class="mb-4"><label class="block text-slate-300 text-sm font-semibold mb-1">Distance (km) *</label><input type="number" id="distance" step="0.1" required class="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2"></div>
+        
+        <!-- PRICING SECTION - NEW -->
+        <div class="mb-4">
+          <label class="block text-slate-300 text-sm font-semibold mb-1">Pricing Type *</label>
+          <select id="pricingType" class="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2">
+            <option value="monthly">Monthly (per month)</option>
+            <option value="yearly">Yearly (per school year)</option>
+            <option value="both">Both (monthly & yearly)</option>
+          </select>
+        </div>
+        
+        <div class="mb-4" id="monthlyPriceDiv">
+          <label class="block text-slate-300 text-sm font-semibold mb-1">Price (FCFA/month) *</label>
+          <input type="number" id="monthlyPrice" class="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2">
+          <p class="text-slate-500 text-xs mt-1">For monthly payment option</p>
+        </div>
+        
+        <div class="mb-4" id="yearlyPriceDiv" style="display:none;">
+          <label class="block text-slate-300 text-sm font-semibold mb-1">Price (FCFA/school year) *</label>
+          <input type="number" id="yearlyPrice" class="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2">
+          <p class="text-slate-500 text-xs mt-1">Most students pay per school year (9-10 months)</p>
+        </div>
+        
+        <!-- LOCATION SECTION - NEW with search -->
+        <div class="mb-4">
+          <label class="block text-slate-300 text-sm font-semibold mb-1">City / Town *</label>
+          <div class="searchable-dropdown">
+            <input type="text" id="citySearch" placeholder="Search or select city..." class="dropdown-input" autocomplete="off">
+            <div id="cityDropdownList" class="dropdown-list"></div>
+          </div>
+          <input type="hidden" id="selectedCity" required>
+        </div>
+        
+        <div class="mb-4"><label class="block text-slate-300 text-sm font-semibold mb-1">Neighborhood/Area (optional)</label><input type="text" id="area" class="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2"></div>
+        <div class="mb-4"><label class="block text-slate-300 text-sm font-semibold mb-1">Distance (km from University) *</label><input type="number" id="distance" step="0.1" required class="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2"></div>
         <div class="mb-4"><label class="block text-slate-300 text-sm font-semibold mb-1">Description *</label><textarea id="description" rows="4" required class="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2"></textarea></div>
-        <div class="mb-4"><label class="block text-slate-300 text-sm font-semibold mb-1">Features (comma)</label><input type="text" id="features" class="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2"></div>
-        <div class="mb-4"><label class="block text-slate-300 text-sm font-semibold mb-1">WhatsApp *</label><input type="tel" id="phone" required class="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2"></div>
+        <div class="mb-4"><label class="block text-slate-300 text-sm font-semibold mb-1">Features (comma separated)</label><input type="text" id="features" placeholder="Water, Electricity, Furnished, WiFi" class="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2"></div>
+        <div class="mb-4"><label class="block text-slate-300 text-sm font-semibold mb-1">WhatsApp Number *</label><input type="tel" id="phone" required placeholder="670922913" class="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2"></div>
         
         <!-- Existing Images -->
         <div class="mb-4"><label class="block text-slate-300 text-sm font-semibold mb-1">Current Images</label><div id="existingImagesContainer" class="flex flex-wrap gap-2"></div></div>
         
-        <!-- Add New Images (white button) -->
-        <div class="mb-4"><label class="block text-slate-300 text-sm font-semibold mb-1">Add New Images (max 5 total)</label><input type="file" id="newImagesInput" accept="image/*" multiple class="w-full text-slate-300 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:bg-white file:text-black file:font-semibold file:border file:border-gray-300 file:cursor-pointer file:hover:bg-gray-100"><div id="newPreviewContainer" class="flex flex-wrap gap-2 mt-3"></div></div>
+        <!-- Add New Images -->
+        <div class="mb-4"><label class="block text-slate-300 text-sm font-semibold mb-1">Add New Images (max 10 total)</label><input type="file" id="newImagesInput" accept="image/*" multiple class="w-full text-slate-300 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:bg-white file:text-black file:font-semibold file:border file:border-gray-300 file:cursor-pointer file:hover:bg-gray-100"><div id="newPreviewContainer" class="flex flex-wrap gap-2 mt-3"></div></div>
         
         <div class="flex gap-3"><button type="submit" class="flex-1 bg-primary text-white py-3 rounded-lg font-semibold hover:bg-green-600">Save Changes</button><button type="button" id="deleteBtn" class="flex-1 bg-red-600 text-white py-3 rounded-lg font-semibold hover:bg-red-700">Delete Room</button></div>
       </form>
@@ -150,6 +218,103 @@
   </div>
 
   <script>
+    // Complete list of Cameroonian cities (all university zones)
+    const CAMEROON_CITIES = [
+      // North-West Region (UBa, CATUC, BUST)
+      "Bamenda", "Bambili", "Mankon", "Nkwen", "Up Station",
+      // South-West Region (UBuea)
+      "Buea", "Limbe", "Kumba", "Tiko",
+      // Littoral Region (UDouala)
+      "Douala", "Bonaberi", "Nkongsamba", "Edéa",
+      // Centre Region (UYI, UYII, Catholic University Yaoundé, UPAC)
+      "Yaoundé", "Soa", "Mbalmayo", "Ebolowa", "Mfou",
+      // West Region (UDschang, Université des Montagnes)
+      "Dschang", "Bafoussam", "Bangangté", "Foumban", "Mbouda",
+      // Adamawa Region (UNgaoundéré)
+      "Ngaoundéré", "Tibati", "Meiganga",
+      // Far-North Region (UMaroua)
+      "Maroua", "Mokolo", "Kousséri",
+      // North Region
+      "Garoua", "Rey Bouba", "Lagdo",
+      // East Region
+      "Bertoua", "Batouri", "Abong-Mbang",
+      // Additional university towns
+      "Kumbo", "Ndop", "Fundong", "Bali", "Santa", "Wum"
+    ].sort();
+
+    // Initialize searchable dropdown
+    function initSearchableDropdown() {
+      const searchInput = document.getElementById('citySearch');
+      const dropdownList = document.getElementById('cityDropdownList');
+      const hiddenInput = document.getElementById('selectedCity');
+      
+      function renderCities(filter = '') {
+        const filtered = CAMEROON_CITIES.filter(city => 
+          city.toLowerCase().includes(filter.toLowerCase())
+        );
+        if (filtered.length === 0) {
+          dropdownList.innerHTML = '<div class="dropdown-item text-slate-500">No cities found. Type a valid city.</div>';
+        } else {
+          dropdownList.innerHTML = filtered.map(city => 
+            `<div class="dropdown-item" data-city="${city}">${city}</div>`
+          ).join('');
+        }
+        dropdownList.classList.add('show');
+        
+        document.querySelectorAll('.dropdown-item[data-city]').forEach(item => {
+          item.addEventListener('click', () => {
+            const city = item.dataset.city;
+            searchInput.value = city;
+            hiddenInput.value = city;
+            dropdownList.classList.remove('show');
+          });
+        });
+      }
+      
+      searchInput.addEventListener('input', (e) => renderCities(e.target.value));
+      searchInput.addEventListener('focus', () => renderCities(searchInput.value));
+      document.addEventListener('click', (e) => {
+        if (!searchInput.contains(e.target) && !dropdownList.contains(e.target)) {
+          dropdownList.classList.remove('show');
+        }
+      });
+      
+      renderCities('');
+    }
+
+    // Pricing type toggle function
+    function initPricingToggle() {
+      const pricingType = document.getElementById('pricingType');
+      const monthlyDiv = document.getElementById('monthlyPriceDiv');
+      const yearlyDiv = document.getElementById('yearlyPriceDiv');
+      const monthlyInput = document.getElementById('monthlyPrice');
+      const yearlyInput = document.getElementById('yearlyPrice');
+      
+      function updatePricingFields() {
+        const type = pricingType.value;
+        if (type === 'monthly') {
+          monthlyDiv.style.display = 'block';
+          yearlyDiv.style.display = 'none';
+          monthlyInput.required = true;
+          yearlyInput.required = false;
+        } else if (type === 'yearly') {
+          monthlyDiv.style.display = 'none';
+          yearlyDiv.style.display = 'block';
+          monthlyInput.required = false;
+          yearlyInput.required = true;
+        } else {
+          monthlyDiv.style.display = 'block';
+          yearlyDiv.style.display = 'block';
+          monthlyInput.required = true;
+          yearlyInput.required = true;
+        }
+      }
+      
+      pricingType.addEventListener('change', updatePricingFields);
+      return updatePricingFields;
+    }
+
+    // Dark mode functions
     function setDarkMode(isDark) {
       if (isDark) {
         document.body.classList.remove('light-mode');
@@ -197,10 +362,25 @@
       existingImages = room.images || [];
       imagesToKeep = [...existingImages];
       
+      // Populate form with existing room data
       document.getElementById('roomId').value = roomId;
       document.getElementById('title').value = room.title || '';
-      document.getElementById('price').value = room.price || '';
-      document.getElementById('city').value = room.city || 'Bambili';
+      
+      // Handle pricing type and prices
+      const pricingType = room.pricingType || 'monthly';
+      document.getElementById('pricingType').value = pricingType;
+      document.getElementById('monthlyPrice').value = room.monthlyPrice || room.price || '';
+      document.getElementById('yearlyPrice').value = room.yearlyPrice || '';
+      
+      // Update pricing fields visibility
+      const updatePricing = initPricingToggle();
+      updatePricing();
+      
+      // Handle city
+      const cityValue = room.city || '';
+      document.getElementById('selectedCity').value = cityValue;
+      document.getElementById('citySearch').value = cityValue;
+      
       document.getElementById('area').value = room.area || '';
       document.getElementById('distance').value = room.distance || '';
       document.getElementById('description').value = room.description || '';
@@ -208,6 +388,7 @@
       document.getElementById('phone').value = room.phone || '';
       
       displayExistingImages();
+      initSearchableDropdown();
       document.getElementById('loadingArea').style.display = 'none';
       document.getElementById('roomForm').style.display = 'block';
     });
@@ -263,12 +444,27 @@
       try {
         const newUrls = await uploadNewImages();
         const allImages = [...imagesToKeep, ...newUrls];
+        
+        const pricingType = document.getElementById('pricingType').value;
+        const monthlyPrice = parseInt(document.getElementById('monthlyPrice').value) || 0;
+        const yearlyPrice = parseInt(document.getElementById('yearlyPrice').value) || 0;
+        const selectedCity = document.getElementById('selectedCity').value;
+        
+        if (!selectedCity) { throw new Error('Please select a city'); }
+        
         await db.collection('rooms').doc(roomId).update({
-          title: document.getElementById('title').value, price: parseInt(document.getElementById('price').value),
-          city: document.getElementById('city').value, area: document.getElementById('area').value || null,
-          distance: parseFloat(document.getElementById('distance').value), description: document.getElementById('description').value,
-          features: document.getElementById('features').value.split(',').map(f=>f.trim()),
-          phone: document.getElementById('phone').value, images: allImages.slice(0,10)
+          title: document.getElementById('title').value,
+          pricingType: pricingType,
+          monthlyPrice: monthlyPrice,
+          yearlyPrice: yearlyPrice,
+          price: pricingType === 'monthly' ? monthlyPrice : (pricingType === 'yearly' ? yearlyPrice : monthlyPrice),
+          city: selectedCity,
+          area: document.getElementById('area').value || null,
+          distance: parseFloat(document.getElementById('distance').value),
+          description: document.getElementById('description').value,
+          features: document.getElementById('features').value.split(',').map(f=>f.trim()).filter(f=>f),
+          phone: document.getElementById('phone').value,
+          images: allImages.slice(0,10)
         });
         msgDiv.className = 'mb-4 p-3 rounded-lg bg-green-500/20 text-green-400';
         msgDiv.innerHTML = '✅ Room updated! Redirecting...';

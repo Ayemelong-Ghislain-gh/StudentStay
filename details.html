@@ -72,6 +72,20 @@
     body.light-mode #mobileMenu button {
       color: #FFFFFF !important;
     }
+
+    /* Price card styles */
+    .price-card {
+      background: linear-gradient(135deg, #22C55E10 0%, #22C55E05 100%);
+      border-radius: 12px;
+      padding: 12px 16px;
+      border-left: 3px solid #22C55E;
+    }
+    .price-yearly-card {
+      background: linear-gradient(135deg, #3B82F610 0%, #3B82F605 100%);
+      border-radius: 12px;
+      padding: 12px 16px;
+      border-left: 3px solid #3B82F6;
+    }
   </style>
 </head>
 <body>
@@ -109,6 +123,53 @@
   </div>
 
   <script>
+    // Helper function to format price display based on pricing type
+    function formatPriceDisplay(room) {
+      const pricingType = room.pricingType || 'monthly';
+      
+      if (pricingType === 'yearly') {
+        const yearlyPrice = room.yearlyPrice || room.price || 0;
+        return `
+          <div class="price-yearly-card mb-2">
+            <div class="text-3xl font-bold text-blue-400">${yearlyPrice.toLocaleString()} FCFA</div>
+            <div class="text-slate-400 text-sm">per school year (9-10 months)</div>
+            <div class="text-slate-500 text-xs mt-1">💡 Most students prefer yearly payment</div>
+          </div>
+        `;
+      } 
+      else if (pricingType === 'both') {
+        const monthlyPrice = room.monthlyPrice || room.price || 0;
+        const yearlyPrice = room.yearlyPrice || (monthlyPrice * 9) || 0;
+        // Calculate savings if yearly is cheaper
+        const expectedYearly = monthlyPrice * 9;
+        const savings = expectedYearly - yearlyPrice;
+        const savingsText = savings > 0 ? `<span class="text-green-400 text-sm ml-2">(Save ${savings.toLocaleString()} FCFA!)</span>` : '';
+        
+        return `
+          <div class="price-card mb-3">
+            <div class="text-2xl font-bold text-primary">${monthlyPrice.toLocaleString()} FCFA</div>
+            <div class="text-slate-400 text-sm">per month</div>
+          </div>
+          <div class="price-yearly-card">
+            <div class="text-2xl font-bold text-blue-400">${yearlyPrice.toLocaleString()} FCFA ${savingsText}</div>
+            <div class="text-slate-400 text-sm">per school year (9-10 months)</div>
+            <div class="text-slate-500 text-xs mt-1">💰 Pay yearly and save money!</div>
+          </div>
+        `;
+      }
+      else { // monthly (default)
+        const monthlyPrice = room.monthlyPrice || room.price || 0;
+        const yearlyEquivalent = monthlyPrice * 9;
+        return `
+          <div class="price-card mb-2">
+            <div class="text-3xl font-bold text-primary">${monthlyPrice.toLocaleString()} FCFA</div>
+            <div class="text-slate-400 text-sm">per month</div>
+            <div class="text-slate-500 text-xs mt-1">≈ ${yearlyEquivalent.toLocaleString()} FCFA per school year</div>
+          </div>
+        `;
+      }
+    }
+
     function setDarkMode(isDark) {
       if (isDark) {
         document.body.classList.remove('light-mode');
@@ -152,10 +213,59 @@
       const doc = await db.collection('rooms').doc(roomId).get();
       if (!doc.exists) { document.getElementById('roomContent').innerHTML = '<div class="p-8 text-center text-red-400">Room not found</div>'; return; }
       room = doc.data();
-      const msg = encodeURIComponent(`Hello, I saw your ${room.title} on StudentStay for ${room.price?.toLocaleString()} FCFA and I am interested.`);
+      
+      // Get the display price for WhatsApp message
+      const displayPrice = room.pricingType === 'yearly' 
+        ? `${(room.yearlyPrice || room.price || 0).toLocaleString()} FCFA per school year`
+        : (room.pricingType === 'both'
+          ? `${(room.monthlyPrice || room.price || 0).toLocaleString()} FCFA/month or ${(room.yearlyPrice || (room.monthlyPrice * 9) || 0).toLocaleString()} FCFA/year`
+          : `${(room.monthlyPrice || room.price || 0).toLocaleString()} FCFA/month`);
+      
+      const msg = encodeURIComponent(`Hello, I saw your ${room.title} on StudentStay for ${displayPrice} and I am interested.`);
       const whatsappUrl = `https://wa.me/237${(room.phone || '').replace(/[^0-9]/g, '')}?text=${msg}`;
       const imagesHtml = room.images && room.images.length ? room.images.map(img => `<img src="${img}" class="w-full h-80 object-cover">`).join('') : '<div class="w-full h-80 bg-slate-700 flex items-center justify-center text-slate-400">📷 No images</div>';
-      document.getElementById('roomContent').innerHTML = `<div><div class="flex overflow-x-auto snap-x snap-mandatory">${imagesHtml}</div><div class="p-6"><div class="flex justify-between items-start flex-wrap gap-2 mb-4"><h1 class="text-2xl font-bold text-white">${room.title}</h1><span class="bg-green-500/20 text-green-400 px-3 py-1 rounded-full text-sm font-semibold">✅ Verified</span></div><div class="text-primary font-bold text-3xl mb-2">${room.price?.toLocaleString() || 0} FCFA<span class="text-slate-300 text-base font-normal">/month</span></div><div class="flex items-center gap-2 text-slate-300 mb-4"><span>📍</span><span>${room.city}${room.area ? `, ${room.area}` : ''}</span><span>•</span><span>🚶 ${room.distance} km from University</span></div><div class="flex flex-wrap gap-2 mb-4">${room.features ? room.features.map(f => `<span class="bg-slate-700 text-slate-200 px-3 py-1 rounded-full text-sm">${f}</span>`).join('') : ''}</div><div class="border-t border-slate-700 pt-4"><h3 class="font-semibold text-white mb-2">Description</h3><p class="text-slate-300 leading-relaxed">${room.description || 'No description provided'}</p></div><div class="border-t border-slate-700 pt-4 mt-4"><a href="${whatsappUrl}" target="_blank" class="bg-whatsapp text-white text-center py-3 px-6 rounded-full font-semibold inline-flex items-center gap-2 w-full sm:w-auto justify-center transition">📲 Contact Landlord on WhatsApp</a></div></div></div>`;
+      
+      // Build the full HTML with dynamic pricing
+      const pricingHtml = formatPriceDisplay(room);
+      
+      document.getElementById('roomContent').innerHTML = `
+        <div>
+          <div class="flex overflow-x-auto snap-x snap-mandatory">${imagesHtml}</div>
+          <div class="p-6">
+            <div class="flex justify-between items-start flex-wrap gap-2 mb-4">
+              <h1 class="text-2xl font-bold text-white">${escapeHtml(room.title)}</h1>
+              <span class="bg-green-500/20 text-green-400 px-3 py-1 rounded-full text-sm font-semibold">✅ Verified</span>
+            </div>
+            
+            <!-- PRICE SECTION - DYNAMIC -->
+            <div class="mb-4">
+              ${pricingHtml}
+            </div>
+            
+            <div class="flex items-center gap-2 text-slate-300 mb-4">
+              <span>📍</span>
+              <span>${escapeHtml(room.city)}${room.area ? `, ${escapeHtml(room.area)}` : ''}</span>
+              <span>•</span>
+              <span>🚶 ${room.distance || '?'} km from University</span>
+            </div>
+            
+            <div class="flex flex-wrap gap-2 mb-4">
+              ${room.features ? room.features.map(f => `<span class="bg-slate-700 text-slate-200 px-3 py-1 rounded-full text-sm">${escapeHtml(f)}</span>`).join('') : ''}
+            </div>
+            
+            <div class="border-t border-slate-700 pt-4">
+              <h3 class="font-semibold text-white mb-2">Description</h3>
+              <p class="text-slate-300 leading-relaxed">${escapeHtml(room.description || 'No description provided')}</p>
+            </div>
+            
+            <div class="border-t border-slate-700 pt-4 mt-4">
+              <a href="${whatsappUrl}" target="_blank" class="bg-whatsapp text-white text-center py-3 px-6 rounded-full font-semibold inline-flex items-center gap-2 w-full sm:w-auto justify-center transition">
+                📲 Contact Landlord on WhatsApp
+              </a>
+            </div>
+          </div>
+        </div>
+      `;
       
       if (user) {
         const userDoc = await db.collection('users').doc(user.uid).get();
@@ -167,6 +277,17 @@
         }
       }
     });
+    
+    // Simple escape function to prevent XSS
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
   </script>
 
   <!-- Service Worker Registration -->
