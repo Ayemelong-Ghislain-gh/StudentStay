@@ -6,24 +6,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Dashboard - StudentStay</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-  <script src="js/firebase-config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js"></script>
   <script src="js/languages.js"></script>
+  <script src="js/shared.js"></script>
   <style>
     .bg-primary { background-color: #22C55E; }
     .text-primary { color: #22C55E; }
-    .nav-btn {
-      padding: 8px 16px;
-      border-radius: 8px;
-      transition: all 0.2s;
-      font-weight: 500;
-    }
-    .nav-btn:hover {
-      background-color: #22C55E;
-      color: white !important;
-    }
     .pricing-badge {
       font-size: 10px;
       padding: 2px 6px;
@@ -65,142 +54,9 @@
     body.light-mode .bg-yellow-600 { background-color: #D97706; }
     body.light-mode table .bg-slate-700 { background-color: #F3F4F6; }
 
-    /* Navbar stays dark with white text in both modes */
-    body.light-mode nav,
-    body.light-mode .bg-slate-900\/90 {
-      background-color: #0F172A !important;
-    }
-    body.light-mode nav .text-white,
-    body.light-mode nav .text-slate-300,
-    body.light-mode nav h1,
-    body.light-mode nav a,
-    body.light-mode nav button {
-      color: #FFFFFF !important;
-    }
-
-    /* Language Selection Modal */
-    .lang-modal-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.85);
-        backdrop-filter: blur(8px);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 9999;
-        transition: all 0.3s ease;
-    }
-    .lang-modal {
-        background: #1E293B;
-        border-radius: 24px;
-        padding: 32px;
-        text-align: center;
-        max-width: 400px;
-        width: 90%;
-        border: 1px solid #334155;
-        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-        animation: modalFadeIn 0.3s ease;
-    }
-    body.light-mode .lang-modal {
-        background: #FFFFFF;
-        border-color: #E5E7EB;
-    }
-    @keyframes modalFadeIn {
-        from {
-            opacity: 0;
-            transform: scale(0.95);
-        }
-        to {
-            opacity: 1;
-            transform: scale(1);
-        }
-    }
-    .lang-flag {
-        font-size: 48px;
-        margin-bottom: 16px;
-    }
-    .lang-title {
-        font-size: 24px;
-        font-weight: bold;
-        margin-bottom: 8px;
-    }
-    .lang-subtitle {
-        font-size: 14px;
-        color: #94A3B8;
-        margin-bottom: 24px;
-    }
-    .lang-buttons {
-        display: flex;
-        gap: 16px;
-        justify-content: center;
-        flex-wrap: wrap;
-    }
-    .lang-btn {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 8px;
-        padding: 16px 24px;
-        background: #334155;
-        border: 2px solid #475569;
-        border-radius: 16px;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        min-width: 120px;
-    }
-    .lang-btn:hover {
-        transform: translateY(-2px);
-        border-color: #22C55E;
-        background: #22C55E20;
-    }
-    .lang-btn-flag {
-        font-size: 32px;
-    }
-    .lang-btn-text {
-        font-size: 18px;
-        font-weight: 600;
-    }
-    .lang-btn-sub {
-        font-size: 12px;
-        color: #94A3B8;
-    }
-    body.light-mode .lang-btn {
-        background: #F3F4F6;
-        border-color: #E5E7EB;
-    }
-    body.light-mode .lang-btn:hover {
-        background: #22C55E10;
-        border-color: #22C55E;
-    }
-    .hidden-modal {
-        display: none !important;
-    }
   </style>
 </head>
-<body>
-  <!-- Language Selection Modal -->
-  <div id="languageModal" class="lang-modal-overlay">
-      <div class="lang-modal">
-          <div class="lang-flag">🇨🇲</div>
-          <h2 class="lang-title" data-i18n="modalWelcome">Welcome to StudentStay</h2>
-          <p class="lang-subtitle" data-i18n="modalSubtitle">Bienvenue sur StudentStay</p>
-          <div class="lang-buttons">
-              <div class="lang-btn" onclick="selectLanguage('en')">
-                  <div class="lang-btn-flag">🇬🇧</div>
-                  <div class="lang-btn-text" data-i18n="modalEnglish">English</div>
-                  <div class="lang-btn-sub" data-i18n="modalEnglishSub">Continue in English</div>
-              </div>
-              <div class="lang-btn" onclick="selectLanguage('fr')">
-                  <div class="lang-btn-flag">🇫🇷</div>
-                  <div class="lang-btn-text" data-i18n="modalFrench">Français</div>
-                  <div class="lang-btn-sub" data-i18n="modalFrenchSub">Continuer en français</div>
-              </div>
-          </div>
-      </div>
-  </div>
+<body data-feedback-auth="required">
 
   <nav class="bg-slate-900/90 backdrop-blur-sm border-b border-slate-700">
     <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
@@ -236,58 +92,44 @@
           <p class="text-slate-400" data-i18n="totalRooms">Total Rooms</p>
           <p id="totalRoomsCount" class="text-3xl font-bold text-white">0</p>
         </div>
+        <div class="bg-slate-800 rounded-xl p-4 text-center">
+          <p class="text-slate-400" data-i18n="suggestions">Suggestions</p>
+          <p id="feedbackCount" class="text-3xl font-bold text-white">0</p>
+        </div>
       </div>
       <div class="flex gap-2 border-b border-slate-700 mb-6">
         <button class="tab-btn active px-4 py-2 font-medium border-b-2 border-primary text-primary" data-tab="rooms" data-i18n="pendingRoomsTab">Pending Rooms</button>
         <button class="tab-btn px-4 py-2 font-medium text-slate-400" data-tab="applications" data-i18n="landlordApplications">Landlord Applications</button>
+        <button class="tab-btn px-4 py-2 font-medium text-slate-400" data-tab="feedback" data-i18n="suggestions">Suggestions</button>
       </div>
       <div id="roomsSection"><div id="roomsTable" class="bg-slate-800 rounded-xl border border-slate-700 overflow-hidden"><div class="p-6 text-center text-slate-400" data-i18n="loadingText">Loading...</div></div></div>
       <div id="applicationsSection" style="display:none;"><div id="applicationsTable" class="bg-slate-800 rounded-xl border border-slate-700 overflow-hidden"><div class="p-6 text-center text-slate-400" data-i18n="loadingText">Loading...</div></div></div>
+      <div id="feedbackSection" style="display:none;"><div id="feedbackTable" class="bg-slate-800 rounded-xl border border-slate-700 overflow-hidden"><div class="p-6 text-center text-slate-400" data-i18n="loadingText">Loading...</div></div></div>
     </div>
   </div>
 
   <script>
     // Helper function to get price display text based on pricing type
+    // Price math + number formatting live in js/shared.js (getRoomPricing/formatFCFA);
+    // this function only owns this page's markup.
     function getPriceDisplayText(room) {
-      const pricingType = room.pricingType || 'monthly';
+      const { pricingType, monthlyPrice, yearlyPrice } = getRoomPricing(room);
       const perMonthText = t('perMonthBadge');
       const perYearText = t('perYearBadge');
       const bothText = t('bothBadge');
       
       if (pricingType === 'yearly') {
-        const yearlyPrice = room.yearlyPrice || room.price || 0;
-        return `${yearlyPrice.toLocaleString()} FCFA<span class="pricing-badge pricing-yearly ml-2">${perYearText}</span>`;
+        return `${formatFCFA(yearlyPrice)}<span class="pricing-badge pricing-yearly ml-2">${perYearText}</span>`;
       } 
       else if (pricingType === 'both') {
-        const monthlyPrice = room.monthlyPrice || room.price || 0;
-        const yearlyPrice = room.yearlyPrice || (monthlyPrice * 9) || 0;
-        return `${monthlyPrice.toLocaleString()} FCFA/${perMonthText}<br><span class="text-xs text-slate-400">or ${yearlyPrice.toLocaleString()} FCFA/${perYearText}</span><span class="pricing-badge pricing-both ml-2">${bothText}</span>`;
+        return `${formatFCFA(monthlyPrice)}/${perMonthText}<br><span class="text-xs text-slate-400">or ${formatFCFA(yearlyPrice)}/${perYearText}</span><span class="pricing-badge pricing-both ml-2">${bothText}</span>`;
       }
       else {
-        const monthlyPrice = room.monthlyPrice || room.price || 0;
-        return `${monthlyPrice.toLocaleString()} FCFA<span class="pricing-badge pricing-monthly ml-2">${perMonthText}</span>`;
+        return `${formatFCFA(monthlyPrice)}<span class="pricing-badge pricing-monthly ml-2">${perMonthText}</span>`;
       }
     }
 
     // Dark Mode Toggle
-    function setDarkMode(isDark) {
-      if (isDark) {
-        document.body.classList.remove('light-mode');
-        localStorage.setItem('theme', 'dark');
-      } else {
-        document.body.classList.add('light-mode');
-        localStorage.setItem('theme', 'light');
-      }
-    }
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'light') setDarkMode(false);
-    else setDarkMode(true);
-
-    document.getElementById('darkModeToggle')?.addEventListener('click', () => {
-      const isDark = !document.body.classList.contains('light-mode');
-      setDarkMode(!isDark);
-    });
-
     // Language Toggle Button
     const langToggle = document.getElementById('languageToggle');
     if (langToggle) {
@@ -299,60 +141,64 @@
     }
 
     window.approveRoom = async (id) => { 
-      await db.collection('rooms').doc(id).update({ status: 'approved', expiresAt: new Date(Date.now() + 30*24*60*60*1000) }); 
+      const { error } = await sb.rpc('approve_room', { room_id: id });
+      if (error) { alert(error.message); return; }
       location.reload(); 
     };
-    window.deleteRoom = async (id) => { 
+    window.deleteRoom = async (id, btn) => { 
       if (confirm(t('confirm') + '?')) { 
-        await db.collection('rooms').doc(id).delete(); 
+        setButtonLoading(btn, true, t('deleting') || 'Deleting...');
+        const { error } = await sb.rpc('delete_room', { room_id: id });
+        if (error) { alert(error.message); setButtonLoading(btn, false); return; }
         location.reload(); 
       } 
     };
     window.approveApplication = async (appId, userId, role) => { 
-      await db.collection('users').doc(userId).update({ role: role, freeListingsRemaining: 5 }); 
-      await db.collection('applications').doc(appId).update({ status: 'approved', reviewedAt: new Date() }); 
+      const { error } = await sb.rpc('approve_application', { app_id: appId, new_role: role });
+      if (error) { alert(error.message); return; }
       alert(t('approve')); 
       location.reload(); 
     };
-    window.rejectApplication = async (appId) => { 
+    window.rejectApplication = async (appId, btn) => { 
       if (confirm(t('confirm') + '?')) { 
-        await db.collection('applications').doc(appId).update({ status: 'rejected', reviewedAt: new Date() }); 
+        setButtonLoading(btn, true, t('deleting') || 'Deleting...');
+        await sb.rpc('reject_application', { app_id: appId });
         location.reload(); 
       } 
     };
     
-    firebase.auth().onAuthStateChanged(async (user) => {
+    (async () => {
+      const { data: sessionData } = await sb.auth.getSession();
+      const user = sessionData.session?.user ?? null;
       if (!user) { 
         document.getElementById('adminCheck').innerHTML = '<div class="bg-red-500/20 p-6 rounded-lg text-center"><p class="text-red-400">' + t('loginTitle') + ' required</p><a href="login.html" class="mt-4 inline-block bg-primary text-white px-4 py-2 rounded-lg">' + t('login') + '</a></div>'; 
         return; 
       }
-      const userDoc = await db.collection('users').doc(user.uid).get();
-      if (!userDoc.exists || userDoc.data().role !== 'admin') { 
+      currentUser = user;
+      const { data: profileRow } = await sb.from('profiles').select('role').eq('id', user.id).single();
+      if (!profileRow || profileRow.role !== 'admin') { 
         document.getElementById('adminCheck').innerHTML = '<div class="bg-red-500/20 p-6 rounded-lg text-center"><p class="text-red-400">' + t('noData') + '</p><a href="index.html" class="mt-4 inline-block bg-slate-600 text-white px-4 py-2 rounded-lg">' + t('back') + '</a></div>'; 
         return; 
       }
       document.getElementById('adminCheck').style.display = 'none'; 
       document.getElementById('adminContent').style.display = 'block';
       
-      const rooms = await db.collection('rooms').get(); 
-      const pending = await db.collection('rooms').where('status','==','pending').get(); 
-      const apps = await db.collection('applications').where('status','==','pending').get();
-      document.getElementById('pendingCount').innerText = pending.size; 
-      document.getElementById('appCount').innerText = apps.size; 
-      document.getElementById('totalRoomsCount').innerText = rooms.size;
+      const { data: allRooms } = await sb.from('rooms').select('id', { count: 'exact' });
+      const { data: pendingRooms } = await sb.from('rooms').select('*, profiles:landlord_id(full_name, email)').eq('status', 'pending');
+      const { data: pendingApps } = await sb.from('applications').select('*, profiles:user_id(full_name, phone)').eq('status', 'pending');
+      document.getElementById('pendingCount').innerText = (pendingRooms || []).length; 
+      document.getElementById('appCount').innerText = (pendingApps || []).length; 
+      document.getElementById('totalRoomsCount').innerText = (allRooms || []).length;
       
-      const pendingSnapshot = await db.collection('rooms').where('status','==','pending').get();
+      const pendingList = pendingRooms || [];
       let roomsHtml = '<div class="overflow-x-auto"><table class="w-full text-sm"><thead class="bg-slate-700"><tr><th class="p-3">' + t('title') + '</th><th class="p-3">' + t('pricing') + '</th><th class="p-3">' + t('city') + '</th><th class="p-3">' + t('listedBy') + '</th><th class="p-3">' + t('actions') + '</th></tr></thead><tbody>';
       
-      for (const doc of pendingSnapshot.docs) { 
-        const room = doc.data(); 
-        let landlordName = 'Unknown';
-        if (room.landlordId) {
-          const landlordDoc = await db.collection('users').doc(room.landlordId).get();
-          if (landlordDoc.exists) {
-            landlordName = landlordDoc.data().fullName || landlordDoc.data().email || 'Unknown';
-          }
-        }
+      for (const r of pendingList) { 
+        const room = {
+          title: r.title, city: r.city,
+          pricingType: r.pricing_type, monthlyPrice: r.monthly_price, yearlyPrice: r.yearly_price, price: r.price
+        };
+        const landlordName = r.profiles?.full_name || r.profiles?.email || 'Unknown';
         
         roomsHtml += `<tr class="border-b border-slate-700">
           <td class="p-3 text-white">${escapeHtml(room.title)}</td>
@@ -360,58 +206,55 @@
           <td class="p-3">${escapeHtml(room.city)}</td>
           <td class="p-3 text-slate-300 text-sm">${escapeHtml(landlordName)}</td>
           <td class="p-3">
-            <a href="edit-room.html?id=${doc.id}" class="bg-yellow-600 text-white px-3 py-1 rounded mr-2 inline-block hover:bg-yellow-700">${t('edit')}</a>
-            <button onclick="approveRoom('${doc.id}')" class="bg-green-600 text-white px-3 py-1 rounded mr-2">${t('approve')}</button>
-            <button onclick="deleteRoom('${doc.id}')" class="bg-red-600 text-white px-3 py-1 rounded">${t('delete')}</button>
+            <a href="edit-room.html?id=${r.id}" class="bg-yellow-600 text-white px-3 py-1 rounded mr-2 inline-block hover:bg-yellow-700">${t('edit')}</a>
+            <button onclick="approveRoom('${r.id}')" class="bg-green-600 text-white px-3 py-1 rounded mr-2">${t('approve')}</button>
+            <button onclick="deleteRoom('${r.id}', this)" class="bg-red-600 text-white px-3 py-1 rounded">${t('delete')}</button>
           </td>
          </tr>`;
       }
-      roomsHtml += pendingSnapshot.empty ? '<tr><td colspan="5" class="p-6 text-center">' + t('noPendingRooms') + '</td></tr>' : ''; 
+      roomsHtml += pendingList.length === 0 ? '<tr><td colspan="5" class="p-6 text-center">' + t('noPendingRooms') + '</td></tr>' : ''; 
       roomsHtml += '</tbody></table></div>';
       document.getElementById('roomsTable').innerHTML = roomsHtml;
       
-      const appSnapshot = await db.collection('applications').where('status','==','pending').get();
+      const appList = pendingApps || [];
       let appsHtml = '<div class="overflow-x-auto"><table class="w-full text-sm"><thead class="bg-slate-700"><tr><th class="p-3">' + t('name') + '</th><th class="p-3">' + t('email') + '</th><th class="p-3">' + t('whatsapp') + '</th><th class="p-3">' + t('requestedRole') + '</th><th class="p-3">' + t('date') + '</th><th class="p-3">' + t('actions') + '</th></tr></thead><tbody>';
       
-      for (const doc of appSnapshot.docs) { 
-        const app = doc.data(); 
-        let userName = 'N/A';
-        let userPhone = 'N/A';
-        if (app.userId) {
-          const userDoc = await db.collection('users').doc(app.userId).get();
-          if (userDoc.exists) {
-            userName = userDoc.data().fullName || 'N/A';
-            userPhone = userDoc.data().phone || 'N/A';
-          }
-        }
+      for (const a of appList) { 
+        const app = { userEmail: a.user_email, requestedRole: a.requested_role, createdAt: a.created_at };
+        const userName = a.profiles?.full_name || 'N/A';
+        const userPhone = a.profiles?.phone || 'N/A';
         
         appsHtml += `<tr class="border-b border-slate-700">
           <td class="p-3 text-white">${escapeHtml(userName)}</td>
           <td class="p-3">${escapeHtml(app.userEmail)}</td>
           <td class="p-3">${escapeHtml(userPhone)}</td>
           <td class="p-3 capitalize"><span class="px-2 py-1 rounded text-xs ${app.requestedRole === 'landlord' ? 'bg-primary/20 text-primary' : 'bg-blue-500/20 text-blue-400'}">${app.requestedRole}</span></td>
-          <td class="p-3">${app.createdAt?.toDate().toLocaleDateString() || 'N/A'}</td>
+          <td class="p-3">${app.createdAt ? new Date(app.createdAt).toLocaleDateString() : 'N/A'}</td>
           <td class="p-3">
-            <button onclick="approveApplication('${doc.id}', '${app.userId}', '${app.requestedRole}')" class="bg-green-600 text-white px-3 py-1 rounded mr-2">${t('approve')}</button>
-            <button onclick="rejectApplication('${doc.id}')" class="bg-red-600 text-white px-3 py-1 rounded">${t('delete')}</button>
+            <button onclick="approveApplication('${a.id}', '${a.user_id}', '${app.requestedRole}')" class="bg-green-600 text-white px-3 py-1 rounded mr-2">${t('approve')}</button>
+            <button onclick="rejectApplication('${a.id}', this)" class="bg-red-600 text-white px-3 py-1 rounded">${t('delete')}</button>
           </td>
          </tr>`;
       }
-      appsHtml += appSnapshot.empty ? '<tr><td colspan="6" class="p-6 text-center">' + t('noPendingApps') + '</td></tr>' : ''; 
+      appsHtml += appList.length === 0 ? '<tr><td colspan="6" class="p-6 text-center">' + t('noPendingApps') + '</td></tr>' : ''; 
       appsHtml += '</tbody></table></div>';
       document.getElementById('applicationsTable').innerHTML = appsHtml;
-    });
+      
+      const { data: feedbackRows } = await sb.from('feedback').select('*').order('created_at', { ascending: false });
+      const feedbackList = feedbackRows || [];
+      document.getElementById('feedbackCount').innerText = feedbackList.length;
+      let feedbackHtml = '<div class="divide-y divide-slate-700">';
+      for (const f of feedbackList) {
+        feedbackHtml += `<div class="p-4">
+          <p class="text-white text-sm">${escapeHtml(f.message)}</p>
+          <p class="text-slate-500 text-xs mt-1">${f.created_at ? new Date(f.created_at).toLocaleString() : ''}</p>
+        </div>`;
+      }
+      feedbackHtml += feedbackList.length === 0 ? '<div class="p-6 text-center text-slate-400" data-i18n="noSuggestions">No suggestions yet.</div>' : '';
+      feedbackHtml += '</div>';
+      document.getElementById('feedbackTable').innerHTML = feedbackHtml;
+    })();
     
-    // Escape HTML to prevent XSS
-    function escapeHtml(str) {
-      if (!str) return '';
-      return str
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;');
-    }
     
     document.querySelectorAll('.tab-btn').forEach(btn => btn.onclick = () => { 
       const tab = btn.dataset.tab; 
@@ -419,8 +262,9 @@
       btn.classList.add('border-b-2','border-primary','text-primary'); 
       document.getElementById('roomsSection').style.display = tab === 'rooms' ? 'block' : 'none'; 
       document.getElementById('applicationsSection').style.display = tab === 'applications' ? 'block' : 'none'; 
+      document.getElementById('feedbackSection').style.display = tab === 'feedback' ? 'block' : 'none'; 
     });
-    document.getElementById('logoutBtn').onclick = () => { firebase.auth().signOut(); window.location.href = 'index.html'; };
+    document.getElementById('logoutBtn').onclick = () => { sb.auth.signOut().then(() => window.location.href = 'index.html'); };
   </script>
 
   <!-- Service Worker Registration -->
@@ -431,5 +275,7 @@
         .catch(err => console.log('Service Worker registration failed', err));
     }
   </script>
+<p class="text-center text-xs text-slate-600 py-4"><a href="https://asghinlabs.com" target="_blank" rel="noopener noreferrer" style="color: #007bff; text-decoration: none; font-weight: 500;">a asghinlabs product</a></p>
+
 </body>
 </html>

@@ -6,17 +6,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Edit Room - StudentStay</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-  <script src="js/firebase-config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js"></script>
   <script src="js/languages.js"></script>
+  <script src="js/phone-validation.js"></script>
+  <script src="js/shared.js"></script>
   <style>
     .bg-primary { background-color: #22C55E; }
     .preview-image { width: 80px; height: 80px; object-fit: cover; border-radius: 8px; border: 1px solid #334155; }
+    .preview-image.is-cover { border: 2px solid #22C55E; }
     .remove-image { position: absolute; top: -8px; right: -8px; background: #ef4444; color: white; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 12px; cursor: pointer; }
     .existing-image { position: relative; display: inline-block; margin: 5px; }
     .remove-existing { position: absolute; top: -8px; right: -8px; background: #ef4444; color: white; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 12px; cursor: pointer; }
+    .cover-star { position: absolute; bottom: -8px; left: -8px; background: #334155; color: #94a3b8; border-radius: 50%; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; font-size: 13px; cursor: pointer; border: 1px solid #1e293b; }
+    .cover-badge { position: absolute; bottom: -8px; left: -8px; background: #22C55E; color: white; font-size: 9px; font-weight: 700; padding: 2px 5px; border-radius: 4px; white-space: nowrap; }
     input[type="file"]::file-selector-button {
       background-color: white;
       color: black;
@@ -30,16 +33,6 @@
     }
     input[type="file"]::file-selector-button:hover {
       background-color: #f0f0f0;
-    }
-    .nav-btn {
-      padding: 8px 16px;
-      border-radius: 8px;
-      transition: all 0.2s;
-      font-weight: 500;
-    }
-    .nav-btn:hover {
-      background-color: #22C55E;
-      color: white !important;
     }
 
     /* Searchable dropdown styles */
@@ -109,149 +102,10 @@
     body.light-mode .dropdown-input { background-color: #F3F4F6; border-color: #E5E7EB; color: #111827; }
 
     /* Navbar stays dark with white text in both modes */
-    body.light-mode nav,
-    body.light-mode .bg-slate-900\/90 {
-      background-color: #0F172A !important;
-    }
-    body.light-mode nav .text-white,
-    body.light-mode nav .text-slate-300,
-    body.light-mode nav h1,
-    body.light-mode nav p,
-    body.light-mode nav a,
-    body.light-mode nav button {
-      color: #FFFFFF !important;
-    }
-    body.light-mode #mobileMenu {
-      background-color: #1E293B !important;
-    }
-    body.light-mode #mobileMenu a,
-    body.light-mode #mobileMenu button {
-      color: #FFFFFF !important;
-    }
 
-    /* Language Selection Modal */
-    .lang-modal-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.85);
-        backdrop-filter: blur(8px);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 9999;
-        transition: all 0.3s ease;
-    }
-    .lang-modal {
-        background: #1E293B;
-        border-radius: 24px;
-        padding: 32px;
-        text-align: center;
-        max-width: 400px;
-        width: 90%;
-        border: 1px solid #334155;
-        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-        animation: modalFadeIn 0.3s ease;
-    }
-    body.light-mode .lang-modal {
-        background: #FFFFFF;
-        border-color: #E5E7EB;
-    }
-    @keyframes modalFadeIn {
-        from {
-            opacity: 0;
-            transform: scale(0.95);
-        }
-        to {
-            opacity: 1;
-            transform: scale(1);
-        }
-    }
-    .lang-flag {
-        font-size: 48px;
-        margin-bottom: 16px;
-    }
-    .lang-title {
-        font-size: 24px;
-        font-weight: bold;
-        margin-bottom: 8px;
-    }
-    .lang-subtitle {
-        font-size: 14px;
-        color: #94A3B8;
-        margin-bottom: 24px;
-    }
-    .lang-buttons {
-        display: flex;
-        gap: 16px;
-        justify-content: center;
-        flex-wrap: wrap;
-    }
-    .lang-btn {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 8px;
-        padding: 16px 24px;
-        background: #334155;
-        border: 2px solid #475569;
-        border-radius: 16px;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        min-width: 120px;
-    }
-    .lang-btn:hover {
-        transform: translateY(-2px);
-        border-color: #22C55E;
-        background: #22C55E20;
-    }
-    .lang-btn-flag {
-        font-size: 32px;
-    }
-    .lang-btn-text {
-        font-size: 18px;
-        font-weight: 600;
-    }
-    .lang-btn-sub {
-        font-size: 12px;
-        color: #94A3B8;
-    }
-    body.light-mode .lang-btn {
-        background: #F3F4F6;
-        border-color: #E5E7EB;
-    }
-    body.light-mode .lang-btn:hover {
-        background: #22C55E10;
-        border-color: #22C55E;
-    }
-    .hidden-modal {
-        display: none !important;
-    }
   </style>
 </head>
 <body>
-  <!-- Language Selection Modal -->
-  <div id="languageModal" class="lang-modal-overlay">
-      <div class="lang-modal">
-          <div class="lang-flag">🇨🇲</div>
-          <h2 class="lang-title" data-i18n="modalWelcome">Welcome to StudentStay</h2>
-          <p class="lang-subtitle" data-i18n="modalSubtitle">Bienvenue sur StudentStay</p>
-          <div class="lang-buttons">
-              <div class="lang-btn" onclick="selectLanguage('en')">
-                  <div class="lang-btn-flag">🇬🇧</div>
-                  <div class="lang-btn-text" data-i18n="modalEnglish">English</div>
-                  <div class="lang-btn-sub" data-i18n="modalEnglishSub">Continue in English</div>
-              </div>
-              <div class="lang-btn" onclick="selectLanguage('fr')">
-                  <div class="lang-btn-flag">🇫🇷</div>
-                  <div class="lang-btn-text" data-i18n="modalFrench">Français</div>
-                  <div class="lang-btn-sub" data-i18n="modalFrenchSub">Continuer en français</div>
-              </div>
-          </div>
-      </div>
-  </div>
 
   <nav class="bg-slate-900/90 backdrop-blur-sm border-b border-slate-700">
     <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
@@ -308,13 +162,13 @@
         
         <div class="mb-4" id="monthlyPriceDiv">
           <label class="block text-slate-300 text-sm font-semibold mb-1" data-i18n="monthlyPriceLabel">Price (FCFA/month) *</label>
-          <input type="number" id="monthlyPrice" class="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2">
+          <input type="number" id="monthlyPrice" step="5000" min="0" class="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2">
           <p class="text-slate-500 text-xs mt-1" data-i18n="monthlyHint">For monthly payment option</p>
         </div>
         
         <div class="mb-4" id="yearlyPriceDiv" style="display:none;">
           <label class="block text-slate-300 text-sm font-semibold mb-1" data-i18n="yearlyPriceLabel">Price (FCFA/school year) *</label>
-          <input type="number" id="yearlyPrice" class="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2">
+          <input type="number" id="yearlyPrice" step="5000" min="0" class="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2">
           <p class="text-slate-500 text-xs mt-1" data-i18n="yearlyHint">Most students pay per school year (9-10 months)</p>
         </div>
         
@@ -367,7 +221,7 @@
         </div>
         
         <div class="flex gap-3">
-          <button type="submit" class="flex-1 bg-primary text-white py-3 rounded-lg font-semibold hover:bg-green-600" data-i18n="saveChanges">Save Changes</button>
+          <button type="submit" id="saveChangesBtn" class="flex-1 bg-primary text-white py-3 rounded-lg font-semibold hover:bg-green-600" data-i18n="saveChanges">Save Changes</button>
           <button type="button" id="deleteBtn" class="flex-1 bg-red-600 text-white py-3 rounded-lg font-semibold hover:bg-red-700" data-i18n="deleteRoom">Delete Room</button>
         </div>
       </form>
@@ -462,28 +316,6 @@
     }
 
     // Dark mode functions
-    function setDarkMode(isDark) {
-      if (isDark) {
-        document.body.classList.remove('light-mode');
-        localStorage.setItem('theme', 'dark');
-      } else {
-        document.body.classList.add('light-mode');
-        localStorage.setItem('theme', 'light');
-      }
-    }
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'light') setDarkMode(false);
-    else setDarkMode(true);
-
-    document.getElementById('darkModeToggle')?.addEventListener('click', () => {
-      const isDark = !document.body.classList.contains('light-mode');
-      setDarkMode(!isDark);
-    });
-    document.getElementById('mobileDarkModeToggle')?.addEventListener('click', () => {
-      const isDark = !document.body.classList.contains('light-mode');
-      setDarkMode(!isDark);
-    });
-
     // Language Toggle Buttons
     const langToggle = document.getElementById('languageToggle');
     const mobileLangToggle = document.getElementById('mobileLanguageToggle');
@@ -506,36 +338,53 @@
       });
     }
 
-    document.getElementById('menuBtn')?.addEventListener('click', () => document.getElementById('mobileMenu').classList.toggle('hidden'));
-
-    const IMGBB_API_KEY = '4d01c952d0e4fd8cd5cc6d81ef0fd025';
     const urlParams = new URLSearchParams(window.location.search);
     const roomId = urlParams.get('id');
     let existingImages = [];
     let imagesToKeep = [];
-    let newFiles = [];
+    // Each entry: { id: uuid, file: File, url: objectURL } — tracked by id
+    // instead of filename so two files with the same name never collide.
+    let newImages = [];
     
     if (!roomId) { document.getElementById('loadingArea').innerHTML = '<div class="text-center text-red-400">No room ID</div>'; }
     
-    firebase.auth().onAuthStateChanged(async (user) => {
+    (async () => {
+      const { data: sessionData } = await sb.auth.getSession();
+      const user = sessionData.session?.user ?? null;
       if (!user) { window.location.href = 'login.html'; return; }
+      currentUser = user;
       
       const desktopLogout = document.getElementById('desktopLogoutBtn');
       const mobileLogout = document.getElementById('mobileLogoutBtn');
       if (desktopLogout) { 
         desktopLogout.textContent = t('logout'); 
-        desktopLogout.onclick = (e) => { e.preventDefault(); firebase.auth().signOut(); window.location.href = 'login.html'; }; 
+        desktopLogout.onclick = (e) => { e.preventDefault(); sb.auth.signOut().then(() => window.location.href = 'login.html'); }; 
       }
       if (mobileLogout) { 
         mobileLogout.textContent = t('logout'); 
-        mobileLogout.onclick = (e) => { e.preventDefault(); firebase.auth().signOut(); window.location.href = 'login.html'; }; 
+        mobileLogout.onclick = (e) => { e.preventDefault(); sb.auth.signOut().then(() => window.location.href = 'login.html'); }; 
       }
       
-      const doc = await db.collection('rooms').doc(roomId).get();
-      if (!doc.exists) { document.getElementById('loadingArea').innerHTML = '<div class="text-center text-red-400">Room not found</div>'; return; }
-      const room = doc.data();
+      const { data: r, error } = await sb.from('rooms').select('*').eq('id', roomId).single();
+      if (error || !r) { document.getElementById('loadingArea').innerHTML = '<div class="text-center text-red-400">Room not found</div>'; return; }
+
+      // Ownership verification: only the listing's owner or an admin may edit it.
+      const { data: profileRow } = await sb.from('profiles').select('role').eq('id', user.id).single();
+      const isAdmin = profileRow?.role === 'admin';
+      if (r.landlord_id !== user.id && !isAdmin) {
+        sessionStorage.setItem('dashboardError', t('notAuthorizedEdit') || "You don't have permission to edit that listing.");
+        window.location.href = 'dashboard.html';
+        return;
+      }
+
+      const room = {
+        title: r.title, city: r.city, area: r.area, distance: r.distance, description: r.description,
+        features: r.features, images: r.images, phone: r.phone,
+        pricingType: r.pricing_type, monthlyPrice: r.monthly_price, yearlyPrice: r.yearly_price, price: r.price
+      };
       existingImages = room.images || [];
       imagesToKeep = [...existingImages];
+      coverKey = imagesToKeep[0] || null;
       
       // Populate form with existing room data
       document.getElementById('roomId').value = roomId;
@@ -568,7 +417,9 @@
       document.getElementById('loadingArea').style.display = 'none';
       document.getElementById('roomForm').style.display = 'block';
       updatePageLanguage();
-    });
+    })();
+    
+    let coverKey = null; // either an existing image URL, or `new:<filename>` for a not-yet-uploaded file
     
     function displayExistingImages() {
       const container = document.getElementById('existingImagesContainer');
@@ -576,54 +427,166 @@
         container.innerHTML = '<p class="text-slate-400 text-sm">' + t('noImages') + '</p>'; 
         return; 
       }
-      container.innerHTML = imagesToKeep.map((img, idx) => `<div class="existing-image"><img src="${img}" class="preview-image"><div class="remove-existing" onclick="removeExistingImage(${idx})">×</div></div>`).join('');
+      container.innerHTML = imagesToKeep.map((img, idx) => {
+        const isCover = coverKey === img;
+        return `<div class="existing-image relative inline-block">
+          <img src="${img}" class="preview-image${isCover ? ' is-cover' : ''}">
+          <div class="remove-image" onclick="removeExistingImage(${idx})">×</div>
+          ${isCover
+            ? `<div class="cover-badge">${t('coverBadge')}</div>`
+            : `<div class="cover-star" title="Set as cover photo" onclick="setCoverExisting(${idx})">☆</div>`}
+        </div>`;
+      }).join('');
     }
     
-    function removeExistingImage(idx) { imagesToKeep.splice(idx, 1); displayExistingImages(); }
+    function removeExistingImage(idx) { 
+      const removedUrl = imagesToKeep[idx];
+      imagesToKeep.splice(idx, 1); 
+      if (coverKey === removedUrl) resetCoverIfNeeded();
+      displayExistingImages(); 
+    }
+    window.removeExistingImage = removeExistingImage;
     
+    function setCoverExisting(idx) {
+      coverKey = imagesToKeep[idx];
+      displayExistingImages();
+      renderNewPreviews();
+    }
+    window.setCoverExisting = setCoverExisting;
+    
+    function resetCoverIfNeeded() {
+      if (imagesToKeep.length > 0) { coverKey = imagesToKeep[0]; return; }
+      if (newImages.length > 0) { coverKey = 'new:' + newImages[0].id; return; }
+      coverKey = null;
+    }
+    
+    // --- Image validation helpers -------------------------------------
+    // 1) file.type must claim to be an image
+    // 2) the file's actual bytes must match a known image signature
+    //    (JPEG / PNG / WEBP), so a renamed .exe with a spoofed MIME type
+    //    is still rejected.
+    function hasImageMimeType(file) {
+      return !!file.type && file.type.startsWith('image/');
+    }
+
+    function readFileHeaderHex(file, byteCount) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          const bytes = new Uint8Array(ev.target.result);
+          let hex = '';
+          for (let i = 0; i < bytes.length; i++) hex += bytes[i].toString(16).padStart(2, '0');
+          resolve(hex);
+        };
+        reader.onerror = () => reject(new Error('Could not read file'));
+        reader.readAsArrayBuffer(file.slice(0, byteCount));
+      });
+    }
+
+    async function hasValidImageSignature(file) {
+      try {
+        const hex = await readFileHeaderHex(file, 12);
+        const isJpeg = hex.startsWith('ffd8ff');
+        const isPng = hex.startsWith('89504e470d0a1a0a');
+        const isWebp = hex.startsWith('52494646') && hex.slice(16, 24) === '57454250';
+        return isJpeg || isPng || isWebp;
+      } catch {
+        return false;
+      }
+    }
+
+    async function isValidImageFile(file) {
+      if (!hasImageMimeType(file)) return false;
+      return hasValidImageSignature(file);
+    }
+
     const newImagesInput = document.getElementById('newImagesInput');
     const newPreviewContainer = document.getElementById('newPreviewContainer');
     
-    newImagesInput.addEventListener('change', (e) => {
-      const files = Array.from(e.target.files);
-      const total = imagesToKeep.length + newFiles.length + files.length;
-      if (total > 10) { alert('Max 10 images total'); newImagesInput.value = ''; return; }
-      files.forEach(file => {
-        if (file.size > 32*1024*1024) { alert(`${file.name} > 32MB`); return; }
-        newFiles.push(file);
-        const reader = new FileReader();
-        reader.onload = (ev) => {
-          const div = document.createElement('div'); div.className = 'relative inline-block';
-          div.innerHTML = `<img src="${ev.target.result}" class="preview-image"><div class="remove-image" onclick="this.parentElement.remove(); removeNewFile('${file.name}')">×</div>`;
-          newPreviewContainer.appendChild(div);
-        };
-        reader.readAsDataURL(file);
+    function renderNewPreviews() {
+      newPreviewContainer.innerHTML = '';
+      newImages.forEach(img => {
+        const isCover = coverKey === ('new:' + img.id);
+        const div = document.createElement('div'); div.className = 'relative inline-block'; div.id = `new-preview-${img.id}`;
+        div.innerHTML = `<img src="${img.url}" class="preview-image${isCover ? ' is-cover' : ''}">
+          <div class="remove-image" onclick="removeNewFile('${img.id}')">×</div>
+          ${isCover
+            ? `<div class="cover-badge">${t('coverBadge')}</div>`
+            : `<div class="cover-star" title="Set as cover photo" onclick="setCoverNew('${img.id}')">☆</div>`}`;
+        newPreviewContainer.appendChild(div);
       });
+    }
+    
+    newImagesInput.addEventListener('change', async (e) => {
+      const files = Array.from(e.target.files);
+      const total = imagesToKeep.length + newImages.length + files.length;
+      if (total > 10) { alert('Max 10 images total'); newImagesInput.value = ''; return; }
+      for (const file of files) {
+        if (file.size > 32*1024*1024) { alert(`${file.name} > 32MB`); continue; }
+        const ok = await isValidImageFile(file);
+        if (!ok) { alert(`${file.name} is not a valid image file.`); continue; }
+        const id = crypto.randomUUID();
+        newImages.push({ id, file, url: URL.createObjectURL(file) });
+        if (!coverKey) coverKey = 'new:' + id;
+      }
+      renderNewPreviews();
       newImagesInput.value = '';
     });
     
-    function removeNewFile(fileName) { newFiles = newFiles.filter(f => f.name !== fileName); }
+    function removeNewFile(id) {
+      const removed = newImages.find(img => img.id === id);
+      if (removed) URL.revokeObjectURL(removed.url);
+      newImages = newImages.filter(img => img.id !== id);
+      if (coverKey === ('new:' + id)) resetCoverIfNeeded();
+      renderNewPreviews();
+      displayExistingImages();
+    }
+    window.removeNewFile = removeNewFile;
+    
+    function setCoverNew(id) {
+      coverKey = 'new:' + id;
+      displayExistingImages();
+      renderNewPreviews();
+    }
+    window.setCoverNew = setCoverNew;
     
     async function uploadNewImages() {
-      const urls = [];
-      for (const file of newFiles) {
-        const fd = new FormData(); fd.append('key', IMGBB_API_KEY); fd.append('image', file);
-        const res = await fetch('https://api.imgbb.com/1/upload', { method: 'POST', body: fd });
-        const data = await res.json();
-        if (!data.success) throw new Error(t('errorOccurred') + 'Upload failed');
-        urls.push(data.data.url);
+      // Returns a Map of id -> uploaded public URL, keyed by id (not
+      // filename) so two files with the same name never collide.
+      const urlsById = new Map();
+      for (const img of newImages) {
+        const wrapper = document.getElementById(`new-preview-${img.id}`);
+        setImageUploadStatus(wrapper, 'uploading');
+        const ext = img.file.name.split('.').pop();
+        const path = `${currentUser.id}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+        const { error } = await sb.storage.from('room-images').upload(path, img.file);
+        if (error) { setImageUploadStatus(wrapper, 'error'); throw new Error(t('errorOccurred') + 'Upload failed'); }
+        const { data } = sb.storage.from('room-images').getPublicUrl(path);
+        urlsById.set(img.id, data.publicUrl);
+        setImageUploadStatus(wrapper, 'done');
       }
-      return urls;
+      return urlsById;
     }
     
     document.getElementById('roomForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const msgDiv = document.getElementById('messageArea');
-      msgDiv.classList.remove('hidden'); msgDiv.className = 'mb-4 p-3 rounded-lg bg-blue-500/20 text-blue-400';
-      msgDiv.innerHTML = t('uploadingImages');
+      const saveBtn = document.getElementById('saveChangesBtn');
+      msgDiv.classList.add('hidden');
+      setButtonLoading(saveBtn, true, t('savingChanges') || 'Saving changes...');
       try {
-        const newUrls = await uploadNewImages();
-        const allImages = [...imagesToKeep, ...newUrls];
+        const newUrlsById = await uploadNewImages();
+        // Build the combined list, then float the chosen cover photo to index 0 —
+        // that's what index.html/listings.html show on the room card.
+        const combined = [
+          ...imagesToKeep.map(url => ({ key: url, url })),
+          ...newImages.map(img => ({ key: 'new:' + img.id, url: newUrlsById.get(img.id) }))
+        ];
+        const coverIdx = combined.findIndex(c => c.key === coverKey);
+        const ordered = coverIdx > 0
+          ? [combined[coverIdx], ...combined.filter((_, i) => i !== coverIdx)]
+          : combined;
+        const allImages = ordered.map(c => c.url);
         
         const pricingType = document.getElementById('pricingType').value;
         const monthlyPrice = parseInt(document.getElementById('monthlyPrice').value) || 0;
@@ -632,32 +595,43 @@
         
         if (!selectedCity) { throw new Error(t('cityLabel2')); }
         
-        await db.collection('rooms').doc(roomId).update({
+        const phoneCheck = validateCameroonPhone(document.getElementById('phone').value);
+        if (!phoneCheck.isValid) { throw new Error(t('invalidPhone')); }
+        
+        const { error: updateError } = await sb.from('rooms').update({
           title: document.getElementById('title').value,
-          pricingType: pricingType,
-          monthlyPrice: monthlyPrice,
-          yearlyPrice: yearlyPrice,
+          pricing_type: pricingType,
+          monthly_price: monthlyPrice,
+          yearly_price: yearlyPrice,
           price: pricingType === 'monthly' ? monthlyPrice : (pricingType === 'yearly' ? yearlyPrice : monthlyPrice),
           city: selectedCity,
           area: document.getElementById('area').value || null,
           distance: parseFloat(document.getElementById('distance').value),
           description: document.getElementById('description').value,
           features: document.getElementById('features').value.split(',').map(f=>f.trim()).filter(f=>f),
-          phone: document.getElementById('phone').value,
-          images: allImages.slice(0,10)
-        });
+          phone: phoneCheck.normalized,
+          images: allImages.slice(0,10),
+          status: 'pending'
+        }).eq('id', roomId);
+        if (updateError) throw updateError;
+        msgDiv.classList.remove('hidden');
         msgDiv.className = 'mb-4 p-3 rounded-lg bg-green-500/20 text-green-400';
-        msgDiv.innerHTML = t('successUpdated');
-        setTimeout(() => { window.location.href = 'dashboard.html'; }, 1500);
+        msgDiv.innerHTML = t('successUpdated') + ' ' + (t('pendingReviewNotice') || 'Your changes will be reviewed by admin before going live.');
+        setTimeout(() => { window.location.href = 'dashboard.html'; }, 2200);
       } catch (error) {
+        msgDiv.classList.remove('hidden');
         msgDiv.className = 'mb-4 p-3 rounded-lg bg-red-500/20 text-red-400';
         msgDiv.innerHTML = t('errorOccurred') + error.message;
+        setButtonLoading(saveBtn, false);
       }
     });
     
     document.getElementById('deleteBtn').onclick = async () => {
       if (confirm(t('confirm') + '? ' + t('deleteRoom'))) { 
-        await db.collection('rooms').doc(roomId).delete(); 
+        const deleteBtn = document.getElementById('deleteBtn');
+        setButtonLoading(deleteBtn, true, t('deleting') || 'Deleting...');
+        const { error } = await sb.rpc('delete_room', { room_id: roomId });
+        if (error) { alert(error.message); setButtonLoading(deleteBtn, false); return; }
         window.location.href = 'dashboard.html'; 
       }
     };
@@ -671,5 +645,7 @@
         .catch(err => console.log('Service Worker registration failed', err));
     }
   </script>
+<p class="text-center text-xs text-slate-600 py-4"><a href="https://asghinlabs.com" target="_blank" rel="noopener noreferrer" style="color: #007bff; text-decoration: none; font-weight: 500;">a asghinlabs product</a></p>
+
 </body>
 </html>

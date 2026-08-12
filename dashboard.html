@@ -6,24 +6,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard - StudentStay</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-  <script src="js/firebase-config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js"></script>
   <script src="js/languages.js"></script>
+  <script src="js/shared.js"></script>
   <style>
     .bg-primary { background-color: #22C55E; }
     .text-primary { color: #22C55E; }
-    .nav-btn {
-      padding: 8px 16px;
-      border-radius: 8px;
-      transition: all 0.2s;
-      font-weight: 500;
-    }
-    .nav-btn:hover {
-      background-color: #22C55E;
-      color: white !important;
-    }
 
     /* === DARK MODE (default) === */
     body {
@@ -74,149 +63,10 @@
     }
 
     /* Navbar stays dark with white text in both modes */
-    body.light-mode nav,
-    body.light-mode .bg-slate-900\/90 {
-      background-color: #0F172A !important;
-    }
-    body.light-mode nav .text-white,
-    body.light-mode nav .text-slate-300,
-    body.light-mode nav h1,
-    body.light-mode nav p,
-    body.light-mode nav a,
-    body.light-mode nav button {
-      color: #FFFFFF !important;
-    }
-    body.light-mode #mobileMenu {
-      background-color: #1E293B !important;
-    }
-    body.light-mode #mobileMenu a,
-    body.light-mode #mobileMenu button {
-      color: #FFFFFF !important;
-    }
 
-    /* Language Selection Modal */
-    .lang-modal-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.85);
-        backdrop-filter: blur(8px);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 9999;
-        transition: all 0.3s ease;
-    }
-    .lang-modal {
-        background: #1E293B;
-        border-radius: 24px;
-        padding: 32px;
-        text-align: center;
-        max-width: 400px;
-        width: 90%;
-        border: 1px solid #334155;
-        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-        animation: modalFadeIn 0.3s ease;
-    }
-    body.light-mode .lang-modal {
-        background: #FFFFFF;
-        border-color: #E5E7EB;
-    }
-    @keyframes modalFadeIn {
-        from {
-            opacity: 0;
-            transform: scale(0.95);
-        }
-        to {
-            opacity: 1;
-            transform: scale(1);
-        }
-    }
-    .lang-flag {
-        font-size: 48px;
-        margin-bottom: 16px;
-    }
-    .lang-title {
-        font-size: 24px;
-        font-weight: bold;
-        margin-bottom: 8px;
-    }
-    .lang-subtitle {
-        font-size: 14px;
-        color: #94A3B8;
-        margin-bottom: 24px;
-    }
-    .lang-buttons {
-        display: flex;
-        gap: 16px;
-        justify-content: center;
-        flex-wrap: wrap;
-    }
-    .lang-btn {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 8px;
-        padding: 16px 24px;
-        background: #334155;
-        border: 2px solid #475569;
-        border-radius: 16px;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        min-width: 120px;
-    }
-    .lang-btn:hover {
-        transform: translateY(-2px);
-        border-color: #22C55E;
-        background: #22C55E20;
-    }
-    .lang-btn-flag {
-        font-size: 32px;
-    }
-    .lang-btn-text {
-        font-size: 18px;
-        font-weight: 600;
-    }
-    .lang-btn-sub {
-        font-size: 12px;
-        color: #94A3B8;
-    }
-    body.light-mode .lang-btn {
-        background: #F3F4F6;
-        border-color: #E5E7EB;
-    }
-    body.light-mode .lang-btn:hover {
-        background: #22C55E10;
-        border-color: #22C55E;
-    }
-    .hidden-modal {
-        display: none !important;
-    }
   </style>
 </head>
-<body>
-  <!-- Language Selection Modal -->
-  <div id="languageModal" class="lang-modal-overlay">
-      <div class="lang-modal">
-          <div class="lang-flag">🇨🇲</div>
-          <h2 class="lang-title" data-i18n="modalWelcome">Welcome to StudentStay</h2>
-          <p class="lang-subtitle" data-i18n="modalSubtitle">Bienvenue sur StudentStay</p>
-          <div class="lang-buttons">
-              <div class="lang-btn" onclick="selectLanguage('en')">
-                  <div class="lang-btn-flag">🇬🇧</div>
-                  <div class="lang-btn-text" data-i18n="modalEnglish">English</div>
-                  <div class="lang-btn-sub" data-i18n="modalEnglishSub">Continue in English</div>
-              </div>
-              <div class="lang-btn" onclick="selectLanguage('fr')">
-                  <div class="lang-btn-flag">🇫🇷</div>
-                  <div class="lang-btn-text" data-i18n="modalFrench">Français</div>
-                  <div class="lang-btn-sub" data-i18n="modalFrenchSub">Continuer en français</div>
-              </div>
-          </div>
-      </div>
-  </div>
+<body data-feedback-auth="required">
 
   <nav class="bg-slate-900/90 backdrop-blur-sm border-b border-slate-700">
     <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
@@ -231,6 +81,7 @@
         <a href="index.html" class="nav-btn text-white hover:text-primary" data-i18n="home">Home</a>
         <a href="listings.html" class="nav-btn text-slate-300 hover:text-primary" data-i18n="browse">Browse</a>
         <a href="dashboard.html" class="nav-btn text-primary hover:text-primary" data-i18n="dashboard">Dashboard</a>
+        <a href="admin.html" id="adminNavLink" style="display:none;" class="nav-btn text-slate-300 hover:text-primary" data-i18n="admin">Admin</a>
         <button id="darkModeToggle" class="nav-btn text-slate-300 hover:text-primary" data-i18n="darkLight">🌓 Dark/Light</button>
         <button id="languageToggle" class="nav-btn text-slate-300 hover:text-primary">🌐 FR/EN</button>
         <a href="#" id="logoutBtn" class="nav-btn text-slate-300 hover:text-primary" data-i18n="logout">Logout</a>
@@ -241,6 +92,7 @@
       <a href="index.html" class="nav-btn text-white hover:text-primary block text-left" data-i18n="home">Home</a>
       <a href="listings.html" class="nav-btn text-slate-300 hover:text-primary block text-left" data-i18n="browse">Browse</a>
       <a href="dashboard.html" class="nav-btn text-primary hover:text-primary block text-left" data-i18n="dashboard">Dashboard</a>
+      <a href="admin.html" id="mobileAdminNavLink" style="display:none;" class="nav-btn text-slate-300 hover:text-primary block text-left" data-i18n="admin">Admin</a>
       <button id="mobileDarkModeToggle" class="nav-btn text-slate-300 hover:text-primary text-left w-full" data-i18n="darkLight">🌓 Dark/Light</button>
       <button id="mobileLanguageToggle" class="nav-btn text-slate-300 hover:text-primary text-left w-full">🌐 FR/EN</button>
       <a href="#" id="mobileLogoutBtn" class="nav-btn text-slate-300 hover:text-primary block text-left" data-i18n="logout">Logout</a>
@@ -248,32 +100,24 @@
   </nav>
 
   <div class="max-w-4xl mx-auto px-4 py-8">
+    <div id="dashboardBanner" class="hidden mb-4 p-3 rounded-lg bg-red-500/20 text-red-400"></div>
     <div id="dashboardContent" class="bg-slate-800 rounded-xl border border-slate-700 p-6"><div class="text-center py-10 text-slate-400" data-i18n="loadingText">Loading...</div></div>
   </div>
 
+  <!-- Request Landlord Status Modal -->
+  <div id="landlordAppModal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center z-[9998] p-4">
+    <div class="bg-slate-800 border border-slate-700 rounded-xl p-6 max-w-sm w-full">
+      <h3 class="text-white font-semibold text-lg mb-2" data-i18n="requestLandlord">Request Landlord Status</h3>
+      <p class="text-slate-400 text-sm mb-4" data-i18n="landlordAppInfo">An admin will review your request. Once approved, you'll be marked as a verified landlord.</p>
+      <p id="landlordAppMsg" class="hidden text-red-400 text-sm mb-3"></p>
+      <div class="flex gap-2 justify-end">
+        <button type="button" onclick="closeLandlordModal()" class="px-4 py-2 rounded-lg text-sm text-slate-300 hover:bg-slate-700" data-i18n="cancel">Cancel</button>
+        <button type="button" id="landlordAppSubmitBtn" onclick="submitLandlordApplication()" class="bg-primary text-white px-4 py-2 rounded-lg text-sm font-semibold" data-i18n="submitApplication">Submit Request</button>
+      </div>
+    </div>
+  </div>
+
   <script>
-    function setDarkMode(isDark) {
-      if (isDark) {
-        document.body.classList.remove('light-mode');
-        localStorage.setItem('theme', 'dark');
-      } else {
-        document.body.classList.add('light-mode');
-        localStorage.setItem('theme', 'light');
-      }
-    }
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'light') setDarkMode(false);
-    else setDarkMode(true);
-
-    document.getElementById('darkModeToggle')?.addEventListener('click', () => {
-      const isDark = !document.body.classList.contains('light-mode');
-      setDarkMode(!isDark);
-    });
-    document.getElementById('mobileDarkModeToggle')?.addEventListener('click', () => {
-      const isDark = !document.body.classList.contains('light-mode');
-      setDarkMode(!isDark);
-    });
-
     // Language Toggle Buttons
     const langToggle = document.getElementById('languageToggle');
     const mobileLangToggle = document.getElementById('mobileLanguageToggle');
@@ -291,46 +135,69 @@
       });
     }
 
-    window.deleteRoom = async (roomId) => {
+    window.deleteRoom = async (roomId, btn) => {
       if (confirm(t('confirm') + '? ' + t('deleteRoom'))) {
-        await db.collection('rooms').doc(roomId).delete();
+        setButtonLoading(btn, true, t('deleting') || 'Deleting...');
+        const { error } = await sb.rpc('delete_room', { room_id: roomId });
+        if (error) { alert(error.message); setButtonLoading(btn, false); return; }
         window.location.reload();
       }
     };
 
-    document.getElementById('menuBtn')?.addEventListener('click', () => document.getElementById('mobileMenu').classList.toggle('hidden'));
-
     async function loadDashboardData() {
-      const user = firebase.auth().currentUser;
+      const user = currentUser;
       if (!user) { window.location.href = 'login.html'; return; }
       
-      const userDoc = await db.collection('users').doc(user.uid).get();
-      const userData = userDoc.data() || { fullName: user.email, role: 'user', freeListingsRemaining: 5 };
-      const applications = await db.collection('applications').where('userId', '==', user.uid).where('status', '==', 'pending').get();
-      const hasPending = !applications.empty;
-      const isLandlord = userData.role === 'landlord' || userData.role === 'admin';
-      const roomsSnapshot = await db.collection('rooms').where('landlordId', '==', user.uid).get();
+      const { data: profileRow } = await sb.from('profiles').select('*').eq('id', user.id).single();
+      const userData = profileRow
+        ? { fullName: profileRow.full_name, role: profileRow.role, freeListingsRemaining: profileRow.free_listings_remaining }
+        : { fullName: user.email, role: 'user', freeListingsRemaining: 5 };
       
+      if (userData.role === 'admin') {
+        const adminLink = document.getElementById('adminNavLink');
+        const mobileAdminLink = document.getElementById('mobileAdminNavLink');
+        if (adminLink) adminLink.style.display = '';
+        if (mobileAdminLink) mobileAdminLink.style.display = '';
+      }
+      const { data: roomRows } = await sb.from('rooms').select('*').eq('landlord_id', user.id);
+      const roomsSnapshot = { docs: (roomRows || []).map(r => ({ id: r.id, data: () => ({
+        title: r.title, city: r.city, status: r.status, pricingType: r.pricing_type,
+        monthlyPrice: r.monthly_price, yearlyPrice: r.yearly_price, price: r.price,
+        postedAs: r.posted_as, expiresAt: r.expires_at
+      }) })), empty: (roomRows || []).length === 0 };
+      
+      // Anyone can post — no role gate anymore. Just show remaining free listings.
+      const postingSection = `<div class="bg-green-500/20 border border-green-500/30 rounded-lg p-4 mb-6">
+        <p class="text-green-300 text-sm" data-i18n="freeListings">You have ${userData.freeListingsRemaining ?? 5} <span data-i18n="freeListingsRemaining">free listings remaining.</span></p>
+        <a href="post-room.html" class="inline-block mt-3 bg-primary text-white px-4 py-2 rounded-lg text-sm font-semibold" data-i18n="postNewRoom">+ Post New Room</a>
+      </div>`;
+
+      // Landlord application section — hidden once the user is already a
+      // landlord/admin, and swapped for a status message while a request
+      // is pending review.
       let landlordSection = '';
-      if (!isLandlord && !hasPending && userData.role !== 'admin') {
-        landlordSection = `<div class="bg-slate-700/50 rounded-lg p-4 mb-6">
-          <p class="text-white font-semibold mb-2" data-i18n="wantToListRooms">Want to list rooms?</p>
-          <button id="becomeLandlordBtn" class="bg-primary text-white px-4 py-2 rounded-lg text-sm font-semibold" data-i18n="requestLandlord">Request to become Landlord</button>
-        </div>`;
-      } else if (hasPending) {
-        landlordSection = `<div class="bg-yellow-500/20 border border-yellow-500/30 rounded-lg p-4 mb-6">
-          <p class="text-yellow-400 font-semibold" data-i18n="pendingApproval">⏳ Pending Approval</p>
-          <p class="text-yellow-300 text-sm" data-i18n="pendingApprovalText">Your landlord application is being reviewed.</p>
-        </div>`;
-      } else if (isLandlord) {
-        landlordSection = `<div class="bg-green-500/20 border border-green-500/30 rounded-lg p-4 mb-6">
-          <p class="text-green-400 font-semibold" data-i18n="verifiedLandlord">✅ Verified Landlord</p>
-          <p class="text-green-300 text-sm" data-i18n="freeListings">You have ${userData.freeListingsRemaining || 5} <span data-i18n="freeListingsRemaining">free listings remaining.</span></p>
-          <a href="post-room.html" class="inline-block mt-3 bg-primary text-white px-4 py-2 rounded-lg text-sm font-semibold" data-i18n="postNewRoom">+ Post New Room</a>
-        </div>`;
+      if (userData.role !== 'landlord' && userData.role !== 'admin') {
+        const { data: existingApps } = await sb.from('applications')
+          .select('id, status')
+          .eq('user_id', user.id)
+          .eq('requested_role', 'landlord')
+          .order('created_at', { ascending: false })
+          .limit(1);
+        const latestApp = (existingApps && existingApps[0]) || null;
+        if (latestApp && latestApp.status === 'pending') {
+          landlordSection = `<div class="bg-yellow-500/20 border border-yellow-500/30 rounded-lg p-4 mb-6">
+            <p class="text-yellow-300 text-sm" data-i18n="landlordAppPending">Your landlord request is pending admin review.</p>
+          </div>`;
+        } else {
+          landlordSection = `<div class="bg-slate-700/50 border border-slate-600 rounded-lg p-4 mb-6 flex justify-between items-center flex-wrap gap-3">
+            <p class="text-slate-300 text-sm" data-i18n="landlordAppPrompt">Want to list rooms as a verified landlord?</p>
+            <button onclick="openLandlordModal()" class="bg-primary text-white px-4 py-2 rounded-lg text-sm font-semibold" data-i18n="requestLandlord">Request Landlord Status</button>
+          </div>`;
+        }
       }
       
       let myRoomsHtml = '<div class="space-y-3"><h3 class="font-semibold text-white mb-3" data-i18n="myRooms">My Rooms</h3>';
+      const now = Date.now();
       for (const doc of roomsSnapshot.docs) { 
         const room = doc.data(); 
         const pricingType = room.pricingType || 'monthly';
@@ -343,15 +210,29 @@
           priceDisplay = `${(room.monthlyPrice || room.price || 0).toLocaleString()} FCFA/${t('perMonth')}`;
         }
         
+        const expiresAtMs = room.expiresAt ? new Date(room.expiresAt).getTime() : null;
+        const daysLeft = expiresAtMs ? Math.ceil((expiresAtMs - now) / (24*60*60*1000)) : null;
+        const isExpired = daysLeft !== null && daysLeft <= 0;
+        const expiringSoon = daysLeft !== null && daysLeft > 0 && daysLeft <= 5;
+        let expiryBadge = '';
+        if (room.status === 'approved' && daysLeft !== null) {
+          expiryBadge = isExpired
+            ? `<span class="text-xs px-2 py-0.5 rounded bg-red-500/20 text-red-400 ml-1" data-i18n="expired">Expired</span>`
+            : expiringSoon
+              ? `<span class="text-xs px-2 py-0.5 rounded bg-yellow-500/20 text-yellow-400 ml-1">${daysLeft}d left</span>`
+              : `<span class="text-xs px-2 py-0.5 rounded bg-slate-600 text-slate-300 ml-1">${daysLeft}d left</span>`;
+        }
+        
         myRoomsHtml += `<div class="bg-slate-700 rounded-lg p-3 flex justify-between items-center flex-wrap gap-2">
           <div>
-            <h4 class="text-white font-semibold">${escapeHtml(room.title)}</h4>
+            <h4 class="text-white font-semibold">${escapeHtml(room.title)} <span class="text-xs text-slate-400 capitalize">(${room.postedAs || 'owner'})</span></h4>
             <p class="text-slate-400 text-sm">${priceDisplay} • ${escapeHtml(room.city)}</p>
-            <span class="text-xs px-2 py-0.5 rounded ${room.status === 'approved' ? 'bg-green-500/20 text-green-400' : room.status === 'pending' ? 'bg-yellow-500/20 text-yellow-400' : 'bg-red-500/20 text-red-400'}">${room.status}</span>
+            <span class="text-xs px-2 py-0.5 rounded ${room.status === 'approved' ? 'bg-green-500/20 text-green-400' : room.status === 'pending' ? 'bg-yellow-500/20 text-yellow-400' : 'bg-red-500/20 text-red-400'}">${room.status}</span>${expiryBadge}
           </div>
           <div class="flex gap-2">
+            ${room.status === 'approved' ? `<button onclick="renewRoom('${doc.id}')" class="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700" data-i18n="renew">Renew</button>` : ''}
             <a href="edit-room.html?id=${doc.id}" class="bg-yellow-600 text-white px-3 py-1 rounded text-sm hover:bg-yellow-700" data-i18n="edit">Edit</a>
-            <button onclick="deleteRoom('${doc.id}')" class="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700" data-i18n="delete">Delete</button>
+            <button onclick="deleteRoom('${doc.id}', this)" class="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700" data-i18n="delete">Delete</button>
             <a href="details.html?id=${doc.id}" class="bg-primary text-white px-3 py-1 rounded text-sm hover:bg-green-600" data-i18n="viewDetails">View</a>
           </div>
         </div>`;
@@ -367,6 +248,7 @@
             <p class="text-slate-400 text-sm" data-i18n="role">Role: <span class="text-primary">${userData.role || 'user'}</span></p>
           </div>
         </div>
+        ${postingSection}
         ${landlordSection}
         <div class="border-t border-slate-700 pt-4">
           ${myRoomsHtml}
@@ -377,46 +259,74 @@
       
       // Re-apply translations to dynamic content
       updatePageLanguage();
-      
-      const becomeBtn = document.getElementById('becomeLandlordBtn');
-      if (becomeBtn) {
-        becomeBtn.onclick = async () => { 
-          await db.collection('applications').add({ userId: user.uid, userEmail: user.email, requestedRole: 'landlord', status: 'pending', createdAt: new Date() }); 
-          alert(t('requestLandlord') + '!'); 
-          window.location.reload(); 
-        };
-      }
     }
     
-    function escapeHtml(str) {
-      if (!str) return '';
-      return str
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;');
-    }
+    window.renewRoom = async (roomId) => {
+      const { error } = await sb.rpc('renew_room', { room_id: roomId });
+      if (error) { alert(error.message); return; }
+      loadDashboardData();
+    };
+
+    // --- Landlord application flow -------------------------------------
+    window.openLandlordModal = () => {
+      const msgEl = document.getElementById('landlordAppMsg');
+      msgEl.classList.add('hidden'); msgEl.textContent = '';
+      document.getElementById('landlordAppModal').classList.remove('hidden');
+    };
+    window.closeLandlordModal = () => {
+      document.getElementById('landlordAppModal').classList.add('hidden');
+    };
+    window.submitLandlordApplication = async () => {
+      if (!currentUser) { window.location.href = 'login.html'; return; }
+      const btn = document.getElementById('landlordAppSubmitBtn');
+      const msgEl = document.getElementById('landlordAppMsg');
+      btn.disabled = true; btn.textContent = t('submitting') || 'Submitting...';
+      const { error } = await sb.from('applications').insert({
+        user_id: currentUser.id,
+        user_email: currentUser.email,
+        requested_role: 'landlord',
+        status: 'pending'
+      });
+      btn.disabled = false; btn.textContent = t('submitApplication') || 'Submit Request';
+      if (error) {
+        msgEl.textContent = error.message;
+        msgEl.classList.remove('hidden');
+        return;
+      }
+      closeLandlordModal();
+      loadDashboardData();
+    };
+    
     
     // Listen for language changes
     window.addEventListener('languageChanged', () => {
       loadDashboardData();
     });
     
-    firebase.auth().onAuthStateChanged(async (user) => {
+    (async () => {
+      const { data } = await sb.auth.getSession();
+      const user = data.session?.user ?? null;
       if (!user) { 
         window.location.href = 'login.html'; 
         return; 
       }
+      currentUser = user;
       loadDashboardData();
+
+      const bannerMsg = sessionStorage.getItem('dashboardError');
+      if (bannerMsg) {
+        sessionStorage.removeItem('dashboardError');
+        const banner = document.getElementById('dashboardBanner');
+        if (banner) { banner.textContent = bannerMsg; banner.classList.remove('hidden'); }
+      }
       
       const mobileLogout = document.getElementById('mobileLogoutBtn');
       if (mobileLogout) {
-        mobileLogout.onclick = (e) => { e.preventDefault(); firebase.auth().signOut(); window.location.href = 'index.html'; };
+        mobileLogout.onclick = (e) => { e.preventDefault(); sb.auth.signOut().then(() => window.location.href = 'index.html'); };
       }
-    });
+    })();
     
-    document.getElementById('logoutBtn').onclick = () => { firebase.auth().signOut(); window.location.href = 'index.html'; };
+    document.getElementById('logoutBtn').onclick = () => { sb.auth.signOut().then(() => window.location.href = 'index.html'); };
   </script>
 
   <!-- Service Worker Registration -->
@@ -427,5 +337,7 @@
         .catch(err => console.log('Service Worker registration failed', err));
     }
   </script>
+<p class="text-center text-xs text-slate-600 py-4"><a href="https://asghinlabs.com" target="_blank" rel="noopener noreferrer" style="color: #007bff; text-decoration: none; font-weight: 500;">a asghinlabs product</a></p>
+
 </body>
 </html>

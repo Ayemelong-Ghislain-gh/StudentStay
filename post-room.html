@@ -6,15 +6,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Post a Room - StudentStay</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-  <script src="js/firebase-config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js"></script>
   <script src="js/languages.js"></script>
+  <script src="js/phone-validation.js"></script>
+  <script src="js/shared.js"></script>
   <style>
     .bg-primary { background-color: #22C55E; }
     .preview-image { width: 80px; height: 80px; object-fit: cover; border-radius: 8px; border: 1px solid #334155; }
+    .preview-image.is-cover { border: 2px solid #22C55E; }
     .remove-image { position: absolute; top: -8px; right: -8px; background: #ef4444; color: white; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 12px; cursor: pointer; }
+    .cover-star { position: absolute; bottom: -8px; left: -8px; background: #334155; color: #94a3b8; border-radius: 50%; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; font-size: 13px; cursor: pointer; border: 1px solid #1e293b; }
+    .cover-star.active { background: #22C55E; color: white; }
+    .cover-badge { position: absolute; bottom: -8px; left: -8px; background: #22C55E; color: white; font-size: 9px; font-weight: 700; padding: 2px 5px; border-radius: 4px; white-space: nowrap; }
     input[type="file"]::file-selector-button {
       background-color: white;
       color: black;
@@ -25,16 +29,6 @@
       cursor: pointer;
       margin-right: 12px;
       transition: background-color 0.2s;
-    }
-    .nav-btn {
-      padding: 8px 16px;
-      border-radius: 8px;
-      transition: all 0.2s;
-      font-weight: 500;
-    }
-    .nav-btn:hover {
-      background-color: #22C55E;
-      color: white !important;
     }
     /* Searchable dropdown styles */
     .searchable-dropdown {
@@ -81,133 +75,10 @@
     body.light-mode .dropdown-list { background-color: #FFFFFF; border-color: #E5E7EB; }
     body.light-mode .dropdown-item { color: #374151; }
     body.light-mode .dropdown-input { background-color: #F3F4F6; border-color: #E5E7EB; color: #111827; }
-    body.light-mode nav, body.light-mode .bg-slate-900\/90 { background-color: #0F172A !important; }
-    body.light-mode nav .text-white, body.light-mode nav .text-slate-300,
-    body.light-mode nav h1, body.light-mode nav button { color: #FFFFFF !important; }
 
-    /* Language Selection Modal */
-    .lang-modal-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.85);
-        backdrop-filter: blur(8px);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 9999;
-        transition: all 0.3s ease;
-    }
-    .lang-modal {
-        background: #1E293B;
-        border-radius: 24px;
-        padding: 32px;
-        text-align: center;
-        max-width: 400px;
-        width: 90%;
-        border: 1px solid #334155;
-        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-        animation: modalFadeIn 0.3s ease;
-    }
-    body.light-mode .lang-modal {
-        background: #FFFFFF;
-        border-color: #E5E7EB;
-    }
-    @keyframes modalFadeIn {
-        from {
-            opacity: 0;
-            transform: scale(0.95);
-        }
-        to {
-            opacity: 1;
-            transform: scale(1);
-        }
-    }
-    .lang-flag {
-        font-size: 48px;
-        margin-bottom: 16px;
-    }
-    .lang-title {
-        font-size: 24px;
-        font-weight: bold;
-        margin-bottom: 8px;
-    }
-    .lang-subtitle {
-        font-size: 14px;
-        color: #94A3B8;
-        margin-bottom: 24px;
-    }
-    .lang-buttons {
-        display: flex;
-        gap: 16px;
-        justify-content: center;
-        flex-wrap: wrap;
-    }
-    .lang-btn {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 8px;
-        padding: 16px 24px;
-        background: #334155;
-        border: 2px solid #475569;
-        border-radius: 16px;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        min-width: 120px;
-    }
-    .lang-btn:hover {
-        transform: translateY(-2px);
-        border-color: #22C55E;
-        background: #22C55E20;
-    }
-    .lang-btn-flag {
-        font-size: 32px;
-    }
-    .lang-btn-text {
-        font-size: 18px;
-        font-weight: 600;
-    }
-    .lang-btn-sub {
-        font-size: 12px;
-        color: #94A3B8;
-    }
-    body.light-mode .lang-btn {
-        background: #F3F4F6;
-        border-color: #E5E7EB;
-    }
-    body.light-mode .lang-btn:hover {
-        background: #22C55E10;
-        border-color: #22C55E;
-    }
-    .hidden-modal {
-        display: none !important;
-    }
   </style>
 </head>
 <body>
-  <!-- Language Selection Modal -->
-  <div id="languageModal" class="lang-modal-overlay">
-      <div class="lang-modal">
-          <div class="lang-flag">🇨🇲</div>
-          <h2 class="lang-title" data-i18n="modalWelcome">Welcome to StudentStay</h2>
-          <p class="lang-subtitle" data-i18n="modalSubtitle">Bienvenue sur StudentStay</p>
-          <div class="lang-buttons">
-              <div class="lang-btn" onclick="selectLanguage('en')">
-                  <div class="lang-btn-flag">🇬🇧</div>
-                  <div class="lang-btn-text" data-i18n="modalEnglish">English</div>
-                  <div class="lang-btn-sub" data-i18n="modalEnglishSub">Continue in English</div>
-              </div>
-              <div class="lang-btn" onclick="selectLanguage('fr')">
-                  <div class="lang-btn-flag">🇫🇷</div>
-                  <div class="lang-btn-text" data-i18n="modalFrench">Français</div>
-                  <div class="lang-btn-sub" data-i18n="modalFrenchSub">Continuer en français</div>
-              </div>
-          </div>
-      </div>
-  </div>
 
   <nav class="bg-slate-900/90 backdrop-blur-sm border-b border-slate-700">
     <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
@@ -263,13 +134,13 @@
         
         <div class="mb-4" id="monthlyPriceDiv">
           <label class="block text-slate-300 text-sm font-semibold mb-1" data-i18n="monthlyPriceLabel">Price (FCFA/month) *</label>
-          <input type="number" id="monthlyPrice" class="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2">
+          <input type="number" id="monthlyPrice" step="5000" min="0" class="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2">
           <p class="text-slate-500 text-xs mt-1" data-i18n="monthlyHint">For monthly payment option</p>
         </div>
         
         <div class="mb-4" id="yearlyPriceDiv" style="display:none;">
           <label class="block text-slate-300 text-sm font-semibold mb-1" data-i18n="yearlyPriceLabel">Price (FCFA/school year) *</label>
-          <input type="number" id="yearlyPrice" class="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2">
+          <input type="number" id="yearlyPrice" step="5000" min="0" class="w-full bg-slate-700 border border-slate-600 text-white rounded-lg px-3 py-2">
           <p class="text-slate-500 text-xs mt-1" data-i18n="yearlyHint">Most students pay per school year (9-10 months)</p>
         </div>
         
@@ -309,9 +180,22 @@
         </div>
         
         <div class="mb-4">
+          <label class="block text-slate-300 text-sm font-semibold mb-1" data-i18n="postedAsLabel">Posting as</label>
+          <div class="flex gap-4">
+            <label class="flex items-center gap-2 text-slate-300 text-sm cursor-pointer">
+              <input type="radio" name="postedAs" value="owner" checked class="accent-primary"> <span data-i18n="postedAsOwner">Room owner</span>
+            </label>
+            <label class="flex items-center gap-2 text-slate-300 text-sm cursor-pointer">
+              <input type="radio" name="postedAs" value="agent" class="accent-primary"> <span data-i18n="postedAsAgent">Agent</span>
+            </label>
+          </div>
+        </div>
+        
+        <div class="mb-4">
           <label class="block text-slate-300 text-sm font-semibold mb-1" data-i18n="imagesLabel">Upload Images (max 5)</label>
           <input type="file" id="imageInput" accept="image/*" multiple class="w-full text-slate-300 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:bg-white file:text-black file:font-semibold file:border file:border-gray-300 file:cursor-pointer file:hover:bg-gray-100">
-          <p class="text-slate-500 text-xs mt-1" data-i18n="imagesHint">Select up to 5 images (JPG, PNG). Uploaded to ImgBB (free).</p>
+          <p class="text-slate-500 text-xs mt-1" data-i18n="imagesHint">Select up to 5 images (JPG, PNG).</p>
+          <p class="text-slate-500 text-xs" data-i18n="coverHint">Tap the star on a photo to make it the cover photo shown on listing cards.</p>
           <div id="previewContainer" class="flex flex-wrap gap-2 mt-3"></div>
         </div>
         
@@ -374,28 +258,6 @@
       renderCities('');
     }
 
-    function setDarkMode(isDark) {
-      if (isDark) {
-        document.body.classList.remove('light-mode');
-        localStorage.setItem('theme', 'dark');
-      } else {
-        document.body.classList.add('light-mode');
-        localStorage.setItem('theme', 'light');
-      }
-    }
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'light') setDarkMode(false);
-    else setDarkMode(true);
-
-    document.getElementById('darkModeToggle')?.addEventListener('click', () => {
-      const isDark = !document.body.classList.contains('light-mode');
-      setDarkMode(!isDark);
-    });
-    document.getElementById('mobileDarkModeToggle')?.addEventListener('click', () => {
-      const isDark = !document.body.classList.contains('light-mode');
-      setDarkMode(!isDark);
-    });
-
     // Language Toggle Buttons
     const langToggle = document.getElementById('languageToggle');
     const mobileLangToggle = document.getElementById('mobileLanguageToggle');
@@ -416,8 +278,6 @@
         if (citySearch) citySearch.placeholder = t('searchCity');
       });
     }
-
-    document.getElementById('menuBtn')?.addEventListener('click', () => document.getElementById('mobileMenu').classList.toggle('hidden'));
 
     // Pricing type toggle
     const pricingType = document.getElementById('pricingType');
@@ -459,68 +319,140 @@
       }
     });
 
-    const IMGBB_API_KEY = '4d01c952d0e4fd8cd5cc6d81ef0fd025';
-    let selectedFiles = [];
+    // Each entry: { id: uuid, file: File, url: objectURL } — tracked by id
+    // instead of filename so two files with the same name never collide.
+    let selectedImages = [];
+    let coverId = null;
     let isUploading = false;
     
     const imageInput = document.getElementById('imageInput');
     const previewContainer = document.getElementById('previewContainer');
     
-    imageInput.addEventListener('change', (e) => {
-      const files = Array.from(e.target.files);
-      if (selectedFiles.length + files.length > 5) { alert(t('maxImages') || 'Max 5 images'); imageInput.value = ''; return; }
-      files.forEach(file => {
-        if (file.size > 32 * 1024 * 1024) { alert(`${file.name} > 32MB`); return; }
-        selectedFiles.push(file);
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          const div = document.createElement('div'); div.className = 'relative inline-block';
-          div.innerHTML = `<img src="${event.target.result}" class="preview-image"><div class="remove-image" onclick="this.parentElement.remove(); removeImage('${file.name}')">×</div>`;
-          previewContainer.appendChild(div);
-        };
-        reader.readAsDataURL(file);
+    function renderPreviews() {
+      previewContainer.innerHTML = '';
+      selectedImages.forEach(img => {
+        const isCover = img.id === coverId;
+        const div = document.createElement('div'); div.className = 'relative inline-block'; div.id = `preview-${img.id}`;
+        div.innerHTML = `<img src="${img.url}" class="preview-image${isCover ? ' is-cover' : ''}">
+          <div class="remove-image" onclick="removeImage('${img.id}')">×</div>
+          ${isCover
+            ? `<div class="cover-badge">${t('coverBadge')}</div>`
+            : `<div class="cover-star" title="Set as cover photo" onclick="setCoverImage('${img.id}')">☆</div>`}`;
+        previewContainer.appendChild(div);
       });
+    }
+    
+    // --- Image validation helpers -------------------------------------
+    // 1) file.type must claim to be an image
+    // 2) the file's actual bytes must match a known image signature
+    //    (JPEG / PNG / WEBP), so a renamed .exe with a spoofed MIME type
+    //    is still rejected.
+    function hasImageMimeType(file) {
+      return !!file.type && file.type.startsWith('image/');
+    }
+
+    function readFileHeaderHex(file, byteCount) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          const bytes = new Uint8Array(ev.target.result);
+          let hex = '';
+          for (let i = 0; i < bytes.length; i++) hex += bytes[i].toString(16).padStart(2, '0');
+          resolve(hex);
+        };
+        reader.onerror = () => reject(new Error('Could not read file'));
+        reader.readAsArrayBuffer(file.slice(0, byteCount));
+      });
+    }
+
+    async function hasValidImageSignature(file) {
+      try {
+        const hex = await readFileHeaderHex(file, 12);
+        const isJpeg = hex.startsWith('ffd8ff');
+        const isPng = hex.startsWith('89504e470d0a1a0a');
+        const isWebp = hex.startsWith('52494646') && hex.slice(16, 24) === '57454250';
+        return isJpeg || isPng || isWebp;
+      } catch {
+        return false;
+      }
+    }
+
+    async function isValidImageFile(file) {
+      if (!hasImageMimeType(file)) return false;
+      return hasValidImageSignature(file);
+    }
+
+    imageInput.addEventListener('change', async (e) => {
+      const files = Array.from(e.target.files);
+      if (selectedImages.length + files.length > 5) { alert(t('maxImages') || 'Max 5 images'); imageInput.value = ''; return; }
+      for (const file of files) {
+        if (file.size > 32 * 1024 * 1024) { alert(`${file.name} > 32MB`); continue; }
+        const ok = await isValidImageFile(file);
+        if (!ok) { alert(`${file.name} is not a valid image file.`); continue; }
+        const id = crypto.randomUUID();
+        selectedImages.push({ id, file, url: URL.createObjectURL(file) });
+        if (!coverId) coverId = id;
+      }
+      renderPreviews();
       imageInput.value = '';
     });
     
-    function removeImage(fileName) { selectedFiles = selectedFiles.filter(f => f.name !== fileName); }
+    function removeImage(id) {
+      const removed = selectedImages.find(img => img.id === id);
+      if (removed) URL.revokeObjectURL(removed.url);
+      selectedImages = selectedImages.filter(img => img.id !== id);
+      if (coverId === id) coverId = selectedImages[0]?.id || null;
+      renderPreviews();
+    }
+    window.removeImage = removeImage;
     
-    async function uploadToImgBB(file) {
-      const fd = new FormData(); fd.append('key', IMGBB_API_KEY); fd.append('image', file);
-      const res = await fetch('https://api.imgbb.com/1/upload', { method: 'POST', body: fd });
-      const data = await res.json();
-      if (!data.success) throw new Error(t('uploadFailed') || 'Upload failed');
-      return data.data.url;
+    function setCoverImage(id) {
+      coverId = id;
+      renderPreviews();
+    }
+    window.setCoverImage = setCoverImage;
+    
+    async function uploadToSupabase(file, userId) {
+      // Path starts with the user's own id — the storage policy in
+      // supabase_schema.sql only allows uploads into your own folder.
+      const ext = file.name.split('.').pop();
+      const path = `${userId}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+      const { error } = await sb.storage.from('room-images').upload(path, file);
+      if (error) throw new Error(t('uploadFailed') || 'Upload failed');
+      const { data } = sb.storage.from('room-images').getPublicUrl(path);
+      return data.publicUrl;
     }
     
-    firebase.auth().onAuthStateChanged(async (user) => {
+    (async () => {
+      const { data } = await sb.auth.getSession();
+      const user = data.session?.user ?? null;
       if (!user) { window.location.href = 'login.html'; return; }
+      currentUser = user;
       
       const desktopLogout = document.getElementById('desktopLogoutBtn');
       const mobileLogout = document.getElementById('mobileLogoutBtn');
       if (desktopLogout) { 
         desktopLogout.textContent = t('logout'); 
-        desktopLogout.onclick = (e) => { e.preventDefault(); firebase.auth().signOut(); window.location.href = 'login.html'; }; 
+        desktopLogout.onclick = (e) => { e.preventDefault(); sb.auth.signOut().then(() => window.location.href = 'login.html'); }; 
       }
       if (mobileLogout) { 
         mobileLogout.textContent = t('logout'); 
-        mobileLogout.onclick = (e) => { e.preventDefault(); firebase.auth().signOut(); window.location.href = 'login.html'; }; 
+        mobileLogout.onclick = (e) => { e.preventDefault(); sb.auth.signOut().then(() => window.location.href = 'login.html'); }; 
       }
       
-      const userDoc = await db.collection('users').doc(user.uid).get();
-      const userData = userDoc.data();
-      if (userData.role !== 'landlord' && userData.role !== 'admin') {
-        alert(t('onlyLandlords'));
+      const { data: profileRow } = await sb.from('profiles').select('free_listings_remaining').eq('id', user.id).single();
+      if (profileRow && profileRow.free_listings_remaining <= 0) {
+        alert(t('noFreeListings') || "You've used all your free listings for now.");
         window.location.href = 'dashboard.html';
       }
-    });
+    })();
     
     initSearchableDropdown();
     
     document.getElementById('roomForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       if (isUploading) return;
-      const user = firebase.auth().currentUser;
+      const user = currentUser;
       const title = document.getElementById('title').value;
       const pricingTypeVal = pricingType.value;
       const monthlyPriceVal = parseInt(monthlyInput.value) || 0;
@@ -530,34 +462,83 @@
       const distance = parseFloat(document.getElementById('distance').value);
       const description = document.getElementById('description').value;
       const features = document.getElementById('features').value.split(',').map(f=>f.trim());
-      const phone = document.getElementById('phone').value;
+      const phoneCheck = validateCameroonPhone(document.getElementById('phone').value);
       
       if (!city) { alert(t('selectCity')); return; }
+      if (!phoneCheck.isValid) { alert(t('invalidPhone')); return; }
+      const phone = phoneCheck.normalized;
       
       const msgDiv = document.getElementById('messageArea');
-      msgDiv.classList.remove('hidden'); msgDiv.className = 'mb-4 p-3 rounded-lg bg-blue-500/20 text-blue-400';
-      msgDiv.innerHTML = t('uploadingImages');
-      isUploading = true; const submitBtn = document.getElementById('submitBtn'); submitBtn.disabled = true; submitBtn.textContent = t('uploading');
+      msgDiv.classList.add('hidden');
+      isUploading = true;
+      const submitBtn = document.getElementById('submitBtn');
+      setButtonLoading(submitBtn, true, t('uploading') || 'Uploading...');
+      showPageLoader(t('creatingRoom') || 'Creating room...');
       try {
-        const imageUrls = await Promise.all(selectedFiles.map(file => uploadToImgBB(file)));
-        await db.collection('rooms').add({ 
-          title, pricingType: pricingTypeVal, 
-          monthlyPrice: monthlyPriceVal, yearlyPrice: yearlyPriceVal,
+        // Mark every thumbnail as "uploading", then flip each one to a
+        // checkmark or an error badge as its own upload settles.
+        selectedImages.forEach(img => setImageUploadStatus(document.getElementById(`preview-${img.id}`), 'uploading'));
+        const uploadedUrls = await Promise.all(selectedImages.map(async img => {
+          try {
+            const url = await uploadToSupabase(img.file, user.id);
+            setImageUploadStatus(document.getElementById(`preview-${img.id}`), 'done');
+            return url;
+          } catch (err) {
+            setImageUploadStatus(document.getElementById(`preview-${img.id}`), 'error');
+            throw err;
+          }
+        }));
+        // Reorder so the poster's chosen cover photo is always images[0] — that's
+        // what index.html/listings.html show on the card before someone taps in.
+        const coverIdx = selectedImages.findIndex(img => img.id === coverId);
+        const imageUrls = coverIdx > 0
+          ? [uploadedUrls[coverIdx], ...uploadedUrls.filter((_, i) => i !== coverIdx)]
+          : uploadedUrls;
+        // Note: createdAt/expiresAt/free-listing-deduction are meant to be
+        // handled automatically by the database (defaults + the
+        // `decrement_free_listings` trigger in supabase_schema.sql). We still
+        // snapshot the count beforehand so we can detect a missing trigger
+        // and fall back to a client-side decrement below.
+        const { data: beforeProfile } = await sb.from('profiles')
+          .select('free_listings_remaining').eq('id', user.id).single();
+
+        const { error } = await sb.from('rooms').insert({
+          title, pricing_type: pricingTypeVal,
+          monthly_price: monthlyPriceVal, yearly_price: yearlyPriceVal,
           price: pricingTypeVal === 'monthly' ? monthlyPriceVal : (pricingTypeVal === 'yearly' ? yearlyPriceVal : monthlyPriceVal),
-          city, area: area || null, distance, description, features, phone, 
-          images: imageUrls, landlordId: user.uid, status: 'pending', 
-          createdAt: new Date(), expiresAt: new Date(Date.now() + 30*24*60*60*1000) 
+          city, area: area || null, distance, description, features, phone,
+          images: imageUrls, landlord_id: user.id,
+          posted_as: document.querySelector('input[name="postedAs"]:checked').value
         });
-        const userDoc = await db.collection('users').doc(user.uid).get();
-        const currentFree = userDoc.data().freeListingsRemaining || 5;
-        await db.collection('users').doc(user.uid).update({ freeListingsRemaining: currentFree - 1 });
+        if (error) throw error;
+
+        // Fallback: if `free_listings_remaining` didn't move after a
+        // successful insert, the DB trigger isn't installed/firing — patch
+        // it manually so the dashboard count stays accurate. This is a
+        // best-effort, non-atomic fallback (a genuine race is possible if
+        // two listings are posted at the same instant); the real fix is
+        // making sure `decrement_free_listings` exists and is enabled.
+        if (beforeProfile && typeof beforeProfile.free_listings_remaining === 'number') {
+          const { data: afterProfile } = await sb.from('profiles')
+            .select('free_listings_remaining').eq('id', user.id).single();
+          if (afterProfile && afterProfile.free_listings_remaining === beforeProfile.free_listings_remaining) {
+            await sb.from('profiles')
+              .update({ free_listings_remaining: Math.max(0, beforeProfile.free_listings_remaining - 1) })
+              .eq('id', user.id);
+          }
+        }
+
+        hidePageLoader();
+        msgDiv.classList.remove('hidden');
         msgDiv.className = 'mb-4 p-3 rounded-lg bg-green-500/20 text-green-400';
         msgDiv.innerHTML = t('successPosted');
         setTimeout(() => { window.location.href = 'dashboard.html'; }, 2000);
       } catch (error) {
+        hidePageLoader();
+        msgDiv.classList.remove('hidden');
         msgDiv.className = 'mb-4 p-3 rounded-lg bg-red-500/20 text-red-400';
         msgDiv.innerHTML = t('errorOccurred') + error.message;
-        submitBtn.disabled = false; submitBtn.textContent = t('submitListing');
+        setButtonLoading(submitBtn, false);
         isUploading = false;
       }
     });
@@ -570,5 +551,7 @@
         .catch(err => console.log('Service Worker registration failed', err));
     }
   </script>
+<p class="text-center text-xs text-slate-600 py-4"><a href="https://asghinlabs.com" target="_blank" rel="noopener noreferrer" style="color: #007bff; text-decoration: none; font-weight: 500;">a asghinlabs product</a></p>
+
 </body>
 </html>

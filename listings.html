@@ -6,26 +6,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Browse Rooms - StudentStay</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-  <script src="js/firebase-config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js"></script>
   <script src="js/languages.js"></script>
+  <script src="js/shared.js"></script>
   <style>
     .bg-primary { background-color: #22C55E; }
     .card { background-color: #1E293B; border-radius: 16px; overflow: hidden; border: 1px solid #334155; transition: all 0.2s; }
     .card:hover { transform: translateY(-4px); box-shadow: 0 10px 25px -5px rgba(0,0,0,0.3); }
     .feature-badge { background-color: #334155; color: #CBD5E1; padding: 4px 8px; border-radius: 8px; font-size: 12px; }
-    .nav-btn {
-      padding: 8px 16px;
-      border-radius: 8px;
-      transition: all 0.2s;
-      font-weight: 500;
-    }
-    .nav-btn:hover {
-      background-color: #22C55E;
-      color: white !important;
-    }
 
     /* Searchable dropdown styles */
     .searchable-dropdown {
@@ -121,149 +110,10 @@
       color: #111827 !important;
     }
 
-    body.light-mode nav,
-    body.light-mode .bg-slate-900\/90 {
-      background-color: #0F172A !important;
-    }
-    body.light-mode nav .text-white,
-    body.light-mode nav .text-slate-300,
-    body.light-mode nav h1,
-    body.light-mode nav p,
-    body.light-mode nav a,
-    body.light-mode nav button {
-      color: #FFFFFF !important;
-    }
-    body.light-mode #mobileMenu {
-      background-color: #1E293B !important;
-    }
-    body.light-mode #mobileMenu a,
-    body.light-mode #mobileMenu button {
-      color: #FFFFFF !important;
-    }
 
-    /* Language Selection Modal */
-    .lang-modal-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.85);
-        backdrop-filter: blur(8px);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 9999;
-        transition: all 0.3s ease;
-    }
-    .lang-modal {
-        background: #1E293B;
-        border-radius: 24px;
-        padding: 32px;
-        text-align: center;
-        max-width: 400px;
-        width: 90%;
-        border: 1px solid #334155;
-        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-        animation: modalFadeIn 0.3s ease;
-    }
-    body.light-mode .lang-modal {
-        background: #FFFFFF;
-        border-color: #E5E7EB;
-    }
-    @keyframes modalFadeIn {
-        from {
-            opacity: 0;
-            transform: scale(0.95);
-        }
-        to {
-            opacity: 1;
-            transform: scale(1);
-        }
-    }
-    .lang-flag {
-        font-size: 48px;
-        margin-bottom: 16px;
-    }
-    .lang-title {
-        font-size: 24px;
-        font-weight: bold;
-        margin-bottom: 8px;
-    }
-    .lang-subtitle {
-        font-size: 14px;
-        color: #94A3B8;
-        margin-bottom: 24px;
-    }
-    .lang-buttons {
-        display: flex;
-        gap: 16px;
-        justify-content: center;
-        flex-wrap: wrap;
-    }
-    .lang-btn {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 8px;
-        padding: 16px 24px;
-        background: #334155;
-        border: 2px solid #475569;
-        border-radius: 16px;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        min-width: 120px;
-    }
-    .lang-btn:hover {
-        transform: translateY(-2px);
-        border-color: #22C55E;
-        background: #22C55E20;
-    }
-    .lang-btn-flag {
-        font-size: 32px;
-    }
-    .lang-btn-text {
-        font-size: 18px;
-        font-weight: 600;
-    }
-    .lang-btn-sub {
-        font-size: 12px;
-        color: #94A3B8;
-    }
-    body.light-mode .lang-btn {
-        background: #F3F4F6;
-        border-color: #E5E7EB;
-    }
-    body.light-mode .lang-btn:hover {
-        background: #22C55E10;
-        border-color: #22C55E;
-    }
-    .hidden-modal {
-        display: none !important;
-    }
   </style>
 </head>
 <body>
-  <!-- Language Selection Modal -->
-  <div id="languageModal" class="lang-modal-overlay">
-      <div class="lang-modal">
-          <div class="lang-flag">🇨🇲</div>
-          <h2 class="lang-title" data-i18n="modalWelcome">Welcome to StudentStay</h2>
-          <p class="lang-subtitle" data-i18n="modalSubtitle">Bienvenue sur StudentStay</p>
-          <div class="lang-buttons">
-              <div class="lang-btn" onclick="selectLanguage('en')">
-                  <div class="lang-btn-flag">🇬🇧</div>
-                  <div class="lang-btn-text" data-i18n="modalEnglish">English</div>
-                  <div class="lang-btn-sub" data-i18n="modalEnglishSub">Continue in English</div>
-              </div>
-              <div class="lang-btn" onclick="selectLanguage('fr')">
-                  <div class="lang-btn-flag">🇫🇷</div>
-                  <div class="lang-btn-text" data-i18n="modalFrench">Français</div>
-                  <div class="lang-btn-sub" data-i18n="modalFrenchSub">Continuer en français</div>
-              </div>
-          </div>
-      </div>
-  </div>
 
   <nav class="bg-slate-900/90 backdrop-blur-sm border-b border-slate-700">
     <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
@@ -347,11 +197,17 @@
     
     <p id="resultsCount" class="text-slate-300 mb-4" data-i18n="loading">Loading...</p>
     <div id="roomsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+    <div class="text-center mt-6">
+      <button id="loadMoreBtn" class="bg-slate-700 hover:bg-primary text-white px-6 py-2 rounded-lg font-medium transition" style="display:none;" data-i18n="loadMore">Load More</button>
+    </div>
   </div>
 
   <footer class="bg-slate-900 border-t border-slate-800 py-8 text-center text-slate-400 text-sm">
     <p><span class="text-primary font-bold" data-i18n="appName">StudentStay</span> — <span data-i18n="footerTagline">Find Rooms. No Stress.</span></p>
     <p class="mt-1" data-i18n="footerLocation">📍 All major university cities across Cameroon</p>
+    <p class="mt-3 text-xs text-slate-600">
+      <a href="https://asghinlabs.com" target="_blank" rel="noopener noreferrer" style="color: #007bff; text-decoration: none; font-weight: 500;">a asghinlabs product</a>
+    </p>
   </footer>
 
   <script>
@@ -411,48 +267,25 @@
     }
 
     // Helper function to get display price for card (with translations)
+    // Price math + number formatting live in js/shared.js (getRoomPricing/formatFCFA);
+    // this function only owns this page's markup.
     function getCardPriceDisplay(room) {
-      const pricingType = room.pricingType || 'monthly';
+      const { pricingType, monthlyPrice, yearlyPrice } = getRoomPricing(room);
       const perMonthText = t('perMonth');
       const perYearText = t('perYear');
       const yearlyOptionText = t('yearlyOption');
       
       if (pricingType === 'yearly') {
-        const yearlyPrice = room.yearlyPrice || room.price || 0;
-        return `<div class="text-green-400 font-bold text-2xl">${yearlyPrice.toLocaleString()} FCFA<span class="text-sm text-slate-300">${perYearText}</span></div>`;
+        return `<div class="text-green-400 font-bold text-2xl">${formatFCFA(yearlyPrice)}<span class="text-sm text-slate-300">${perYearText}</span></div>`;
       } 
       else if (pricingType === 'both') {
-        const monthlyPrice = room.monthlyPrice || room.price || 0;
-        return `<div class="text-green-400 font-bold text-xl">${monthlyPrice.toLocaleString()} FCFA<span class="text-sm text-slate-300">${perMonthText}</span></div>
+        return `<div class="text-green-400 font-bold text-xl">${formatFCFA(monthlyPrice)}<span class="text-sm text-slate-300">${perMonthText}</span></div>
                 <div class="text-green-400/80 font-semibold text-sm">${yearlyOptionText}</div>`;
       }
       else {
-        const monthlyPrice = room.monthlyPrice || room.price || 0;
-        return `<div class="text-green-400 font-bold text-2xl">${monthlyPrice.toLocaleString()} FCFA<span class="text-sm text-slate-300">${perMonthText}</span></div>`;
+        return `<div class="text-green-400 font-bold text-2xl">${formatFCFA(monthlyPrice)}<span class="text-sm text-slate-300">${perMonthText}</span></div>`;
       }
     }
-
-    function setDarkMode(isDark) {
-      if (isDark) {
-        document.body.classList.remove('light-mode');
-        localStorage.setItem('theme', 'dark');
-      } else {
-        document.body.classList.add('light-mode');
-        localStorage.setItem('theme', 'light');
-      }
-    }
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'light') setDarkMode(false);
-    else setDarkMode(true);
-
-    document.getElementById('darkModeToggle')?.addEventListener('click', () => {
-      const isDark = !document.body.classList.contains('light-mode');
-      setDarkMode(!isDark);
-    });
-    document.getElementById('mobileDarkModeToggle')?.addEventListener('click', () => {
-      const isDark = !document.body.classList.contains('light-mode');
-      setDarkMode(!isDark);
-    });
 
     // Language Toggle Buttons
     const langToggle = document.getElementById('languageToggle');
@@ -476,33 +309,23 @@
       });
     }
 
-    document.getElementById('menuBtn')?.addEventListener('click', () => document.getElementById('mobileMenu').classList.toggle('hidden'));
-    
-    firebase.auth().onAuthStateChanged((user) => {
+    function updateAuthButtons(user) {
       const desktopBtn = document.getElementById('desktopLogoutBtn'), mobileBtn = document.getElementById('mobileLogoutBtn');
       if (user) {
-        if (desktopBtn) { desktopBtn.textContent = t('logout'); desktopBtn.onclick = (e) => { e.preventDefault(); firebase.auth().signOut(); window.location.href = 'login.html'; }; }
-        if (mobileBtn) { mobileBtn.textContent = t('logout'); mobileBtn.onclick = (e) => { e.preventDefault(); firebase.auth().signOut(); window.location.href = 'login.html'; }; }
+        if (desktopBtn) { desktopBtn.textContent = t('logout'); desktopBtn.onclick = (e) => { e.preventDefault(); sb.auth.signOut().then(() => window.location.href = 'login.html'); }; }
+        if (mobileBtn) { mobileBtn.textContent = t('logout'); mobileBtn.onclick = (e) => { e.preventDefault(); sb.auth.signOut().then(() => window.location.href = 'login.html'); }; }
       } else {
         if (desktopBtn) { desktopBtn.textContent = t('login'); desktopBtn.href = 'login.html'; desktopBtn.onclick = null; }
         if (mobileBtn) { mobileBtn.textContent = t('login'); mobileBtn.href = 'login.html'; mobileBtn.onclick = null; }
       }
-    });
+    }
+    sb.auth.getSession().then(({ data }) => updateAuthButtons(data.session?.user ?? null));
+    sb.auth.onAuthStateChange((_event, session) => updateAuthButtons(session?.user ?? null));
     
     // Listen for language changes
     window.addEventListener('languageChanged', () => {
       displayRooms();
-      // Update login/logout buttons
-      const user = firebase.auth().currentUser;
-      const desktopBtn = document.getElementById('desktopLogoutBtn');
-      const mobileBtn = document.getElementById('mobileLogoutBtn');
-      if (user) {
-        if (desktopBtn) desktopBtn.textContent = t('logout');
-        if (mobileBtn) mobileBtn.textContent = t('logout');
-      } else {
-        if (desktopBtn) desktopBtn.textContent = t('login');
-        if (mobileBtn) mobileBtn.textContent = t('login');
-      }
+      updateAuthButtons(currentUser);
       // Update filter dropdown options text
       const pricingFilter = document.getElementById('pricingTypeFilter');
       if (pricingFilter) {
@@ -518,17 +341,62 @@
     });
     
     let allRooms = [], filteredRooms = [];
-    
-    async function loadRooms() {
+    const PAGE_SIZE = 50;
+    let pageOffset = 0;
+    let hasMoreRooms = true;
+    let isLoadingRooms = false;
+
+    async function loadRooms(isLoadMore = false) {
       const grid = document.getElementById('roomsGrid');
-      grid.innerHTML = '<div class="col-span-full text-center text-slate-300 py-10" data-i18n="loading">Loading...</div>';
+      const loadMoreBtn = document.getElementById('loadMoreBtn');
+      if (isLoadingRooms) return;
+      isLoadingRooms = true;
+
+      if (!isLoadMore) {
+        pageOffset = 0;
+        hasMoreRooms = true;
+        allRooms = [];
+        grid.innerHTML = getSkeletonCards(6);
+      } else {
+        setButtonLoading(loadMoreBtn, true, t('loading') || 'Loading...');
+      }
+
       try {
-        const snapshot = await db.collection('rooms').where('status', '==', 'approved').get();
-        allRooms = []; snapshot.forEach(doc => allRooms.push({ id: doc.id, ...doc.data() }));
-        filteredRooms = [...allRooms]; displayRooms();
+        // .range() alone paginates to PAGE_SIZE rows (offset..offset+PAGE_SIZE-1);
+        // calling .limit() as well would overwrite the same Range header, so only .range() is used here.
+        const nowIso = new Date().toISOString();
+        const { data, error } = await sb.from('rooms').select('*')
+          .eq('status', 'approved')
+          .or(`expires_at.gt.${nowIso},expires_at.is.null`)
+          .order('id', { ascending: false })
+          .range(pageOffset, pageOffset + PAGE_SIZE - 1);
+        if (error) throw error;
+
+        const newRooms = (data || []).map(r => ({
+          id: r.id, title: r.title, city: r.city, distance: r.distance,
+          images: r.images, features: r.features,
+          pricingType: r.pricing_type, monthlyPrice: r.monthly_price, yearlyPrice: r.yearly_price, price: r.price
+        }));
+
+        allRooms = isLoadMore ? [...allRooms, ...newRooms] : newRooms;
+        hasMoreRooms = newRooms.length === PAGE_SIZE;
+        pageOffset += newRooms.length;
+
+        // Re-apply whatever filters are currently active (if any) across all rooms loaded so far.
+        applyFilters();
+        updateLoadMoreButton();
       } catch (error) { 
         grid.innerHTML = '<div class="col-span-full text-center text-red-400 py-10" data-i18n="errorLoading">Error loading rooms</div>';
+      } finally {
+        isLoadingRooms = false;
+        setButtonLoading(loadMoreBtn, false);
+        loadMoreBtn.textContent = t('loadMore') || 'Load More';
       }
+    }
+
+    function updateLoadMoreButton() {
+      const loadMoreBtn = document.getElementById('loadMoreBtn');
+      loadMoreBtn.style.display = hasMoreRooms ? 'inline-block' : 'none';
     }
     
     function displayRooms() {
@@ -618,21 +486,13 @@
       updateActiveFiltersDisplay('', '', 0, Infinity);
     }
     
-    function escapeHtml(str) {
-      if (!str) return '';
-      return str
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;');
-    }
     
     document.getElementById('applyFilters').onclick = applyFilters;
     document.getElementById('resetFilters').onclick = resetFilters;
     
     document.getElementById('minPrice').addEventListener('keypress', (e) => { if (e.key === 'Enter') applyFilters(); });
     document.getElementById('maxPrice').addEventListener('keypress', (e) => { if (e.key === 'Enter') applyFilters(); });
+    document.getElementById('loadMoreBtn').addEventListener('click', () => loadRooms(true));
     
     initCityDropdown();
     loadRooms();
@@ -646,5 +506,6 @@
         .catch(err => console.log('Service Worker registration failed', err));
     }
   </script>
+
 </body>
 </html>

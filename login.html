@@ -6,24 +6,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Login - StudentStay</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-  <script src="js/firebase-config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js"></script>
   <script src="js/languages.js"></script>
+  <script src="js/phone-validation.js"></script>
+  <script src="js/shared.js"></script>
   <style>
     .bg-primary { background-color: #22C55E; }
     .text-primary { color: #22C55E; }
-    .nav-btn {
-      padding: 8px 16px;
-      border-radius: 8px;
-      transition: all 0.2s;
-      font-weight: 500;
-    }
-    .nav-btn:hover {
-      background-color: #22C55E;
-      color: white !important;
-    }
 
     /* === DARK MODE (default) === */
     body {
@@ -54,149 +44,10 @@
     body.light-mode .text-red-400 { color: #DC2626 !important; }
 
     /* Navbar stays dark with white text in both modes */
-    body.light-mode nav,
-    body.light-mode .bg-slate-900\/90 {
-      background-color: #0F172A !important;
-    }
-    body.light-mode nav .text-white,
-    body.light-mode nav .text-slate-300,
-    body.light-mode nav h1,
-    body.light-mode nav p,
-    body.light-mode nav a,
-    body.light-mode nav button {
-      color: #FFFFFF !important;
-    }
-    body.light-mode #mobileMenu {
-      background-color: #1E293B !important;
-    }
-    body.light-mode #mobileMenu a,
-    body.light-mode #mobileMenu button {
-      color: #FFFFFF !important;
-    }
 
-    /* Language Selection Modal */
-    .lang-modal-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.85);
-        backdrop-filter: blur(8px);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 9999;
-        transition: all 0.3s ease;
-    }
-    .lang-modal {
-        background: #1E293B;
-        border-radius: 24px;
-        padding: 32px;
-        text-align: center;
-        max-width: 400px;
-        width: 90%;
-        border: 1px solid #334155;
-        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-        animation: modalFadeIn 0.3s ease;
-    }
-    body.light-mode .lang-modal {
-        background: #FFFFFF;
-        border-color: #E5E7EB;
-    }
-    @keyframes modalFadeIn {
-        from {
-            opacity: 0;
-            transform: scale(0.95);
-        }
-        to {
-            opacity: 1;
-            transform: scale(1);
-        }
-    }
-    .lang-flag {
-        font-size: 48px;
-        margin-bottom: 16px;
-    }
-    .lang-title {
-        font-size: 24px;
-        font-weight: bold;
-        margin-bottom: 8px;
-    }
-    .lang-subtitle {
-        font-size: 14px;
-        color: #94A3B8;
-        margin-bottom: 24px;
-    }
-    .lang-buttons {
-        display: flex;
-        gap: 16px;
-        justify-content: center;
-        flex-wrap: wrap;
-    }
-    .lang-btn {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 8px;
-        padding: 16px 24px;
-        background: #334155;
-        border: 2px solid #475569;
-        border-radius: 16px;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        min-width: 120px;
-    }
-    .lang-btn:hover {
-        transform: translateY(-2px);
-        border-color: #22C55E;
-        background: #22C55E20;
-    }
-    .lang-btn-flag {
-        font-size: 32px;
-    }
-    .lang-btn-text {
-        font-size: 18px;
-        font-weight: 600;
-    }
-    .lang-btn-sub {
-        font-size: 12px;
-        color: #94A3B8;
-    }
-    body.light-mode .lang-btn {
-        background: #F3F4F6;
-        border-color: #E5E7EB;
-    }
-    body.light-mode .lang-btn:hover {
-        background: #22C55E10;
-        border-color: #22C55E;
-    }
-    .hidden-modal {
-        display: none !important;
-    }
   </style>
 </head>
 <body>
-  <!-- Language Selection Modal -->
-  <div id="languageModal" class="lang-modal-overlay">
-      <div class="lang-modal">
-          <div class="lang-flag">🇨🇲</div>
-          <h2 class="lang-title" data-i18n="modalWelcome">Welcome to StudentStay</h2>
-          <p class="lang-subtitle" data-i18n="modalSubtitle">Bienvenue sur StudentStay</p>
-          <div class="lang-buttons">
-              <div class="lang-btn" onclick="selectLanguage('en')">
-                  <div class="lang-btn-flag">🇬🇧</div>
-                  <div class="lang-btn-text" data-i18n="modalEnglish">English</div>
-                  <div class="lang-btn-sub" data-i18n="modalEnglishSub">Continue in English</div>
-              </div>
-              <div class="lang-btn" onclick="selectLanguage('fr')">
-                  <div class="lang-btn-flag">🇫🇷</div>
-                  <div class="lang-btn-text" data-i18n="modalFrench">Français</div>
-                  <div class="lang-btn-sub" data-i18n="modalFrenchSub">Continuer en français</div>
-              </div>
-          </div>
-      </div>
-  </div>
 
   <nav class="bg-slate-900/90 backdrop-blur-sm border-b border-slate-700">
     <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
@@ -248,28 +99,6 @@
   </div>
 
   <script>
-    function setDarkMode(isDark) {
-      if (isDark) {
-        document.body.classList.remove('light-mode');
-        localStorage.setItem('theme', 'dark');
-      } else {
-        document.body.classList.add('light-mode');
-        localStorage.setItem('theme', 'light');
-      }
-    }
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'light') setDarkMode(false);
-    else setDarkMode(true);
-
-    document.getElementById('darkModeToggle')?.addEventListener('click', () => {
-      const isDark = !document.body.classList.contains('light-mode');
-      setDarkMode(!isDark);
-    });
-    document.getElementById('mobileDarkModeToggle')?.addEventListener('click', () => {
-      const isDark = !document.body.classList.contains('light-mode');
-      setDarkMode(!isDark);
-    });
-
     // Language Toggle Buttons
     const langToggle = document.getElementById('languageToggle');
     const mobileLangToggle = document.getElementById('mobileLanguageToggle');
@@ -295,8 +124,6 @@
         document.getElementById('doSignup').textContent = t('createAccount');
       });
     }
-
-    document.getElementById('menuBtn')?.addEventListener('click', () => document.getElementById('mobileMenu').classList.toggle('hidden'));
 
     // Listen for language changes
     window.addEventListener('languageChanged', () => {
@@ -332,11 +159,14 @@
     };
     
     document.getElementById('doLogin').onclick = async () => { 
+      const btn = document.getElementById('doLogin');
+      setButtonLoading(btn, true, t('loggingIn') || 'Logging in...');
       try { 
-        await firebase.auth().signInWithEmailAndPassword(
-          document.getElementById('loginEmail').value, 
-          document.getElementById('loginPassword').value
-        ); 
+        const { error } = await sb.auth.signInWithPassword({
+          email: document.getElementById('loginEmail').value,
+          password: document.getElementById('loginPassword').value
+        });
+        if (error) throw error;
         msgDiv.className = 'mt-4 text-center text-sm p-2 rounded bg-green-500/20 text-green-400'; 
         msgDiv.textContent = t('loginSuccess'); 
         msgDiv.classList.remove('hidden');
@@ -345,27 +175,34 @@
         msgDiv.className = 'mt-4 text-center text-sm p-2 rounded bg-red-500/20 text-red-400'; 
         msgDiv.textContent = error.message; 
         msgDiv.classList.remove('hidden'); 
+        setButtonLoading(btn, false);
       } 
     };
     
     document.getElementById('doSignup').onclick = async () => {
+      const btn = document.getElementById('doSignup');
       const name = document.getElementById('signupName').value, 
             email = document.getElementById('signupEmail').value, 
             phone = document.getElementById('signupPhone').value, 
             password = document.getElementById('signupPassword').value;
-      const phoneRegex = /^[236][0-9]{8}$/;
-      if (!phoneRegex.test(phone)) { 
+      const phoneCheck = validateCameroonPhone(phone);
+      if (!phoneCheck.isValid) { 
         msgDiv.className = 'mt-4 text-center text-sm p-2 rounded bg-red-500/20 text-red-400'; 
         msgDiv.textContent = t('invalidPhone'); 
         msgDiv.classList.remove('hidden'); 
         return; 
       }
+      setButtonLoading(btn, true, t('creatingAccount') || 'Creating account...');
       try {
-        const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
-        await db.collection('users').doc(userCredential.user.uid).set({ 
-          fullName: name, email: email, phone: phone, role: 'user', 
-          freeListingsRemaining: 5, createdAt: new Date() 
+        // full_name/phone travel in via options.data — a database trigger
+        // (see supabase_schema.sql) reads these and creates the profile row
+        // automatically. We never insert into profiles directly from the
+        // client, which is what stops anyone from setting their own role.
+        const { error } = await sb.auth.signUp({
+          email, password,
+          options: { data: { full_name: name, phone: phoneCheck.normalized } }
         });
+        if (error) throw error;
         msgDiv.className = 'mt-4 text-center text-sm p-2 rounded bg-green-500/20 text-green-400'; 
         msgDiv.textContent = t('accountCreated'); 
         msgDiv.classList.remove('hidden');
@@ -374,6 +211,7 @@
         msgDiv.className = 'mt-4 text-center text-sm p-2 rounded bg-red-500/20 text-red-400'; 
         msgDiv.textContent = error.message; 
         msgDiv.classList.remove('hidden'); 
+        setButtonLoading(btn, false);
       }
     };
   </script>
@@ -386,5 +224,7 @@
         .catch(err => console.log('Service Worker registration failed', err));
     }
   </script>
+<p class="text-center text-xs text-slate-600 py-4"><a href="https://asghinlabs.com" target="_blank" rel="noopener noreferrer" style="color: #007bff; text-decoration: none; font-weight: 500;">a asghinlabs product</a></p>
+
 </body>
 </html>

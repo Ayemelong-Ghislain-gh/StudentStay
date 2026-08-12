@@ -6,25 +6,71 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Room Details - StudentStay</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-  <script src="js/firebase-config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js"></script>
   <script src="js/languages.js"></script>
+  <script src="js/shared.js"></script>
   <style>
     .bg-primary { background-color: #22C55E; }
     .bg-whatsapp { background-color: #25D366; }
     .bg-whatsapp:hover { background-color: #1da851; }
-    .nav-btn {
-      padding: 8px 16px;
-      border-radius: 8px;
-      transition: all 0.2s;
-      font-weight: 500;
+
+    /* === Photo carousel (simple slide track — one photo visible at a time) === */
+    .carousel-wrap {
+      position: relative;
+      width: 100%;
+      height: 320px;
+      overflow: hidden;
+      background: #0F172A;
     }
-    .nav-btn:hover {
-      background-color: #22C55E;
-      color: white !important;
+    .carousel-track {
+      display: flex;
+      height: 100%;
+      transition: transform 0.4s ease;
     }
+    .carousel-track img {
+      flex: 0 0 100%;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      user-select: none;
+    }
+    .carousel-btns {
+      position: absolute;
+      bottom: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 20px;
+      z-index: 5;
+    }
+    .carousel-btn {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      background: rgba(15,23,42,0.7);
+      border: 2px solid #fff;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      color: #fff;
+      font-size: 18px;
+      user-select: none;
+    }
+    .carousel-btn:active { background: #22C55E; }
+    .carousel-dots {
+      position: absolute;
+      top: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 6px;
+      z-index: 5;
+    }
+    .carousel-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.4);
+    }
+    .carousel-dot.active { background: #22C55E; }
 
     /* === DARK MODE (default) === */
     body {
@@ -54,25 +100,6 @@
     body.light-mode .feature-badge { background-color: #E5E7EB; color: #111827; }
 
     /* Navbar stays dark with white text in both modes */
-    body.light-mode nav,
-    body.light-mode .bg-slate-900\/90 {
-      background-color: #0F172A !important;
-    }
-    body.light-mode nav .text-white,
-    body.light-mode nav .text-slate-300,
-    body.light-mode nav h1,
-    body.light-mode nav p,
-    body.light-mode nav a,
-    body.light-mode nav button {
-      color: #FFFFFF !important;
-    }
-    body.light-mode #mobileMenu {
-      background-color: #1E293B !important;
-    }
-    body.light-mode #mobileMenu a,
-    body.light-mode #mobileMenu button {
-      color: #FFFFFF !important;
-    }
 
     /* Price card styles */
     .price-card {
@@ -88,129 +115,9 @@
       border-left: 3px solid #3B82F6;
     }
 
-    /* Language Selection Modal */
-    .lang-modal-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.85);
-        backdrop-filter: blur(8px);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 9999;
-        transition: all 0.3s ease;
-    }
-    .lang-modal {
-        background: #1E293B;
-        border-radius: 24px;
-        padding: 32px;
-        text-align: center;
-        max-width: 400px;
-        width: 90%;
-        border: 1px solid #334155;
-        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-        animation: modalFadeIn 0.3s ease;
-    }
-    body.light-mode .lang-modal {
-        background: #FFFFFF;
-        border-color: #E5E7EB;
-    }
-    @keyframes modalFadeIn {
-        from {
-            opacity: 0;
-            transform: scale(0.95);
-        }
-        to {
-            opacity: 1;
-            transform: scale(1);
-        }
-    }
-    .lang-flag {
-        font-size: 48px;
-        margin-bottom: 16px;
-    }
-    .lang-title {
-        font-size: 24px;
-        font-weight: bold;
-        margin-bottom: 8px;
-    }
-    .lang-subtitle {
-        font-size: 14px;
-        color: #94A3B8;
-        margin-bottom: 24px;
-    }
-    .lang-buttons {
-        display: flex;
-        gap: 16px;
-        justify-content: center;
-        flex-wrap: wrap;
-    }
-    .lang-btn {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 8px;
-        padding: 16px 24px;
-        background: #334155;
-        border: 2px solid #475569;
-        border-radius: 16px;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        min-width: 120px;
-    }
-    .lang-btn:hover {
-        transform: translateY(-2px);
-        border-color: #22C55E;
-        background: #22C55E20;
-    }
-    .lang-btn-flag {
-        font-size: 32px;
-    }
-    .lang-btn-text {
-        font-size: 18px;
-        font-weight: 600;
-    }
-    .lang-btn-sub {
-        font-size: 12px;
-        color: #94A3B8;
-    }
-    body.light-mode .lang-btn {
-        background: #F3F4F6;
-        border-color: #E5E7EB;
-    }
-    body.light-mode .lang-btn:hover {
-        background: #22C55E10;
-        border-color: #22C55E;
-    }
-    .hidden-modal {
-        display: none !important;
-    }
   </style>
 </head>
 <body>
-  <!-- Language Selection Modal -->
-  <div id="languageModal" class="lang-modal-overlay">
-      <div class="lang-modal">
-          <div class="lang-flag">🇨🇲</div>
-          <h2 class="lang-title" data-i18n="modalWelcome">Welcome to StudentStay</h2>
-          <p class="lang-subtitle" data-i18n="modalSubtitle">Bienvenue sur StudentStay</p>
-          <div class="lang-buttons">
-              <div class="lang-btn" onclick="selectLanguage('en')">
-                  <div class="lang-btn-flag">🇬🇧</div>
-                  <div class="lang-btn-text" data-i18n="modalEnglish">English</div>
-                  <div class="lang-btn-sub" data-i18n="modalEnglishSub">Continue in English</div>
-              </div>
-              <div class="lang-btn" onclick="selectLanguage('fr')">
-                  <div class="lang-btn-flag">🇫🇷</div>
-                  <div class="lang-btn-text" data-i18n="modalFrench">Français</div>
-                  <div class="lang-btn-sub" data-i18n="modalFrenchSub">Continuer en français</div>
-              </div>
-          </div>
-      </div>
-  </div>
 
   <nav class="bg-slate-900/90 backdrop-blur-sm border-b border-slate-700">
     <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
@@ -251,72 +158,45 @@
 
   <script>
     // Helper function to format price display based on pricing type (with translations)
+    // Price math + number formatting live in js/shared.js (getRoomPricing/formatFCFA);
+    // this function only owns this page's markup.
     function formatPriceDisplay(room) {
-      const pricingType = room.pricingType || 'monthly';
+      const { pricingType, monthlyPrice, yearlyPrice, yearlyEquivalent, savings } = getRoomPricing(room);
       
       if (pricingType === 'yearly') {
-        const yearlyPrice = room.yearlyPrice || room.price || 0;
         return `
           <div class="price-yearly-card mb-2">
-            <div class="text-3xl font-bold text-blue-400">${yearlyPrice.toLocaleString()} FCFA</div>
+            <div class="text-3xl font-bold text-blue-400">${formatFCFA(yearlyPrice)}</div>
             <div class="text-slate-400 text-sm">${t('yearlyPrice')}</div>
             <div class="text-slate-500 text-xs mt-1">💡 ${t('yearlyNote')}</div>
           </div>
         `;
       } 
       else if (pricingType === 'both') {
-        const monthlyPrice = room.monthlyPrice || room.price || 0;
-        const yearlyPrice = room.yearlyPrice || (monthlyPrice * 9) || 0;
-        const expectedYearly = monthlyPrice * 9;
-        const savings = expectedYearly - yearlyPrice;
-        const savingsText = savings > 0 ? `<span class="text-green-400 text-sm ml-2">(${t('saveAmount')} ${savings.toLocaleString()} FCFA!)</span>` : '';
+        const savingsText = savings > 0 ? `<span class="text-green-400 text-sm ml-2">(${t('saveAmount')} ${formatFCFA(savings)}!)</span>` : '';
         
         return `
           <div class="price-card mb-3">
-            <div class="text-2xl font-bold text-primary">${monthlyPrice.toLocaleString()} FCFA</div>
+            <div class="text-2xl font-bold text-primary">${formatFCFA(monthlyPrice)}</div>
             <div class="text-slate-400 text-sm">${t('bothMonthly')}</div>
           </div>
           <div class="price-yearly-card">
-            <div class="text-2xl font-bold text-blue-400">${yearlyPrice.toLocaleString()} FCFA ${savingsText}</div>
+            <div class="text-2xl font-bold text-blue-400">${formatFCFA(yearlyPrice)} ${savingsText}</div>
             <div class="text-slate-400 text-sm">${t('bothYearly')}</div>
             <div class="text-slate-500 text-xs mt-1">💰 ${t('bothSavings')}</div>
           </div>
         `;
       }
       else { // monthly (default)
-        const monthlyPrice = room.monthlyPrice || room.price || 0;
-        const yearlyEquivalent = monthlyPrice * 9;
         return `
           <div class="price-card mb-2">
-            <div class="text-3xl font-bold text-primary">${monthlyPrice.toLocaleString()} FCFA</div>
+            <div class="text-3xl font-bold text-primary">${formatFCFA(monthlyPrice)}</div>
             <div class="text-slate-400 text-sm">${t('monthlyPrice')}</div>
-            <div class="text-slate-500 text-xs mt-1">≈ ${yearlyEquivalent.toLocaleString()} FCFA ${t('yearlyPrice')}</div>
+            <div class="text-slate-500 text-xs mt-1">≈ ${formatFCFA(yearlyEquivalent)} ${t('yearlyPrice')}</div>
           </div>
         `;
       }
     }
-
-    function setDarkMode(isDark) {
-      if (isDark) {
-        document.body.classList.remove('light-mode');
-        localStorage.setItem('theme', 'dark');
-      } else {
-        document.body.classList.add('light-mode');
-        localStorage.setItem('theme', 'light');
-      }
-    }
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'light') setDarkMode(false);
-    else setDarkMode(true);
-
-    document.getElementById('darkModeToggle')?.addEventListener('click', () => {
-      const isDark = !document.body.classList.contains('light-mode');
-      setDarkMode(!isDark);
-    });
-    document.getElementById('mobileDarkModeToggle')?.addEventListener('click', () => {
-      const isDark = !document.body.classList.contains('light-mode');
-      setDarkMode(!isDark);
-    });
 
     // Language Toggle Buttons
     const langToggle = document.getElementById('languageToggle');
@@ -336,8 +216,6 @@
       });
     }
 
-    document.getElementById('menuBtn')?.addEventListener('click', () => document.getElementById('mobileMenu').classList.toggle('hidden'));
-
     const urlParams = new URLSearchParams(window.location.search);
     const roomId = urlParams.get('id');
     if (!roomId) document.getElementById('roomContent').innerHTML = '<div class="p-8 text-center text-red-400">No room ID</div>';
@@ -347,29 +225,61 @@
     async function loadRoomData() {
       if (!roomId) return;
       
-      const doc = await db.collection('rooms').doc(roomId).get();
-      if (!doc.exists) { 
-        document.getElementById('roomContent').innerHTML = '<div class="p-8 text-center text-red-400">Room not found</div>'; 
+      const nowIso = new Date().toISOString();
+      const { data: r, error } = await sb.from('rooms')
+        .select('*')
+        .eq('id', roomId)
+        .eq('status', 'approved')
+        .or(`expires_at.gt.${nowIso},expires_at.is.null`)
+        .maybeSingle();
+      if (error || !r) { 
+        document.getElementById('roomContent').innerHTML = '<div class="p-8 text-center text-red-400">Listing not available</div>'; 
         return; 
       }
-      room = doc.data();
+      room = {
+        title: r.title, city: r.city, area: r.area, distance: r.distance, description: r.description,
+        features: r.features, images: r.images, phone: r.phone, landlordId: r.landlord_id,
+        pricingType: r.pricing_type, monthlyPrice: r.monthly_price, yearlyPrice: r.yearly_price, price: r.price
+      };
       
       // Get the display price for WhatsApp message
-      const displayPrice = room.pricingType === 'yearly' 
-        ? `${(room.yearlyPrice || room.price || 0).toLocaleString()} FCFA ${t('yearlyPrice')}`
-        : (room.pricingType === 'both'
-          ? `${(room.monthlyPrice || room.price || 0).toLocaleString()} FCFA/${t('monthlyPrice')} or ${(room.yearlyPrice || (room.monthlyPrice * 9) || 0).toLocaleString()} FCFA/${t('yearlyPrice')}`
-          : `${(room.monthlyPrice || room.price || 0).toLocaleString()} FCFA/${t('monthlyPrice')}`);
+      const roomPricing = getRoomPricing(room);
+      const displayPrice = roomPricing.pricingType === 'yearly' 
+        ? `${formatFCFA(roomPricing.yearlyPrice)} ${t('yearlyPrice')}`
+        : (roomPricing.pricingType === 'both'
+          ? `${formatFCFA(roomPricing.monthlyPrice)}/${t('monthlyPrice')} or ${formatFCFA(roomPricing.yearlyPrice)}/${t('yearlyPrice')}`
+          : `${formatFCFA(roomPricing.monthlyPrice)}/${t('monthlyPrice')}`);
       
       const msg = encodeURIComponent(`Hello, I saw your ${room.title} on StudentStay for ${displayPrice} and I am interested.`);
       const whatsappUrl = `https://wa.me/237${(room.phone || '').replace(/[^0-9]/g, '')}?text=${msg}`;
-      const imagesHtml = room.images && room.images.length ? room.images.map(img => `<img src="${img}" class="w-full h-80 object-cover">`).join('') : '<div class="w-full h-80 bg-slate-700 flex items-center justify-center text-slate-400">📷 No images</div>';
+      
+      const photos = room.images || [];
+      let imagesHtml;
+      if (photos.length === 0) {
+        imagesHtml = '<div class="w-full h-80 bg-slate-700 flex items-center justify-center text-slate-400">📷 No images</div>';
+      } else if (photos.length === 1) {
+        imagesHtml = `<img src="${photos[0]}" class="w-full h-80 object-cover">`;
+      } else {
+        imagesHtml = `
+        <div class="carousel-wrap">
+          <div class="carousel-dots" id="carouselDots">
+            ${photos.map((_, i) => `<div class="carousel-dot${i === 0 ? ' active' : ''}" data-idx="${i}"></div>`).join('')}
+          </div>
+          <div class="carousel-track" id="carouselTrack">
+            ${photos.map((img, i) => `<img src="${img}" alt="Photo ${i + 1}">`).join('')}
+          </div>
+          <div class="carousel-btns">
+            <div class="carousel-btn" id="carouselPrev">‹</div>
+            <div class="carousel-btn" id="carouselNext">›</div>
+          </div>
+        </div>`;
+      }
       
       const pricingHtml = formatPriceDisplay(room);
       
       document.getElementById('roomContent').innerHTML = `
         <div>
-          <div class="flex overflow-x-auto snap-x snap-mandatory">${imagesHtml}</div>
+          <div>${imagesHtml}</div>
           <div class="p-6">
             <div class="flex justify-between items-start flex-wrap gap-2 mb-4">
               <h1 class="text-2xl font-bold text-white">${escapeHtml(room.title)}</h1>
@@ -408,12 +318,41 @@
       // Apply translations to dynamic content
       updatePageLanguage();
       
-      const user = firebase.auth().currentUser;
+      // Wire up the photo carousel (only present when there are 2+ photos).
+      // Simple slide track: translateX the track by 100% per step, one
+      // photo fills the viewport at a time. No 3D transforms involved,
+      // so there's nothing for perspective/z-depth to glitch on.
+      const carouselTrack = document.getElementById('carouselTrack');
+      if (carouselTrack) {
+        let currentIndex = 0;
+        const dots = document.querySelectorAll('#carouselDots .carousel-dot');
+
+        function updateCarousel() {
+          carouselTrack.style.transform = `translateX(-${currentIndex * 100}%)`;
+          dots.forEach((d, i) => d.classList.toggle('active', i === currentIndex));
+        }
+
+        document.getElementById('carouselPrev').onclick = () => {
+          currentIndex = (currentIndex - 1 + photos.length) % photos.length;
+          updateCarousel();
+        };
+        document.getElementById('carouselNext').onclick = () => {
+          currentIndex = (currentIndex + 1) % photos.length;
+          updateCarousel();
+        };
+        dots.forEach(dot => {
+          dot.onclick = () => { currentIndex = parseInt(dot.dataset.idx); updateCarousel(); };
+        });
+
+        updateCarousel();
+      }
+      
+      const { data: sessionData } = await sb.auth.getSession();
+      const user = sessionData.session?.user ?? null;
       if (user) {
-        const userDoc = await db.collection('users').doc(user.uid).get();
-        const userData = userDoc.data();
-        const isOwner = room.landlordId === user.uid;
-        const isAdmin = userData?.role === 'admin';
+        const { data: profileRow } = await sb.from('profiles').select('role').eq('id', user.id).single();
+        const isOwner = room.landlordId === user.id;
+        const isAdmin = profileRow?.role === 'admin';
         if (isOwner || isAdmin) {
           document.getElementById('editButtonContainer').innerHTML = `<a href="edit-room.html?id=${roomId}" class="bg-yellow-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-yellow-700 inline-block transition">✏️ ${t('editRoom')}</a>`;
         }
@@ -427,30 +366,31 @@
       }
     });
     
-    firebase.auth().onAuthStateChanged(async (user) => {
+    function updateAuthButtons(user) {
       const desktopLogout = document.getElementById('desktopLogoutBtn');
       const mobileLogout = document.getElementById('mobileLogoutBtn');
       if (user) {
-        if (desktopLogout) { desktopLogout.textContent = t('logout'); desktopLogout.onclick = (e) => { e.preventDefault(); firebase.auth().signOut(); window.location.href = 'login.html'; }; }
-        if (mobileLogout) { mobileLogout.textContent = t('logout'); mobileLogout.onclick = (e) => { e.preventDefault(); firebase.auth().signOut(); window.location.href = 'login.html'; }; }
+        if (desktopLogout) { desktopLogout.textContent = t('logout'); desktopLogout.onclick = (e) => { e.preventDefault(); sb.auth.signOut().then(() => window.location.href = 'login.html'); }; }
+        if (mobileLogout) { mobileLogout.textContent = t('logout'); mobileLogout.onclick = (e) => { e.preventDefault(); sb.auth.signOut().then(() => window.location.href = 'login.html'); }; }
       } else {
         if (desktopLogout) { desktopLogout.textContent = t('login'); desktopLogout.href = 'login.html'; desktopLogout.onclick = null; }
         if (mobileLogout) { mobileLogout.textContent = t('login'); mobileLogout.href = 'login.html'; mobileLogout.onclick = null; }
       }
-      
-      loadRoomData();
+    }
+    // onAuthStateChange fires once immediately with the current session on
+    // subscribe (as well as on future sign-in/out), so a separate getSession()
+    // call here would load the room data twice on every page load.
+    let initialRoomLoadDone = false;
+    sb.auth.getSession().then(({ data }) => { updateAuthButtons(data.session?.user ?? null); });
+    sb.auth.onAuthStateChange((_event, session) => {
+      updateAuthButtons(session?.user ?? null);
+      if (!initialRoomLoadDone) {
+        initialRoomLoadDone = true;
+        loadRoomData();
+      }
     });
     
     // Simple escape function to prevent XSS
-    function escapeHtml(str) {
-      if (!str) return '';
-      return str
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;');
-    }
   </script>
 
   <!-- Service Worker Registration -->
@@ -461,5 +401,7 @@
         .catch(err => console.log('Service Worker registration failed', err));
     }
   </script>
+<p class="text-center text-xs text-slate-600 py-4"><a href="https://asghinlabs.com" target="_blank" rel="noopener noreferrer" style="color: #007bff; text-decoration: none; font-weight: 500;">a asghinlabs product</a></p>
+
 </body>
 </html>
