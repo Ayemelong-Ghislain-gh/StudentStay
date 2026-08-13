@@ -5,6 +5,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Room Details - StudentStay</title>
+  <meta name="description" content="View this student room listing on StudentStay — photos, price, location and features. Contact the landlord directly on WhatsApp.">
+  <link rel="canonical" id="canonicalTag" href="https://studentstay-cm.vercel.app/details.html">
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="StudentStay">
+  <meta id="ogTitle" property="og:title" content="Room Details - StudentStay">
+  <meta id="ogDescription" property="og:description" content="View this student room listing on StudentStay.">
+  <meta id="ogUrl" property="og:url" content="https://studentstay-cm.vercel.app/details.html">
+  <meta id="ogImage" property="og:image" content="https://studentstay-cm.vercel.app/icons/icon-512.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta id="robotsTag" name="robots" content="index, follow">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-config.js"></script>
@@ -386,6 +396,11 @@
       );
       if (error || !r) { 
         document.getElementById('roomContent').innerHTML = '<div class="p-8 text-center text-red-400">Listing not available</div>'; 
+        // This room doesn't exist / isn't approved / has expired — tell search
+        // engines not to index this specific URL instead of leaving the
+        // generic fallback tags in place.
+        const robotsTag = document.getElementById('robotsTag');
+        if (robotsTag) robotsTag.setAttribute('content', 'noindex');
         return; 
       }
       room = {
@@ -394,6 +409,45 @@
         pricingType: r.pricing_type, monthlyPrice: r.monthly_price, yearlyPrice: r.yearly_price, price: r.price
       };
       
+      // --- SEO: give this specific room its own title, description, and
+      // structured data instead of the generic "Room Details" placeholder.
+      // This is what lets an individual listing show up in Google results
+      // and look good when shared on WhatsApp/Facebook.
+      const seoPricing = getRoomPricing(room);
+      const seoPriceText = seoPricing.pricingType === 'yearly'
+        ? `${formatFCFA(seoPricing.yearlyPrice)}/year`
+        : `${formatFCFA(seoPricing.monthlyPrice)}/month`;
+      const seoTitle = `${room.title} — ${room.city} | ${seoPriceText} | StudentStay`;
+      const seoDescription = `${room.title} in ${room.city}${room.area ? ', ' + room.area : ''}. ${seoPriceText}. ${(room.description || '').slice(0, 120)}`.trim();
+      const seoUrl = `https://studentstay-cm.vercel.app/details.html?id=${roomId}`;
+      const seoImage = (room.images && room.images[0]) || 'https://studentstay-cm.vercel.app/icons/icon-512.png';
+
+      document.title = seoTitle;
+      document.querySelector('meta[name="description"]')?.setAttribute('content', seoDescription);
+      document.getElementById('canonicalTag')?.setAttribute('href', seoUrl);
+      document.getElementById('ogTitle')?.setAttribute('content', seoTitle);
+      document.getElementById('ogDescription')?.setAttribute('content', seoDescription);
+      document.getElementById('ogUrl')?.setAttribute('content', seoUrl);
+      document.getElementById('ogImage')?.setAttribute('content', seoImage);
+
+      const jsonLd = document.createElement('script');
+      jsonLd.type = 'application/ld+json';
+      jsonLd.textContent = JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "Product",
+        "name": room.title,
+        "description": room.description || seoDescription,
+        "image": room.images || [],
+        "offers": {
+          "@type": "Offer",
+          "url": seoUrl,
+          "priceCurrency": "XAF",
+          "price": seoPricing.pricingType === 'yearly' ? seoPricing.yearlyPrice : seoPricing.monthlyPrice,
+          "availability": "https://schema.org/InStock"
+        }
+      });
+      document.head.appendChild(jsonLd);
+
       // Get the display price for WhatsApp message
       const roomPricing = getRoomPricing(room);
       const displayPrice = roomPricing.pricingType === 'yearly' 

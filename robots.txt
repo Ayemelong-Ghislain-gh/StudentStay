@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+Disallow: /dashboard.html
+Disallow: /admin.html
+Disallow: /post-room.html
+Disallow: /edit-room.html
+Disallow: /login.html
+Disallow: /carousel-test.html
+Disallow: /diagnostic.html
+Disallow: /details-debug.html
+
+Sitemap: https://studentstay-cm.vercel.app/sitemap.xml
