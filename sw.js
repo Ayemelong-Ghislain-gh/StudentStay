@@ -1,4 +1,4 @@
-const CACHE_NAME = 'room-finder-v3';
+const CACHE_NAME = 'room-finder-v4';
 const urlsToCache = [
   '/',
   '/index.html',
@@ -17,6 +17,11 @@ const urlsToCache = [
 ];
 
 self.addEventListener('install', event => {
+  // Force this new worker to become active immediately instead of sitting
+  // "waiting" until every open tab for the site is closed. Without this,
+  // uploading a new sw.js (and even a hard refresh) can silently keep
+  // serving whatever HTML/JS was cached by the OLD worker indefinitely.
+  self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => cache.addAll(urlsToCache))
@@ -28,7 +33,7 @@ self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(keys =>
       Promise.all(keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key)))
-    )
+    ).then(() => self.clients.claim()) // take control of already-open tabs right away
   );
 });
 
