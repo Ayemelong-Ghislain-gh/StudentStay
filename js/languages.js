@@ -425,7 +425,8 @@ function selectLanguage(lang) {
         modal.classList.add('hidden-modal');
     }
     
-    // Update page language
+    // Update page language (just repaints data-i18n text — does NOT
+    // dispatch languageChanged; see below)
     updatePageLanguage();
     
     // Reload dynamic content
@@ -437,6 +438,23 @@ function selectLanguage(lang) {
     
     // Update language button if it exists
     updateLanguageButtonText();
+
+    // Dispatch languageChanged exactly once, here, because this is the only
+    // place the language actually changes. IMPORTANT: this must NOT live
+    // inside updatePageLanguage() — every page's loadRooms()/displayRooms()/
+    // loadRoomData() both LISTEN for this event AND call updatePageLanguage()
+    // at the end of their own render. If updatePageLanguage() dispatched the
+    // event itself, that would re-trigger those same reload functions, which
+    // would call updatePageLanguage() again, which would dispatch again —
+    // an infinite reload loop on every page load for any returning visitor
+    // (this was happening silently on every load once a language was saved
+    // to localStorage, since DOMContentLoaded calls updatePageLanguage()
+    // unconditionally). On the homepage this loop kept resetting the grid to
+    // its loading-skeleton state (looked like permanently empty boxes); on
+    // the details page it kept re-rendering #roomContent from scratch,
+    // snapping the photo carousel back to the cover image a moment after
+    // every click.
+    window.dispatchEvent(new CustomEvent('languageChanged', { detail: { language: currentLanguage } }));
 }
 
 // Function to set language (for nav button usage)
@@ -484,8 +502,6 @@ function updatePageLanguage() {
         element.title = t(key);
     });
     
-    // Dispatch custom event for dynamic content updates
-    window.dispatchEvent(new CustomEvent('languageChanged', { detail: { language: currentLanguage } }));
 }
 
 // Function to update language toggle button text

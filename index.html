@@ -144,7 +144,7 @@
     <p><span class="text-primary font-bold" data-i18n="appName">StudentStay</span> — <span data-i18n="footerTagline">Find Rooms. No Stress.</span></p>
     <p class="mt-1" data-i18n="footerLocation">📍 All major university cities across Cameroon</p>
     <p class="mt-3 text-xs text-slate-600">
-      <a href="https://asghinlabs.com" target="_blank" rel="noopener noreferrer" style="color: #007bff; text-decoration: none; font-weight: 500;">a asghinlabs product</a>
+      <a href="https://asghinlabs.vercel.app" target="_blank" rel="noopener noreferrer" style="color: #007bff; text-decoration: none; font-weight: 500;">a asghinlabs product</a>
     </p>
   </footer>
 
@@ -198,7 +198,10 @@
         if (mobileBtn) { mobileBtn.textContent = t('login'); mobileBtn.href = 'login.html'; mobileBtn.onclick = null; }
       }
     }
-    sb.auth.getSession().then(({ data }) => updateAuthButtons(data.session?.user ?? null));
+    // NOTE: onAuthStateChange (subscribed in js/supabase-config.js) already
+    // fires immediately with the current session on page load, so a
+    // separate getSession() call here was redundant — and was adding to the
+    // pile-up of concurrent session-lock calls that could hang the page.
     sb.auth.onAuthStateChange((_event, session) => updateAuthButtons(session?.user ?? null));
     
     
@@ -213,12 +216,16 @@
       grid.innerHTML = getSkeletonCards(6);
       try {
         const nowIso = new Date().toISOString();
-        const { data, error } = await sb.from('rooms')
-          .select('*')
-          .eq('status', 'approved')
-          .or(`expires_at.gt.${nowIso},expires_at.is.null`)
-          .order('created_at', { ascending: false })
-          .limit(20);
+        const { data, error } = await withTimeout(
+          sb.from('rooms')
+            .select('*')
+            .eq('status', 'approved')
+            .or(`expires_at.gt.${nowIso},expires_at.is.null`)
+            .order('created_at', { ascending: false })
+            .limit(20),
+          10000,
+          'Room fetch'
+        );
         if (error) throw error;
         const rooms = (data || []).map(r => ({
           id: r.id, title: r.title, city: r.city, distance: r.distance,

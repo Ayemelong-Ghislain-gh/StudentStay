@@ -1,4 +1,4 @@
-const CACHE_NAME = 'room-finder-v4';
+const CACHE_NAME = 'room-finder-v6';
 const urlsToCache = [
   '/',
   '/index.html',

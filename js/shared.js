@@ -37,6 +37,20 @@ function formatPrice(amount) {
 const formatFCFA = formatPrice;
 
 /* --------------------------------------------------------------------------
+   Utility: withTimeout — races a promise against a timer so a hung request
+   (e.g. a stuck network call or auth lock) fails fast with a clear error
+   after `ms` milliseconds instead of leaving the UI stuck forever.
+   -------------------------------------------------------------------------- */
+function withTimeout(promise, ms = 10000, label = 'Request') {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) =>
+      setTimeout(() => reject(new Error(`${label} timed out after ${ms / 1000}s`)), ms)
+    )
+  ]);
+}
+
+/* --------------------------------------------------------------------------
    Utility: getRoomPricing — normalizes a room's pricing fields (monthly,
    yearly, or both) into the shape every listing/detail page renders from.
    -------------------------------------------------------------------------- */

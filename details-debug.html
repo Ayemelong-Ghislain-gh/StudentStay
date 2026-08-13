@@ -15,63 +15,25 @@
     .bg-whatsapp { background-color: #25D366; }
     .bg-whatsapp:hover { background-color: #1da851; }
 
-    /* === Photo carousel (larger frame, no cropping, tap to enlarge) === */
+    /* === Photo carousel (simple slide track — one photo visible at a time) === */
     .carousel-wrap {
       position: relative;
       width: 100%;
-      height: min(65vh, 460px);
-      min-height: 280px;
+      height: 320px;
       overflow: hidden;
       background: #0F172A;
     }
     .carousel-track {
       display: flex;
       height: 100%;
-      transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+      transition: transform 0.4s ease;
     }
-    .carousel-slide {
-      position: relative;
+    .carousel-track img {
       flex: 0 0 100%;
+      width: 100%;
       height: 100%;
-      overflow: hidden;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: #0F172A;
-    }
-    /* Blurred, scaled copy of the same photo fills the frame edge-to-edge
-       behind the real image, so there's never an empty letterbox bar —
-       while the real image on top is never cropped (object-fit: contain). */
-    .carousel-slide .carousel-bg {
-      position: absolute;
-      inset: 0;
-      background-size: cover;
-      background-position: center;
-      filter: blur(28px) brightness(0.55);
-      transform: scale(1.15);
-    }
-    .carousel-slide img {
-      position: relative;
-      z-index: 1;
-      max-width: 100%;
-      max-height: 100%;
-      width: auto;
-      height: auto;
-      object-fit: contain;
-      cursor: zoom-in;
+      object-fit: cover;
       user-select: none;
-    }
-    .carousel-zoom-hint {
-      position: absolute;
-      bottom: 12px;
-      right: 12px;
-      z-index: 5;
-      background: rgba(15,23,42,0.7);
-      color: #fff;
-      font-size: 12px;
-      padding: 4px 10px;
-      border-radius: 20px;
-      pointer-events: none;
     }
     .carousel-btns {
       position: absolute;
@@ -92,7 +54,6 @@
       color: #fff;
       font-size: 18px;
       user-select: none;
-      transition: background-color 0.15s;
     }
     .carousel-btn:active { background: #22C55E; }
     .carousel-dots {
@@ -108,65 +69,8 @@
       width: 7px; height: 7px;
       border-radius: 50%;
       background: rgba(255,255,255,0.4);
-      transition: background-color 0.2s, transform 0.2s;
     }
-    .carousel-dot.active { background: #22C55E; transform: scale(1.3); }
-
-    /* === Lightbox (full-screen tap-to-enlarge view) === */
-    .lightbox-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(2,6,23,0.95);
-      z-index: 10000;
-      display: none;
-      align-items: center;
-      justify-content: center;
-    }
-    .lightbox-overlay.open { display: flex; }
-    .lightbox-overlay img {
-      max-width: 92vw;
-      max-height: 88vh;
-      object-fit: contain;
-      user-select: none;
-    }
-    .lightbox-close {
-      position: absolute;
-      top: 16px; right: 16px;
-      width: 44px; height: 44px;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.1);
-      border: 2px solid #fff;
-      color: #fff;
-      font-size: 22px;
-      display: flex; align-items: center; justify-content: center;
-      cursor: pointer;
-    }
-    .lightbox-nav {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 48px; height: 48px;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.1);
-      border: 2px solid #fff;
-      color: #fff;
-      font-size: 22px;
-      display: flex; align-items: center; justify-content: center;
-      cursor: pointer;
-    }
-    .lightbox-prev { left: 16px; }
-    .lightbox-next { right: 16px; }
-    .lightbox-counter {
-      position: absolute;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      color: #CBD5E1;
-      font-size: 13px;
-      background: rgba(255,255,255,0.08);
-      padding: 4px 12px;
-      border-radius: 20px;
-    }
+    .carousel-dot.active { background: #22C55E; }
 
     /* === DARK MODE (default) === */
     body {
@@ -215,6 +119,20 @@
 </head>
 <body>
 
+  <!-- TEMPORARY on-page debug log — remove once the glitch is diagnosed -->
+  <div id="ssDebugLog" style="position:fixed;bottom:0;left:0;right:0;max-height:35vh;overflow-y:auto;background:rgba(0,0,0,0.9);color:#0f0;font-family:monospace;font-size:11px;padding:8px;z-index:99999;"></div>
+  <script>
+    window.ssDebugCounts = { loadRoomData: 0, updateCarousel: 0 };
+    window.ssDebug = function(msg) {
+      const el = document.getElementById('ssDebugLog');
+      const line = document.createElement('div');
+      const t = new Date().toISOString().split('T')[1].replace('Z','');
+      line.textContent = `[${t}] ${msg}`;
+      el.appendChild(line);
+      el.scrollTop = el.scrollHeight;
+    };
+  </script>
+
   <nav class="bg-slate-900/90 backdrop-blur-sm border-b border-slate-700">
     <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
       <a href="index.html" class="flex items-center gap-3">
@@ -250,15 +168,6 @@
       <a href="listings.html" class="inline-block text-primary hover:underline" data-i18n="backToListings">← Back to listings</a>
       <div id="editButtonContainer"></div>
     </div>
-  </div>
-
-  <!-- Lightbox: full-screen tap-to-enlarge photo view -->
-  <div class="lightbox-overlay" id="lightboxOverlay">
-    <div class="lightbox-close" id="lightboxClose">✕</div>
-    <div class="lightbox-nav lightbox-prev" id="lightboxPrev">‹</div>
-    <img id="lightboxImg" src="" alt="">
-    <div class="lightbox-nav lightbox-next" id="lightboxNext">›</div>
-    <div class="lightbox-counter" id="lightboxCounter"></div>
   </div>
 
   <script>
@@ -326,52 +235,11 @@
     if (!roomId) document.getElementById('roomContent').innerHTML = '<div class="p-8 text-center text-red-400">No room ID</div>';
     
     let room = null;
-
-    // Lightbox (tap-to-enlarge). Lives outside #roomContent so it's wired
-    // up once and keeps working across every loadRoomData() re-render.
-    let lightboxPhotos = [];
-    let lightboxIndex = 0;
-    const lightboxOverlay = document.getElementById('lightboxOverlay');
-    const lightboxImg = document.getElementById('lightboxImg');
-    const lightboxCounter = document.getElementById('lightboxCounter');
-
-    function updateLightboxImage() {
-      lightboxImg.src = lightboxPhotos[lightboxIndex];
-      lightboxCounter.textContent = `${lightboxIndex + 1} / ${lightboxPhotos.length}`;
-    }
-    function openLightbox(index) {
-      if (!lightboxPhotos.length) return;
-      lightboxIndex = index;
-      updateLightboxImage();
-      lightboxOverlay.classList.add('open');
-      document.body.style.overflow = 'hidden';
-    }
-    function closeLightbox() {
-      lightboxOverlay.classList.remove('open');
-      document.body.style.overflow = '';
-    }
-    function lightboxPrev() {
-      lightboxIndex = (lightboxIndex - 1 + lightboxPhotos.length) % lightboxPhotos.length;
-      updateLightboxImage();
-    }
-    function lightboxNext() {
-      lightboxIndex = (lightboxIndex + 1) % lightboxPhotos.length;
-      updateLightboxImage();
-    }
-    document.getElementById('lightboxClose').onclick = closeLightbox;
-    document.getElementById('lightboxPrev').onclick = lightboxPrev;
-    document.getElementById('lightboxNext').onclick = lightboxNext;
-    // Click the dark backdrop (not the photo itself) to close
-    lightboxOverlay.addEventListener('click', (e) => { if (e.target === lightboxOverlay) closeLightbox(); });
-    document.addEventListener('keydown', (e) => {
-      if (!lightboxOverlay.classList.contains('open')) return;
-      if (e.key === 'Escape') closeLightbox();
-      else if (e.key === 'ArrowLeft') lightboxPrev();
-      else if (e.key === 'ArrowRight') lightboxNext();
-    });
     
     async function loadRoomData() {
       if (!roomId) return;
+      window.ssDebugCounts.loadRoomData++;
+      window.ssDebug(`loadRoomData() called — total calls: ${window.ssDebugCounts.loadRoomData}`);
       
       const nowIso = new Date().toISOString();
       const { data: r, error } = await withTimeout(
@@ -410,12 +278,7 @@
       if (photos.length === 0) {
         imagesHtml = '<div class="w-full h-80 bg-slate-700 flex items-center justify-center text-slate-400">📷 No images</div>';
       } else if (photos.length === 1) {
-        imagesHtml = `
-        <div class="carousel-wrap">
-          <div class="carousel-bg" style="background-image:url('${photos[0]}')"></div>
-          <img src="${photos[0]}" alt="Photo 1" onclick="openLightbox(0)">
-          <div class="carousel-zoom-hint">🔍 Tap to enlarge</div>
-        </div>`;
+        imagesHtml = `<img src="${photos[0]}" class="w-full h-80 object-cover">`;
       } else {
         imagesHtml = `
         <div class="carousel-wrap">
@@ -423,13 +286,8 @@
             ${photos.map((_, i) => `<div class="carousel-dot${i === 0 ? ' active' : ''}" data-idx="${i}"></div>`).join('')}
           </div>
           <div class="carousel-track" id="carouselTrack">
-            ${photos.map((img, i) => `
-              <div class="carousel-slide">
-                <div class="carousel-bg" style="background-image:url('${img}')"></div>
-                <img src="${img}" alt="Photo ${i + 1}" onclick="openLightbox(${i})">
-              </div>`).join('')}
+            ${photos.map((img, i) => `<img src="${img}" alt="Photo ${i + 1}">`).join('')}
           </div>
-          <div class="carousel-zoom-hint">🔍 Tap to enlarge</div>
           <div class="carousel-btns">
             <div class="carousel-btn" id="carouselPrev">‹</div>
             <div class="carousel-btn" id="carouselNext">›</div>
@@ -482,24 +340,27 @@
       
       // Wire up the photo carousel (only present when there are 2+ photos).
       // Simple slide track: translateX the track by 100% per step, one
-      // photo fills the viewport at a time. Supports buttons, dots, and
-      // touch/mouse drag swiping.
+      // photo fills the viewport at a time. No 3D transforms involved,
+      // so there's nothing for perspective/z-depth to glitch on.
       const carouselTrack = document.getElementById('carouselTrack');
       if (carouselTrack) {
         let currentIndex = 0;
         const dots = document.querySelectorAll('#carouselDots .carousel-dot');
 
         function updateCarousel() {
+          window.ssDebugCounts.updateCarousel++;
+          window.ssDebug(`updateCarousel() → index=${currentIndex}, call #${window.ssDebugCounts.updateCarousel}`);
           carouselTrack.style.transform = `translateX(-${currentIndex * 100}%)`;
           dots.forEach((d, i) => d.classList.toggle('active', i === currentIndex));
-          lightboxIndex = currentIndex;
         }
 
         document.getElementById('carouselPrev').onclick = () => {
+          window.ssDebug('Prev button clicked');
           currentIndex = (currentIndex - 1 + photos.length) % photos.length;
           updateCarousel();
         };
         document.getElementById('carouselNext').onclick = () => {
+          window.ssDebug('Next button clicked');
           currentIndex = (currentIndex + 1) % photos.length;
           updateCarousel();
         };
@@ -507,45 +368,8 @@
           dot.onclick = () => { currentIndex = parseInt(dot.dataset.idx); updateCarousel(); };
         });
 
-        // Touch/mouse drag swipe
-        let dragStartX = null, dragDeltaX = 0, dragging = false;
-        const wrap = carouselTrack.closest('.carousel-wrap');
-        const onDragStart = (x) => { dragging = true; dragStartX = x; carouselTrack.style.transition = 'none'; };
-        const onDragMove = (x) => {
-          if (!dragging) return;
-          dragDeltaX = x - dragStartX;
-          carouselTrack.style.transform = `translateX(calc(-${currentIndex * 100}% + ${dragDeltaX}px))`;
-        };
-        const onDragEnd = () => {
-          if (!dragging) return;
-          dragging = false;
-          carouselTrack.style.transition = '';
-          const threshold = wrap.offsetWidth * 0.15;
-          if (dragDeltaX > threshold) currentIndex = (currentIndex - 1 + photos.length) % photos.length;
-          else if (dragDeltaX < -threshold) currentIndex = (currentIndex + 1) % photos.length;
-          dragDeltaX = 0;
-          updateCarousel();
-        };
-        wrap.addEventListener('touchstart', e => onDragStart(e.touches[0].clientX), { passive: true });
-        wrap.addEventListener('touchmove', e => onDragMove(e.touches[0].clientX), { passive: true });
-        wrap.addEventListener('touchend', onDragEnd);
-        wrap.addEventListener('mousedown', e => { e.preventDefault(); onDragStart(e.clientX); });
-        // Window-level listeners get re-created on every loadRoomData() call
-        // (e.g. after a language switch) — remove the previous pair first so
-        // they don't pile up across reloads.
-        if (window._carouselMouseMove) window.removeEventListener('mousemove', window._carouselMouseMove);
-        if (window._carouselMouseUp) window.removeEventListener('mouseup', window._carouselMouseUp);
-        window._carouselMouseMove = (e) => onDragMove(e.clientX);
-        window._carouselMouseUp = onDragEnd;
-        window.addEventListener('mousemove', window._carouselMouseMove);
-        window.addEventListener('mouseup', window._carouselMouseUp);
-
         updateCarousel();
       }
-
-      // Lightbox (tap-to-enlarge full-screen view)
-      lightboxPhotos = photos;
-      lightboxIndex = 0;
       
       // currentUser is kept up to date by the onAuthStateChange subscriber in
       // js/supabase-config.js — reusing it here avoids yet another getSession()
@@ -583,6 +407,7 @@
     // subscribe — no separate getSession() call needed here.
     let initialRoomLoadDone = false;
     sb.auth.onAuthStateChange((_event, session) => {
+      window.ssDebug(`onAuthStateChange fired — event: ${_event}, initialRoomLoadDone: ${initialRoomLoadDone}`);
       updateAuthButtons(session?.user ?? null);
       if (!initialRoomLoadDone) {
         initialRoomLoadDone = true;
@@ -601,7 +426,7 @@
         .catch(err => console.log('Service Worker registration failed', err));
     }
   </script>
-<p class="text-center text-xs text-slate-600 py-4"><a href="https://asghinlabs.vercel.app" target="_blank" rel="noopener noreferrer" style="color: #007bff; text-decoration: none; font-weight: 500;">a asghinlabs product</a></p>
+<p class="text-center text-xs text-slate-600 py-4"><a href="https://asghinlabs.com" target="_blank" rel="noopener noreferrer" style="color: #007bff; text-decoration: none; font-weight: 500;">a asghinlabs product</a></p>
 
 </body>
 </html>
