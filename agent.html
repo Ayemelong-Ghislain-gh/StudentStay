@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link rel="manifest" href="/manifest.json">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title id="pageTitle">Landlord Profile - StudentStay</title>
+  <meta name="description" id="pageDescription" content="See all rooms posted by this landlord on StudentStay.">
+  <link rel="canonical" id="canonicalTag" href="https://studentstay-cm.vercel.app/agent.html">
+  <meta property="og:type" content="profile">
+  <meta property="og:site_name" content="StudentStay">
+  <meta id="ogTitle" property="og:title" content="Landlord Profile - StudentStay">
+  <meta id="ogDescription" property="og:description" content="See all rooms posted by this landlord on StudentStay.">
+  <meta id="ogUrl" property="og:url" content="https://studentstay-cm.vercel.app/agent.html">
+  <meta id="ogImage" property="og:image" content="https://studentstay-cm.vercel.app/icons/icon-512.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta id="robotsTag" name="robots" content="index, follow">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js"></script>
+  <script src="js/languages.js"></script>
+  <script src="js/shared.js"></script>
+  <style>
+    .bg-primary { background-color: #22C55E; }
+    .card { background-color: #1E293B; border-radius: 16px; overflow: hidden; border: 1px solid #334155; transition: all 0.2s; }
+    .card:hover { transform: translateY(-4px); box-shadow: 0 10px 25px -5px rgba(0,0,0,0.3); }
+    .feature-badge { background-color: #334155; color: #CBD5E1; padding: 4px 8px; border-radius: 8px; font-size: 12px; }
+
+    body { background-color: #0F172A; color: #F1F5F9; }
+    body .bg-slate-800 { background-color: #1E293B; border-color: #334155; }
+    body .bg-slate-700 { background-color: #334155; border-color: #475569; }
+    body .text-white { color: #F1F5F9; }
+    body .text-slate-300 { color: #CBD5E1; }
+    body .text-slate-400 { color: #94A3B8; }
+    body .border-slate-700 { border-color: #334155; }
+    body .card { background-color: #1E293B; border-color: #334155; }
+    body .feature-badge { background-color: #334155; color: #CBD5E1; }
+    body footer { background-color: #0F172A; border-color: #1E293B; }
+    body footer .text-slate-400 { color: #94A3B8; }
+
+    body.light-mode { background-color: #F3F4F6; color: #111827; }
+    body.light-mode .bg-slate-800 { background-color: #FFFFFF; border-color: #E5E7EB; }
+    body.light-mode .bg-slate-700 { background-color: #F3F4F6; border-color: #E5E7EB; }
+    body.light-mode .border-slate-700 { border-color: #E5E7EB; }
+    body.light-mode .card { background-color: #FFFFFF; border-color: #E5E7EB; }
+    body.light-mode .card .text-white { color: #111827; }
+    body.light-mode .card .text-slate-300 { color: #374151; }
+    body.light-mode .card .text-slate-400 { color: #4B5563; }
+    body.light-mode .feature-badge { background-color: #E5E7EB; color: #111827; }
+    body.light-mode footer { background-color: #F9FAFB !important; border-color: #E5E7EB !important; }
+    body.light-mode footer .text-slate-400 { color: #4B5563 !important; }
+    body.light-mode h1.text-white,
+    body.light-mode .text-slate-300:not(nav .text-slate-300),
+    body.light-mode .text-slate-400 { color: #111827 !important; }
+  </style>
+</head>
+<body>
+
+  <nav class="bg-slate-900/90 backdrop-blur-sm border-b border-slate-700">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
+      <a href="index.html" class="flex items-center gap-3">
+        <div class="h-9 w-9 bg-primary rounded-lg flex items-center justify-center"><span class="text-white font-bold text-base">S</span></div>
+        <div>
+          <h1 class="text-2xl font-bold text-white tracking-tight" data-i18n="appName">StudentStay</h1>
+          <p class="text-xs text-slate-300" data-i18n="tagline">Find Rooms. No Stress.</p>
+        </div>
+      </a>
+      <div class="hidden md:flex gap-3">
+        <a href="index.html" class="nav-btn text-white hover:text-primary" data-i18n="home">Home</a>
+        <a href="listings.html" class="nav-btn text-slate-300 hover:text-primary" data-i18n="browse">Browse</a>
+        <a href="dashboard.html" class="nav-btn text-slate-300 hover:text-primary" data-i18n="dashboard">Dashboard</a>
+        <button id="darkModeToggle" class="nav-btn text-slate-300 hover:text-primary" data-i18n="darkLight">🌓 Dark/Light</button>
+        <button id="languageToggle" class="nav-btn text-slate-300 hover:text-primary">🌐 FR/EN</button>
+      </div>
+      <button id="menuBtn" class="md:hidden text-white"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg></button>
+    </div>
+    <div id="mobileMenu" class="hidden md:hidden bg-slate-800 border-t border-slate-700 py-3 px-4 flex flex-col gap-2">
+      <a href="index.html" class="nav-btn text-white hover:text-primary block text-left" data-i18n="home">Home</a>
+      <a href="listings.html" class="nav-btn text-slate-300 hover:text-primary block text-left" data-i18n="browse">Browse</a>
+      <a href="dashboard.html" class="nav-btn text-slate-300 hover:text-primary block text-left" data-i18n="dashboard">Dashboard</a>
+      <button id="mobileDarkModeToggle" class="nav-btn text-slate-300 hover:text-primary text-left w-full" data-i18n="darkLight">🌓 Dark/Light</button>
+      <button id="mobileLanguageToggle" class="nav-btn text-slate-300 hover:text-primary text-left w-full">🌐 FR/EN</button>
+    </div>
+  </nav>
+
+  <div class="max-w-6xl mx-auto px-4 py-8">
+
+    <div id="profileHeader" class="bg-slate-800 rounded-xl p-6 mb-8 border border-slate-700">
+      <div class="text-center py-6 text-slate-300" data-i18n="loadingText">Loading...</div>
+    </div>
+
+    <h2 class="text-xl font-bold text-white mb-4" id="roomsSectionTitle" data-i18n="listedRooms">Rooms listed</h2>
+    <div id="roomsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+  </div>
+
+  <footer class="bg-slate-900 border-t border-slate-800 py-8 text-center text-slate-400 text-sm">
+    <p><span class="text-primary font-bold" data-i18n="appName">StudentStay</span> — <span data-i18n="footerTagline">Find Rooms. No Stress.</span></p>
+    <p class="mt-1" data-i18n="footerLocation">📍 All major university cities across Cameroon</p>
+    <p class="mt-3 text-xs text-slate-600">
+      <a href="https://asghinlabs.vercel.app" target="_blank" rel="noopener noreferrer" style="color: #007bff; text-decoration: none; font-weight: 500;">a asghinlabs product</a>
+    </p>
+  </footer>
+
+  <script>
+    // Language Toggle Buttons
+    const langToggle = document.getElementById('languageToggle');
+    const mobileLangToggle = document.getElementById('mobileLanguageToggle');
+    if (langToggle) langToggle.addEventListener('click', () => { toggleLanguage(); updatePageLanguage(); });
+    if (mobileLangToggle) mobileLangToggle.addEventListener('click', () => { toggleLanguage(); updatePageLanguage(); });
+    window.addEventListener('languageChanged', () => {
+      updatePageLanguage();
+      if (agentRooms) renderRooms(agentRooms);
+    });
+
+    // Dark mode toggle
+    const darkModeToggle = document.getElementById('darkModeToggle');
+    const mobileDarkModeToggle = document.getElementById('mobileDarkModeToggle');
+    if (darkModeToggle) darkModeToggle.addEventListener('click', () => setDarkMode(!document.body.classList.contains('light-mode') ? false : true));
+    if (mobileDarkModeToggle) mobileDarkModeToggle.addEventListener('click', () => setDarkMode(!document.body.classList.contains('light-mode') ? false : true));
+    initDarkMode();
+
+    // Mobile menu toggle
+    document.getElementById('menuBtn').addEventListener('click', () => {
+      document.getElementById('mobileMenu').classList.toggle('hidden');
+    });
+
+    function getCardPriceDisplay(room) {
+      const { pricingType, monthlyPrice, yearlyPrice } = getRoomPricing(room);
+      const perMonthText = t('perMonth');
+      const perYearText = t('perYear');
+      const yearlyOptionText = t('yearlyOption');
+      if (pricingType === 'yearly') {
+        return `<div class="text-green-400 font-bold text-2xl">${formatFCFA(yearlyPrice)}<span class="text-sm text-slate-300">${perYearText}</span></div>`;
+      } else if (pricingType === 'both') {
+        return `<div class="text-green-400 font-bold text-xl">${formatFCFA(monthlyPrice)}<span class="text-sm text-slate-300">${perMonthText}</span></div>
+                <div class="text-green-400/80 font-semibold text-sm">${yearlyOptionText}</div>`;
+      } else {
+        return `<div class="text-green-400 font-bold text-2xl">${formatFCFA(monthlyPrice)}<span class="text-sm text-slate-300">${perMonthText}</span></div>`;
+      }
+    }
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const agentId = urlParams.get('id');
+    let agentRooms = null;
+    let agentName = '';
+
+    function renderRooms(rooms) {
+      const grid = document.getElementById('roomsGrid');
+      if (!rooms.length) {
+        grid.innerHTML = `<div class="col-span-full text-center text-slate-300 py-10">${t('noRoomsFound') || 'No rooms found'}</div>`;
+        return;
+      }
+      grid.innerHTML = rooms.map(room => `
+        <div class="card">
+          <img src="${room.images?.[0] || 'https://placehold.co/600x400/1e293b/22C55E?text=No+Image'}" class="w-full h-48 object-cover">
+          <div class="p-4">
+            <div class="mb-2">${getCardPriceDisplay(room)}</div>
+            <h4 class="font-semibold text-white text-lg mt-1 truncate">${escapeHtml(room.title || 'Untitled')}</h4>
+            <p class="text-slate-300 text-sm">📍 ${escapeHtml(room.city || 'Unknown')} • ${room.distance || '?'} ${t('fromUni')}</p>
+            <div class="flex flex-wrap gap-1 mt-2">
+              ${room.features?.slice(0,3).map(f => `<span class="feature-badge">${escapeHtml(f)}</span>`).join('') || ''}
+            </div>
+            <a href="details.html?id=${room.id}" class="block mt-3 text-center bg-primary text-white py-2 rounded-lg font-medium hover:bg-green-600 transition" data-i18n="viewDetails">View Details →</a>
+          </div>
+        </div>
+      `).join('');
+      updatePageLanguage();
+    }
+
+    async function loadAgentProfile() {
+      if (!agentId) {
+        document.getElementById('profileHeader').innerHTML = `<div class="text-center py-6 text-red-400">${t('noRoomId') || 'No landlord specified'}</div>`;
+        const robotsTag = document.getElementById('robotsTag');
+        if (robotsTag) robotsTag.setAttribute('content', 'noindex');
+        return;
+      }
+
+      try {
+        const [{ data: profile, error: profileError }, { data: rooms, error: roomsError }] = await Promise.all([
+          sb.from('profiles').select('full_name').eq('id', agentId).single(),
+          sb.from('rooms').select('*').eq('landlord_id', agentId).eq('status', 'approved')
+            .order('created_at', { ascending: false })
+        ]);
+
+        if (profileError || !profile) {
+          document.getElementById('profileHeader').innerHTML = `<div class="text-center py-6 text-red-400">${t('profileNotFound') || 'Landlord not found'}</div>`;
+          const robotsTag = document.getElementById('robotsTag');
+          if (robotsTag) robotsTag.setAttribute('content', 'noindex');
+          return;
+        }
+
+        agentName = profile.full_name || 'StudentStay Landlord';
+        agentRooms = (rooms || []).map(r => ({
+          id: r.id, title: r.title, city: r.city, distance: r.distance,
+          images: r.images, features: r.features,
+          pricingType: r.pricing_type, monthlyPrice: r.monthly_price, yearlyPrice: r.yearly_price, price: r.price
+        }));
+
+        // --- SEO: unique title/description/OG per landlord, same pattern as details.html ---
+        const roomCount = agentRooms.length;
+        const roomWord = roomCount === 1 ? (t('roomFound') || 'room') : (t('roomsFound') || 'rooms');
+        const seoTitle = `${agentName} — ${roomCount} ${roomWord} on StudentStay`;
+        const seoDescription = `See all rooms listed by ${agentName} on StudentStay. Browse photos, prices, and contact directly on WhatsApp.`;
+        const seoUrl = `https://studentstay-cm.vercel.app/agent.html?id=${agentId}`;
+        const seoImage = (agentRooms[0]?.images?.[0]) || 'https://studentstay-cm.vercel.app/icons/icon-512.png';
+
+        document.title = seoTitle;
+        document.getElementById('pageDescription').setAttribute('content', seoDescription);
+        document.getElementById('canonicalTag').setAttribute('href', seoUrl);
+        document.getElementById('ogTitle').setAttribute('content', seoTitle);
+        document.getElementById('ogDescription').setAttribute('content', seoDescription);
+        document.getElementById('ogUrl').setAttribute('content', seoUrl);
+        document.getElementById('ogImage').setAttribute('content', seoImage);
+
+        const jsonLd = document.createElement('script');
+        jsonLd.type = 'application/ld+json';
+        jsonLd.textContent = JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "ProfilePage",
+          "name": seoTitle,
+          "url": seoUrl,
+          "mainEntity": { "@type": "Person", "name": agentName }
+        });
+        document.head.appendChild(jsonLd);
+
+        // --- Profile header + share button ---
+        document.getElementById('profileHeader').innerHTML = `
+          <div class="flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <h2 class="text-2xl font-bold text-white">${escapeHtml(agentName)}</h2>
+              <p class="text-slate-300 mt-1">${roomCount} ${roomWord} ${t('listedOnStudentStay') || 'listed on StudentStay'}</p>
+            </div>
+            <button id="shareProfileBtn" class="bg-slate-700 text-white text-center py-3 px-6 rounded-full font-semibold inline-flex items-center gap-2 transition hover:bg-slate-600">
+              🔗 <span id="shareProfileBtnLabel">${t('shareProfile') || 'Share this profile'}</span>
+            </button>
+          </div>
+        `;
+
+        const shareBtn = document.getElementById('shareProfileBtn');
+        const shareBtnLabel = document.getElementById('shareProfileBtnLabel');
+        shareBtn.onclick = async () => {
+          const shareData = { title: seoTitle, text: seoDescription, url: seoUrl };
+          if (navigator.share) {
+            try { await navigator.share(shareData); } catch (err) { /* cancelled, ignore */ }
+          } else {
+            try {
+              await navigator.clipboard.writeText(seoUrl);
+              const original = shareBtnLabel.textContent;
+              shareBtnLabel.textContent = t('linkCopied') || 'Link copied!';
+              setTimeout(() => { shareBtnLabel.textContent = original; }, 2000);
+            } catch (err) {
+              window.open(`https://wa.me/?text=${encodeURIComponent(shareData.text + ' ' + shareData.url)}`, '_blank');
+            }
+          }
+        };
+
+        renderRooms(agentRooms);
+      } catch (err) {
+        document.getElementById('profileHeader').innerHTML = `<div class="text-center py-6 text-red-400">${t('errorLoading') || 'Error loading profile'}</div>`;
+      }
+    }
+
+    loadAgentProfile();
+  </script>
+
+  <!-- Service Worker Registration -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch(() => {});
+    }
+  </script>
+
+</body>
+</html>

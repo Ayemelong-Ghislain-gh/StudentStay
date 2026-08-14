@@ -386,7 +386,7 @@
       const nowIso = new Date().toISOString();
       const { data: r, error } = await withTimeout(
         sb.from('rooms')
-          .select('*')
+          .select('*, profiles:landlord_id(full_name)')
           .eq('id', roomId)
           .eq('status', 'approved')
           .or(`expires_at.gt.${nowIso},expires_at.is.null`)
@@ -406,6 +406,7 @@
       room = {
         title: r.title, city: r.city, area: r.area, distance: r.distance, description: r.description,
         features: r.features, images: r.images, phone: r.phone, landlordId: r.landlord_id,
+        landlordName: r.profiles?.full_name || null,
         pricingType: r.pricing_type, monthlyPrice: r.monthly_price, yearlyPrice: r.yearly_price, price: r.price
       };
       
@@ -512,6 +513,14 @@
               <span>•</span>
               <span>🚶 ${room.distance || '?'} km ${t('fromUni')}</span>
             </div>
+
+            ${room.landlordName ? `
+            <div class="text-sm text-slate-400 mb-4">
+              ${t('postedBy') || 'Posted by'} <a href="agent.html?id=${room.landlordId}" class="text-primary hover:underline">${escapeHtml(room.landlordName)}</a>
+              <span class="mx-1">·</span>
+              <a href="agent.html?id=${room.landlordId}" class="text-primary hover:underline">${t('seeAllRoomsFrom') || 'See all their rooms'}</a>
+            </div>
+            ` : ''}
             
             <div class="flex flex-wrap gap-2 mb-4">
               ${room.features ? room.features.map(f => `<span class="bg-slate-700 text-slate-200 px-3 py-1 rounded-full text-sm">${escapeHtml(f)}</span>`).join('') : ''}
@@ -522,14 +531,53 @@
               <p class="text-slate-300 leading-relaxed">${escapeHtml(room.description || 'No description provided')}</p>
             </div>
             
-            <div class="border-t border-slate-700 pt-4 mt-4">
+            <div class="border-t border-slate-700 pt-4 mt-4 flex flex-wrap gap-3">
               <a href="${whatsappUrl}" target="_blank" class="bg-whatsapp text-white text-center py-3 px-6 rounded-full font-semibold inline-flex items-center gap-2 w-full sm:w-auto justify-center transition">
                 📲 ${t('contactWhatsApp')}
               </a>
+              <button id="shareRoomBtn" class="bg-slate-700 text-white text-center py-3 px-6 rounded-full font-semibold inline-flex items-center gap-2 w-full sm:w-auto justify-center transition hover:bg-slate-600">
+                🔗 <span id="shareRoomBtnLabel">${t('shareRoom') || 'Share this room'}</span>
+              </button>
             </div>
           </div>
         </div>
       `;
+
+      // --- Share button ---
+      // On phones this opens the native share sheet, which includes
+      // "WhatsApp" and "WhatsApp Status" directly if the app is installed —
+      // exactly what landlords/agents want for pushing a room into a group
+      // or their status. On desktop (no native share sheet available) it
+      // falls back to copying the link so they can paste it anywhere.
+      const shareBtn = document.getElementById('shareRoomBtn');
+      const shareBtnLabel = document.getElementById('shareRoomBtnLabel');
+      if (shareBtn) {
+        shareBtn.onclick = async () => {
+          const shareData = {
+            title: seoTitle,
+            text: `${room.title} — ${room.city}, ${seoPriceText}`,
+            url: seoUrl
+          };
+          if (navigator.share) {
+            try {
+              await navigator.share(shareData);
+            } catch (err) {
+              // User cancelled the share sheet — not an error, do nothing.
+            }
+          } else {
+            try {
+              await navigator.clipboard.writeText(seoUrl);
+              const original = shareBtnLabel.textContent;
+              shareBtnLabel.textContent = t('linkCopied') || 'Link copied!';
+              setTimeout(() => { shareBtnLabel.textContent = original; }, 2000);
+            } catch (err) {
+              // Clipboard API blocked (rare, e.g. insecure context) — last
+              // resort: open a WhatsApp share link directly.
+              window.open(`https://wa.me/?text=${encodeURIComponent(shareData.text + ' ' + shareData.url)}`, '_blank');
+            }
+          }
+        };
+      }
       
       // Apply translations to dynamic content
       updatePageLanguage();
