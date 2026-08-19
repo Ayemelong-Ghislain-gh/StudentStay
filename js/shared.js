@@ -524,7 +524,7 @@ function initFeedbackWidget(options = {}) {
     // Feedback rows require a real user_id on pages where anonymous
     // submissions are rejected client-side and by the `feedback` table's
     // RLS policy (admin/dashboard opt in via requireAuth).
-    if (requireAuth && !window.currentUser) {
+    if (requireAuth && !currentUser) {
       alert('Please log in to send feedback.');
       return;
     }
@@ -533,7 +533,7 @@ function initFeedbackWidget(options = {}) {
     submitBtn.textContent = 'Sending...';
     try {
       const { error } = await sb.from('feedback').insert({
-        user_id: requireAuth ? window.currentUser.id : (window.currentUser ? window.currentUser.id : null),
+        user_id: currentUser ? currentUser.id : null,
         message: message
       });
       if (error) throw error;

@@ -184,9 +184,11 @@
       }
 
       try {
+        const nowIso = new Date().toISOString();
         const [{ data: profile, error: profileError }, { data: rooms, error: roomsError }] = await Promise.all([
           sb.from('public_profiles').select('full_name').eq('id', agentId).single(),
           sb.from('rooms').select('*').eq('landlord_id', agentId).eq('status', 'approved')
+            .or(`expires_at.gt.${nowIso},expires_at.is.null`)
             .order('created_at', { ascending: false })
         ]);
 

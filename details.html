@@ -391,32 +391,68 @@
     async function loadRoomData() {
       if (!roomId) return;
       
-      const nowIso = new Date().toISOString();
+      // No status/expiry filter here on purpose — visibility is decided
+      // below in JS, because the room's own owner (and admins) need to be
+      // able to preview a pending/rejected/expired listing instead of
+      // hitting "Listing not available" (e.g. the "View" link on their
+      // own dashboard points here regardless of status).
       const { data: r, error } = await withTimeout(
         sb.from('rooms')
           .select('*, profiles:landlord_id(full_name)')
           .eq('id', roomId)
-          .eq('status', 'approved')
-          .or(`expires_at.gt.${nowIso},expires_at.is.null`)
           .maybeSingle(),
         10000,
         'Room fetch'
       );
       if (error || !r) { 
         document.getElementById('roomContent').innerHTML = '<div class="p-8 text-center text-red-400">Listing not available</div>'; 
-        // This room doesn't exist / isn't approved / has expired — tell search
-        // engines not to index this specific URL instead of leaving the
-        // generic fallback tags in place.
+        // This room doesn't exist — tell search engines not to index this
+        // specific URL instead of leaving the generic fallback tags in place.
         const robotsTag = document.getElementById('robotsTag');
         if (robotsTag) robotsTag.setAttribute('content', 'noindex');
         return; 
       }
+
+      // currentUser is kept up to date by the onAuthStateChange subscriber in
+      // js/supabase-config.js — reusing it here avoids yet another getSession()
+      // call competing for the same session lock. Computed here (once) so the
+      // edit-button section further down can reuse it instead of re-querying.
+      const user = currentUser;
+      let isOwner = false;
+      let isAdmin = false;
+      if (user) {
+        const { data: profileRow } = await sb.from('profiles').select('role').eq('id', user.id).single();
+        isOwner = r.landlord_id === user.id;
+        isAdmin = profileRow?.role === 'admin';
+      }
+
+      const isExpired = !!r.expires_at && new Date(r.expires_at).getTime() <= Date.now();
+      const isPubliclyVisible = r.status === 'approved' && !isExpired;
+
+      // Anyone can view an approved, unexpired room. Otherwise only the
+      // owner or an admin may preview it (e.g. to check a pending listing
+      // before it's approved) — everyone else sees the same "not available"
+      // message a nonexistent room would show.
+      if (!isPubliclyVisible && !isOwner && !isAdmin) {
+        document.getElementById('roomContent').innerHTML = '<div class="p-8 text-center text-red-400">Listing not available</div>';
+        const robotsTag = document.getElementById('robotsTag');
+        if (robotsTag) robotsTag.setAttribute('content', 'noindex');
+        return;
+      }
+
       room = {
         title: r.title, city: r.city, area: r.area, distance: r.distance, description: r.description,
         features: r.features, images: r.images, phone: r.phone, landlordId: r.landlord_id,
         landlordName: r.profiles?.full_name || null,
         pricingType: r.pricing_type, monthlyPrice: r.monthly_price, yearlyPrice: r.yearly_price, price: r.price
       };
+
+      // A non-public preview (owner/admin looking at a pending, rejected, or
+      // expired room) should never be indexed by search engines.
+      if (!isPubliclyVisible) {
+        const robotsTag = document.getElementById('robotsTag');
+        if (robotsTag) robotsTag.setAttribute('content', 'noindex');
+      }
       
       // --- SEO: give this specific room its own title, description, and
       // structured data instead of the generic "Room Details" placeholder.
@@ -501,9 +537,23 @@
       }
       
       const pricingHtml = formatPriceDisplay(room);
+
+      // Owner/admin previewing a room that isn't publicly visible yet
+      // (pending review, rejected, or expired) — shown inline so it's
+      // replaced along with the rest of the content on every re-render.
+      let previewBannerHtml = '';
+      if (!isPubliclyVisible) {
+        const statusLabel = r.status === 'pending'
+          ? (t('pendingReviewNotice') || 'This listing is pending admin review — only you can see this preview.')
+          : r.status === 'rejected'
+            ? (t('rejectedNotice') || 'This listing was rejected and is not visible to the public.')
+            : (t('expiredNotice') || 'This listing has expired and is not visible to the public.');
+        previewBannerHtml = `<div class="m-4 mb-0 p-3 rounded-lg bg-yellow-500/20 text-yellow-400 text-sm">👁️ ${statusLabel}</div>`;
+      }
       
       document.getElementById('roomContent').innerHTML = `
         <div>
+          ${previewBannerHtml}
           <div>${imagesHtml}</div>
           <div class="p-6">
             <div class="flex justify-between items-start flex-wrap gap-2 mb-4">
@@ -656,18 +706,10 @@
       // Lightbox (tap-to-enlarge full-screen view)
       lightboxPhotos = photos;
       lightboxIndex = 0;
-      
-      // currentUser is kept up to date by the onAuthStateChange subscriber in
-      // js/supabase-config.js — reusing it here avoids yet another getSession()
-      // call competing for the same session lock.
-      const user = currentUser;
-      let isOwner = false;
-      let isAdmin = false;
-      if (user) {
-        const { data: profileRow } = await sb.from('profiles').select('role').eq('id', user.id).single();
-        isOwner = room.landlordId === user.id;
-        isAdmin = profileRow?.role === 'admin';
-      }
+
+      // isOwner/isAdmin/isPubliclyVisible were already computed earlier in
+      // loadRoomData() (needed there to decide visibility) — reused here so
+      // we don't query `profiles` a second time.
       if (isOwner || isAdmin) {
         // Note: this button being hidden/shown is a display convenience only.
         // The actual protection against unauthorized edits lives in the
